@@ -1,0 +1,41 @@
+import React from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { IBreadcrumbLink } from '@/@types/breadcrumb-link'
+import { capitalizeFirstLetter } from '@/utils'
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
+
+
+
+
+export function AppBreadcrumb() {
+  const location = useLocation()
+  const currentPath = location.pathname.split('/').slice(1)
+
+  return (
+    <>
+    <Breadcrumb>
+      <BreadcrumbList>
+        {currentPath.map(link => (
+          <React.Fragment key={link}>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink>
+                <BreadcrumbPage>{ capitalizeFirstLetter(link) }</BreadcrumbPage>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </React.Fragment>
+        ))}
+      </BreadcrumbList>
+    </Breadcrumb>
+    </>
+  )
+}
