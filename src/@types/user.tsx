@@ -4,7 +4,7 @@ export interface IUser {
   username: string
   password?: string
   email: string
-  firstName: string
+  firstName: string 
   middleName?: string
   lastName: string
   extensionName?: string

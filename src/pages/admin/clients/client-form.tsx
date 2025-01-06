@@ -83,7 +83,7 @@ export default function AdminClientForm() {
     try {
       const response = await api.post('/api/clients', newData)
       if(response.status === 201) {
-        toast.success(`${data.firstName} ${data.lastName} is created successfully.`, {
+        toast.success(`"${data.firstName} ${data.lastName}" is created successfully.`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

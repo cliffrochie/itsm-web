@@ -1,5 +1,5 @@
 "use client"
-
+import { useNavigate } from "react-router-dom"
 import { Row } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 
@@ -13,14 +13,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { IUser } from '@/@types/user'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
+  data: IUser
 }
 
 export function DataTableRowActions<TData>({
   row,
+  data
 }: DataTableRowActionsProps<TData>) {
+  const navigate = useNavigate()
 
   return (
     <DropdownMenu>
@@ -35,7 +39,7 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(`/admin/users/${data._id}/update`) }>Edit</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           Delete

@@ -21,7 +21,7 @@ import api from '@/services/use-api'
 import { UserDataTable } from '@/features/admin/components/data-tables/users/data-table'
 import { UserDataTableColumnHeader } from '@/features/admin/components/data-tables/users/data-table-column-header'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
-import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
+import { DataTableRowActions } from '@/features/admin/components/data-tables/users/data-table-row-actions'
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 
 import { roles } from '@/data/user-roles'
@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} /></div>
+        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} data={row.original} /></div>
       }
     ], []
   )

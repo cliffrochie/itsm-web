@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useParams } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -8,6 +8,8 @@ import { z } from "zod"
 
 import api from '@/services/use-api'
 import { handleAxiosError } from '@/utils/error-handler'
+
+import { useQuery } from '@tanstack/react-query'
 
 import { toast, Slide } from 'react-toastify';
 import { Button } from "@/components/ui/button"
@@ -23,10 +25,14 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
+import { IUser } from '@/@types/user'
+
 
 const formSchema = z.object({
   firstName: z.string().min(2),
+  middleName: z.string().nullable(),
   lastName: z.string().min(2),
+  extensionName: z.string().nullable(),
   username: z.string().min(4),
   email: z.string().email(),
   password: z.string().nonempty(),
@@ -38,28 +44,72 @@ const formSchema = z.object({
 
 export default function AdminUserForm() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const params = useParams()
   const currentPath = location.pathname.split('/')
+  const [errors, setErrors] = useState<any>(null)
+
+  let isUpdate = false
+
   let title = ''
   if(currentPath[currentPath.length-1] === 'create') {
     title = 'Create'
   }
   else if(currentPath[currentPath.length-1] === 'update') {
     title = 'Update'
+    isUpdate = true
   }
 
-  const [errors, setErrors] = useState<any>(null)
+  const { data } = useQuery({
+    queryKey: ['data'],
+    queryFn: async () => {
+      let data: IUser = {
+        _id: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        extensionName: '',
+        username: '',
+        email: '',
+        role: 'user'
+      }
+      let url = `/api/users/${params.userId}?includePassword=true`
+      if(params.userId) {
+        await api.get(url).then(response => {
+          data = response.data
+        })
+      }
+      return data
+    }
+  }) 
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    if(isUpdate) {
+      console.log(data)
+      form.setValue('firstName', data ? data.firstName : '')
+      form.setValue('middleName', data ? data.middleName !== undefined ? data.middleName : '' : '')
+      form.setValue('lastName', data ? data.lastName : '')
+      form.setValue('extensionName', data ? data.extensionName !== undefined ? data.extensionName : '' : '')
+      form.setValue('username', data ? data.username : '')
+      form.setValue('email', data ? data.email : '')
+      form.setValue('password', 'samplepassword')
+      form.setValue('password2', 'samplepassword')
+      form.setValue('role', data ? data.role : 'user')
+    }
+  }, [data])  
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: '',
+      middleName: '',
       lastName: '',
+      extensionName: '',
       username: '',
       email: '',
       password: '', 
-      password2: ''
+      password2: '',
     },
   })
 
@@ -67,25 +117,60 @@ export default function AdminUserForm() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     console.log(data)
     try {
-      const response = await api.post('/api/users/signup', data)
-      if(response.status === 201) {
-        toast.success('Success!', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Slide,
-        });
+      if(isUpdate) {
+        const updatedData = {
+          firstName: data.firstName,
+          middleName: data.middleName,
+          lastName: data.lastName,
+          extensionName: data.extensionName,
+          username: data.username,
+          email: data.email,
+          role: data.role
+        }
 
-        navigate('/admin/users')
+        const response = await api.put(`/api/users/${params.userId}`, updatedData)
+        if(response.status === 200) {
+          toast.success('Success!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+  
+          navigate('/admin/users')
+        }
+        else {
+          console.log(response.status)
+        }
+        
       }
       else {
-        console.log(response.status)
+        const response = await api.post('/api/users/signup', data)
+        if(response.status === 201) {
+          toast.success('Success!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+  
+          navigate('/admin/users')
+        }
+        else {
+          console.log(response.status)
+        }
       }
+      
     }
     catch(e) {
       const err = await handleAxiosError(e)
@@ -104,7 +189,7 @@ export default function AdminUserForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-8/12 md:w-7/12 sm:w-full">
             <Label className="text-gray-500">User Information</Label>
-            <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+            <div className="grid lg:grid-cols-4 sm:grid-cols-1 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -120,12 +205,38 @@ export default function AdminUserForm() {
               />
               <FormField
                 control={form.control}
+                name="middleName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} className="h-7" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
                       <Input {...field} className="h-7" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="extensionName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Extension Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} className="h-7" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -161,34 +272,36 @@ export default function AdminUserForm() {
               />
             </div>
             <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="password" className="h-7" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password2"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password Confirmation</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="password" className="h-7" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              { !isUpdate && (
+                <div className="grid gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="password" className="h-7" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password Confirmation</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="password" className="h-7" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
               <div>
                 <FormField
                   control={form.control}
@@ -199,7 +312,7 @@ export default function AdminUserForm() {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                           className="flex space-y-1 gap-9"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">

@@ -24,7 +24,7 @@ import { OfficeDataTable } from '@/features/admin/components/data-tables/offices
 import { OfficeDataTableColumnHeader } from '@/features/admin/components/data-tables/offices/data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
+import { DataTableRowActions } from '@/features/admin/components/data-tables/offices/data-table-row-actions'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 
 import { officeTypes } from '@/data/office-types'
@@ -108,7 +108,7 @@ export default function AdminOfficesPage() {
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} /></div>
+        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} data={row.original} /></div>
       }
     ], []
   )

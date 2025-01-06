@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useParams } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -8,6 +8,8 @@ import { z } from "zod"
 
 import api from '@/services/use-api'
 import { handleAxiosError } from '@/utils/error-handler'
+
+import { useQuery } from '@tanstack/react-query'
 
 import { toast, Slide } from 'react-toastify';
 import { Button } from "@/components/ui/button"
@@ -22,6 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
+import { IDesignation } from '@/@types/designation'
+
 
 
 const formSchema = z.object({
@@ -31,18 +35,46 @@ const formSchema = z.object({
 
 export default function AdminDesignationForm() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const params = useParams()
   const currentPath = location.pathname.split('/')
+  const [errors, setErrors] = useState<any>(null)
+
+
+  let isUpdate = false
+
   let title = ''
   if(currentPath[currentPath.length-1] === 'create') {
     title = 'Create'
   }
   else if(currentPath[currentPath.length-1] === 'update') {
     title = 'Update'
+    isUpdate = true
   }
 
-  const [errors, setErrors] = useState<any>(null)
-  
-  const navigate = useNavigate()
+  const { data } = useQuery({
+    queryKey: ['data'],
+    queryFn: async () => {
+      let data: IDesignation = {
+        _id: '',
+        title: '',
+      }
+      let url = `/api/designations/${params.designationId}`
+      if(params.designationId) {
+        await api.get(url).then(response => {
+          data = response.data
+        })
+      }
+      return data
+    }
+  }) 
+
+  useEffect(() => {
+    if(isUpdate) {
+      form.setValue('title', data ? data.title : '')
+    }
+  }, [data])
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,26 +84,49 @@ export default function AdminDesignationForm() {
   })
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
+    // console.log(data)
     try {
-      const response = await api.post('/api/designations', data)
-      if(response.status === 201) {
-        toast.success(`${data.title} is created successfully.`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Slide,
-        });
-
-        navigate('/admin/designations')
+      if(isUpdate) {
+        const response = await api.put(`/api/designations/${params.designationId}`, data)
+        if(response.status === 200) {
+          toast.success(`"${data.title}" is updated successfully.`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+  
+          navigate('/admin/designations')
+        }
+        else {
+          console.log(response.status)
+        }
       }
       else {
-        console.log(response.status)
+        const response = await api.post('/api/designations', data)
+        if(response.status === 201) {
+          toast.success(`"${data.title}" is created successfully.`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+
+          navigate('/admin/designations')
+        }
+        else {
+          console.log(response.status)
+        }
       }
     }
     catch(e) {

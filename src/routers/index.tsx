@@ -64,15 +64,23 @@ const router = createBrowserRouter([
         element: <AdminClientForm />
       },
       {
+        path: '/admin/clients/:clientId/update',
+        element: <AdminClientForm />
+      },
+      {
         path: '/admin/users',
         element: <AdminUsersPage />
+      },
+      {
+        path: '/admin/users/create',
+        element: <AdminUserForm />
       },
       {
         path: '/admin/users/:userId',
         element: <AdminUserForm />
       },
       {
-        path: '/admin/users/create',
+        path: '/admin/users/:userId/update',
         element: <AdminUserForm />
       },
       {
@@ -84,11 +92,19 @@ const router = createBrowserRouter([
         element: <AdminDesignationForm />
       },
       {
+        path: '/admin/designations/:designationId/update',
+        element: <AdminDesignationForm />
+      },
+      {
         path: '/admin/offices',
         element: <AdminOfficesPage />
       },
       {
         path: '/admin/offices/create',
+        element: <AdminOfficeForm />
+      },
+      {
+        path: '/admin/offices/:officeId/update',
         element: <AdminOfficeForm />
       },
     ]
