@@ -1,4 +1,5 @@
 "use client"
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Row } from "@tanstack/react-table"
@@ -14,7 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { 
+  useQuery, 
+  useMutation,
+  useQueryClient,
+  keepPreviousData 
+} from '@tanstack/react-query'
+
 import { IOffice } from '@/@types/office'
+import api from '@/services/use-api'
+import { toast, Slide } from 'react-toastify';
+import { handleAxiosError } from '@/utils/error-handler'
 
 
 interface DataTableRowActionsProps<TData> {
@@ -29,7 +40,6 @@ export function DataTableRowActions<TData>({
 
   const navigate = useNavigate()
 
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,11 +53,12 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate(`/admin/offices/${data._id}/update`) } >Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(`/admin/offices/${data._id}/update`) } >
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -8,9 +8,11 @@ import api from '@/services/use-api'
 
 export default function OfficeComboBox({
   defaultValue,
+  previousValue,
   onValueChange,
 }: {
   defaultValue?: string;
+  previousValue?: string;
   onValueChange: (value: string) => void;
 }) {
   
@@ -53,7 +55,7 @@ export default function OfficeComboBox({
       onSearchChange={setSearch}
       searchPlaceholder="Search office..."
       noResultsMsg="No offices found"
-      selectItemMsg="Select an office"
+      selectItemMsg={previousValue || "Select an office"}
     />
   )
 }

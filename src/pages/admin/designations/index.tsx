@@ -39,7 +39,7 @@ export default function AdminDesignationsPage() {
   const navigate = useNavigate()
 
   const dataQuery = useQuery({
-    queryKey: ['data', pagination, sorting, columnFilters],
+    queryKey: ['designations', pagination, sorting, columnFilters],
     queryFn: async () => {
       let sortValue = ''      
       let data = { rows: [], pageCount: 0, rowCount: 0 }

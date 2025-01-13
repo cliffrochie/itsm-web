@@ -7,9 +7,11 @@ import api from '@/services/use-api'
 
 export default function DesignationComboBox({
   defaultValue,
+  previousValue,
   onValueChange,
 }: {
   defaultValue?: string;
+  previousValue?: string;
   onValueChange: (value: string) => void;
 }) {
   
@@ -55,7 +57,7 @@ export default function DesignationComboBox({
         onSearchChange={setSearch}
         searchPlaceholder="Search designation..."
         noResultsMsg="No designation found"
-        selectItemMsg="Select a designation"
+        selectItemMsg={previousValue || "Select a designation"}
       />
     </>
     

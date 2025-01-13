@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { 
   useQuery, 
+  useMutation,
+  useQueryClient,
   keepPreviousData 
 } from '@tanstack/react-query'
 
@@ -38,9 +40,13 @@ export default function AdminOfficesPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const defaultData = useMemo(() => [], [])
+
+  const officeQueryKey = ['offices', pagination, sorting, columnFilters]
 
   const dataQuery = useQuery({
-    queryKey: ['data', pagination, sorting, columnFilters],
+    queryKey: officeQueryKey,
     queryFn: async () => {
       let sortValue = ''      
       let data = { rows: [], pageCount: 0, rowCount: 0 }
@@ -72,7 +78,6 @@ export default function AdminOfficesPage() {
     placeholderData: keepPreviousData
   })
 
-  const defaultData = useMemo(() => [], [])
 
   const columns: ColumnDef<IOffice>[] = useMemo<ColumnDef<IOffice>[]>(
     () => [
