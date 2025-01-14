@@ -1,5 +1,4 @@
 "use client"
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Row } from "@tanstack/react-table"
@@ -11,7 +10,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -19,23 +17,27 @@ import {
   useQuery, 
   useMutation,
   useQueryClient,
-  keepPreviousData 
+  keepPreviousData,
+  UseMutationResult
 } from '@tanstack/react-query'
 
-import { IOffice } from '@/@types/office'
-import api from '@/services/use-api'
-import { toast, Slide } from 'react-toastify';
-import { handleAxiosError } from '@/utils/error-handler'
+import { AxiosResponse } from 'axios'
+
 
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
-  data: IOffice
+  id: string
+  updatePath: string
+  deleteMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
+
 
 export function DataTableRowActions<TData>({
   row,
-  data
+  id,
+  updatePath,
+  deleteMutation,
 }: DataTableRowActionsProps<TData>) {
 
   const navigate = useNavigate()
@@ -53,11 +55,11 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate(`/admin/offices/${data._id}/update`) } >
+        <DropdownMenuItem onClick={() => navigate(updatePath) } >
           Edit
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => deleteMutation.mutate(id)}>
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

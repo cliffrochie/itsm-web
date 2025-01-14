@@ -3,7 +3,9 @@ import { Briefcase } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { 
   useQuery, 
-  keepPreviousData 
+  keepPreviousData, 
+  useQueryClient,
+  useMutation
 } from '@tanstack/react-query'
 
 import {
@@ -23,7 +25,7 @@ import { DesignationDataTable } from '@/features/admin/components/data-tables/de
 import { DataTableColumnHeader } from '@/features/admin/components/data-tables/designations/data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/features/admin/components/data-tables/designations/data-table-row-actions'
+import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 
 import { IDesignation } from '@/@types/designation'
@@ -35,11 +37,15 @@ export default function AdminDesignationsPage() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-
+  
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const defaultData = useMemo(() => [], [])
+
+  const designationQueryKey = ['designations', pagination, sorting, columnFilters]
 
   const dataQuery = useQuery({
-    queryKey: ['designations', pagination, sorting, columnFilters],
+    queryKey: designationQueryKey,
     queryFn: async () => {
       let sortValue = ''      
       let data = { rows: [], pageCount: 0, rowCount: 0 }
@@ -70,7 +76,18 @@ export default function AdminDesignationsPage() {
     placeholderData: keepPreviousData
   })
 
-  const defaultData = useMemo(() => [], [])
+
+  const deleteMutation = useMutation({
+    mutationKey: designationQueryKey,
+    mutationFn: async (id: string) => {
+      return await api.delete(`/api/designations/${id}`)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: designationQueryKey })
+    }
+  })
+
+  
 
   const columns: ColumnDef<IDesignation>[] = useMemo<ColumnDef<IDesignation>[]>(
     () => [
@@ -82,7 +99,7 @@ export default function AdminDesignationsPage() {
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} data={row.original} /></div>
+        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} id={row.original._id} updatePath={`/admin/designations/${row.original._id}/update`} deleteMutation={deleteMutation} /></div>
       }
     ], []
   )

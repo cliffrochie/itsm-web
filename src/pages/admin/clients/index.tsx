@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { 
   useQuery, 
-  keepPreviousData 
+  keepPreviousData, 
+  useQueryClient,
+  useMutation
 } from '@tanstack/react-query'
 
 import {
@@ -24,7 +26,7 @@ import { ClientDataTable } from '@/features/admin/components/data-tables/clients
 import { DataTableColumnHeader } from '@/features/admin/components/data-tables/clients/data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/features/admin/components/data-tables/clients/data-table-row-actions'
+import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 
 import { IClient } from '@/@types/client'
@@ -40,9 +42,14 @@ export default function AdminClientsPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const defaultData = useMemo(() => [], [])
+
+  const clientQueryKey = ['clients', pagination, sorting, columnFilters]
+
 
   const dataQuery = useQuery({
-    queryKey: ['data', pagination, sorting, columnFilters],
+    queryKey: clientQueryKey,
     queryFn: async () => {
       let sortValue = ''      
       let data = { rows: [], pageCount: 0, rowCount: 0 }
@@ -74,7 +81,17 @@ export default function AdminClientsPage() {
     placeholderData: keepPreviousData
   })
 
-  const defaultData = useMemo(() => [], [])
+
+  const deleteMutation = useMutation({
+    mutationKey: clientQueryKey,
+    mutationFn: async (id: string) => {
+      return await api.delete(`/api/designations/${id}`)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: clientQueryKey })
+    }
+  })
+
 
   const columns: ColumnDef<IClient>[] = useMemo<ColumnDef<IClient>[]>(
     () => [
@@ -121,9 +138,9 @@ export default function AdminClientsPage() {
         },
       },
       {
-        id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} data={row.original} /></div>
-      }
+              id: "actions",
+              cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} id={row.original._id} updatePath={`/admin/clients/${row.original._id}/update`} deleteMutation={deleteMutation} /></div>
+            }
     ], []
   )
 

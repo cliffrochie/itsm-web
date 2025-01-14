@@ -65,7 +65,7 @@ export default function AdminClientForm() {
   }
 
   const { data } = useQuery({
-    queryKey: ['data'],
+    queryKey: ['clientForm'],
     queryFn: async () => {
       let data: IClient = {
         _id: '',

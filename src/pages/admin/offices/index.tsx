@@ -26,7 +26,7 @@ import { OfficeDataTable } from '@/features/admin/components/data-tables/offices
 import { OfficeDataTableColumnHeader } from '@/features/admin/components/data-tables/offices/data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/features/admin/components/data-tables/offices/data-table-row-actions'
+import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 
 import { officeTypes } from '@/data/office-types'
@@ -79,6 +79,17 @@ export default function AdminOfficesPage() {
   })
 
 
+  const deleteMutation = useMutation({
+    mutationKey: officeQueryKey,
+    mutationFn: async (id: string) => {
+      return await api.delete(`/api/offices/${id}`)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: officeQueryKey })
+    }
+  })
+
+
   const columns: ColumnDef<IOffice>[] = useMemo<ColumnDef<IOffice>[]>(
     () => [
       {
@@ -113,7 +124,7 @@ export default function AdminOfficesPage() {
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} data={row.original} /></div>
+        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} id={row.original._id} updatePath={`/admin/offices/${row.original._id}/update`} deleteMutation={deleteMutation} /></div>
       }
     ], []
   )

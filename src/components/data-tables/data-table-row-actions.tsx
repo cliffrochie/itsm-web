@@ -1,4 +1,5 @@
 "use client"
+import { useNavigate } from 'react-router-dom'
 
 import { Row } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
@@ -9,18 +10,37 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import { 
+  useQuery, 
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+  UseMutationResult
+} from '@tanstack/react-query'
+
+import { AxiosResponse } from 'axios'
+
 
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
+  id: string
+  updatePath: string
+  deleteMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
+
 
 export function DataTableRowActions<TData>({
   row,
+  id,
+  updatePath,
+  deleteMutation,
 }: DataTableRowActionsProps<TData>) {
+
+  const navigate = useNavigate()
 
   return (
     <DropdownMenu>
@@ -35,11 +55,12 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(updatePath) } >
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => deleteMutation.mutate(id)}>
           Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

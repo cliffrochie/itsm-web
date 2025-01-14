@@ -20,7 +20,7 @@ export default function DesignationComboBox({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: [search, "designations"],
+    queryKey: [search, "designationCombobox"],
     queryFn: async () => {
       
       let url = `/api/designations/?noPage=true&title=${search}`

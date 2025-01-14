@@ -21,7 +21,7 @@ export default function OfficeComboBox({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: [search, "offices"],
+    queryKey: [search, "officeCombobox"],
     queryFn: async () => {
       let data: {value: string, label: string}[] = []
 

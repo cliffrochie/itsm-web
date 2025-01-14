@@ -61,7 +61,7 @@ export default function AdminOfficeForm() {
   }
 
   const { data } = useQuery({
-    queryKey: ['data'],
+    queryKey: ['officeForm'],
     queryFn: async () => {
       let data: IOffice = {
         _id: '',

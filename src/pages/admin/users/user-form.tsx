@@ -35,6 +35,9 @@ const formSchema = z.object({
   extensionName: z.string().nullable(),
   username: z.string().min(4),
   email: z.string().email(),
+  contactNo: z.string().max(13).regex(/^\d+$/, {
+    message: "Must be a string containing only numbers",
+  }).nullable(),
   password: z.string().nonempty(),
   password2: z.string().nonempty(),
   role: z.enum(['user', 'staff', 'admin'], {
@@ -61,7 +64,7 @@ export default function AdminUserForm() {
   }
 
   const { data } = useQuery({
-    queryKey: ['data'],
+    queryKey: ['userForm'],
     queryFn: async () => {
       let data: IUser = {
         _id: '',
@@ -71,9 +74,10 @@ export default function AdminUserForm() {
         extensionName: '',
         username: '',
         email: '',
+        contactNo: '',
         role: 'user'
       }
-      let url = `/api/users/${params.userId}?includePassword=true`
+      let url = `/api/users/${params.userId}`
       if(params.userId) {
         await api.get(url).then(response => {
           data = response.data
@@ -92,8 +96,7 @@ export default function AdminUserForm() {
       form.setValue('extensionName', data ? data.extensionName !== undefined ? data.extensionName : '' : '')
       form.setValue('username', data ? data.username : '')
       form.setValue('email', data ? data.email : '')
-      form.setValue('password', 'samplepassword')
-      form.setValue('password2', 'samplepassword')
+      form.setValue('contactNo', data ? data.contactNo !== undefined ? data.contactNo : '' : '')
       form.setValue('role', data ? data.role : 'user')
     }
   }, [data])  
@@ -118,6 +121,7 @@ export default function AdminUserForm() {
     console.log(data)
     try {
       if(isUpdate) {
+        
         const updatedData = {
           firstName: data.firstName,
           middleName: data.middleName,
@@ -125,6 +129,7 @@ export default function AdminUserForm() {
           extensionName: data.extensionName,
           username: data.username,
           email: data.email,
+          contactNo: data.contactNo,
           role: data.role
         }
 
@@ -257,19 +262,34 @@ export default function AdminUserForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" className="h-7" />
-                    </FormControl>
-                    <FormMessage>{ errors?.email }</FormMessage>
-                  </FormItem>
-                )}
-              />
+              <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="email" className="h-7" />
+                      </FormControl>
+                      <FormMessage>{ errors?.email }</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contactNo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="contactNo" className="h-7" />
+                      </FormControl>
+                      <FormMessage>{ errors?.contactNo }</FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
               { !isUpdate && (

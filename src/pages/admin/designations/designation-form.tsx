@@ -53,7 +53,7 @@ export default function AdminDesignationForm() {
   }
 
   const { data } = useQuery({
-    queryKey: ['data'],
+    queryKey: ['designationForm'],
     queryFn: async () => {
       let data: IDesignation = {
         _id: '',

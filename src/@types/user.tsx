@@ -8,6 +8,7 @@ export interface IUser {
   middleName?: string
   lastName: string
   extensionName?: string
+  contactNo?: string
   role: "user" | "staff" | "admin"
   createdAt?: Date
   updatedAt?: Date
