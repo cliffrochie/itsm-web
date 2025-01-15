@@ -152,7 +152,7 @@ export default function AdminClientForm() {
       if(isUpdate) {
         const response = await api.put(`/api/clients/${data ? data._id : ''}`, newData)
         if(response.status === 200) {
-          toast.success(`"${newData.firstName} ${newData.lastName}" is updated successfully.`, {
+          toast.success(`${newData.firstName} ${newData.lastName} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -160,7 +160,7 @@ export default function AdminClientForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
 
@@ -174,7 +174,7 @@ export default function AdminClientForm() {
       else {
         const response = await api.post(`/api/clients/`, newData)
         if(response.status === 201) {
-          toast.success(`"${newData.firstName} ${newData.lastName}" is created successfully.`, {
+          toast.success(`${newData.firstName} ${newData.lastName} is created successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -182,7 +182,7 @@ export default function AdminClientForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
 

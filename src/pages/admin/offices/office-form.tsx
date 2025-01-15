@@ -106,7 +106,7 @@ export default function AdminOfficeForm() {
       if(isUpdate) {
         const response = await api.put(`/api/offices/${params.officeId}`, data)
         if(response.status === 200) {
-          toast.success(`"${data?.name}" is updated successfully.`, {
+          toast.success(`${data?.name} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -114,7 +114,7 @@ export default function AdminOfficeForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
 
@@ -127,7 +127,7 @@ export default function AdminOfficeForm() {
       else {
         const response = await api.post('/api/offices', data)
         if(response.status === 201) {
-          toast.success(`"${data?.name}" is created successfully.`, {
+          toast.success(`${data?.name} is created successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -135,7 +135,7 @@ export default function AdminOfficeForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
 

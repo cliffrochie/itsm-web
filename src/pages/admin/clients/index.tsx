@@ -82,15 +82,15 @@ export default function AdminClientsPage() {
   })
 
 
-  const deleteMutation = useMutation({
-    mutationKey: clientQueryKey,
-    mutationFn: async (id: string) => {
-      return await api.delete(`/api/designations/${id}`)
-    },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: clientQueryKey })
-    }
-  })
+    const deleteMutation = useMutation({
+      mutationKey: clientQueryKey,
+      mutationFn: async (id: string) => {
+        return await api.delete(`/api/clients/${id}`)
+      },
+      onSuccess: async () => {
+        queryClient.invalidateQueries({ queryKey: clientQueryKey })
+      },
+    })
 
 
   const columns: ColumnDef<IClient>[] = useMemo<ColumnDef<IClient>[]>(
@@ -138,9 +138,16 @@ export default function AdminClientsPage() {
         },
       },
       {
-              id: "actions",
-              cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} id={row.original._id} updatePath={`/admin/clients/${row.original._id}/update`} deleteMutation={deleteMutation} /></div>
-            }
+        id: "actions",
+        cell: ({ row }) => <div className="flex justify-end">
+          <DataTableRowActions 
+            id={row.original._id} 
+            name={row.original.firstName +' '+ row.original.lastName} 
+            updatePath={`/admin/clients/${row.original._id}/update`} 
+            deleteMutation={deleteMutation} 
+          />
+        </div>
+      }
     ], []
   )
 

@@ -99,7 +99,14 @@ export default function AdminDesignationsPage() {
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end"><DataTableRowActions row={row} id={row.original._id} updatePath={`/admin/designations/${row.original._id}/update`} deleteMutation={deleteMutation} /></div>
+        cell: ({ row }) => <div className="flex justify-end">
+          <DataTableRowActions 
+            id={row.original._id} 
+            name={row.original.title} 
+            updatePath={`/admin/designations/${row.original._id}/update`} 
+            deleteMutation={deleteMutation} 
+          />
+        </div>
       }
     ], []
   )

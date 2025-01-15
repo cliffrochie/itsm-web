@@ -89,7 +89,7 @@ export default function AdminDesignationForm() {
       if(isUpdate) {
         const response = await api.put(`/api/designations/${params.designationId}`, data)
         if(response.status === 200) {
-          toast.success(`"${data.title}" is updated successfully.`, {
+          toast.success(`${data.title} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -97,7 +97,7 @@ export default function AdminDesignationForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
   
@@ -110,7 +110,7 @@ export default function AdminDesignationForm() {
       else {
         const response = await api.post('/api/designations', data)
         if(response.status === 201) {
-          toast.success(`"${data.title}" is created successfully.`, {
+          toast.success(`${data.title} is created successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -118,7 +118,7 @@ export default function AdminDesignationForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
 

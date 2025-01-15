@@ -135,7 +135,7 @@ export default function AdminUserForm() {
 
         const response = await api.put(`/api/users/${params.userId}`, updatedData)
         if(response.status === 200) {
-          toast.success('Success!', {
+          toast.success('User created successfully.', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -143,7 +143,7 @@ export default function AdminUserForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
   
@@ -157,7 +157,7 @@ export default function AdminUserForm() {
       else {
         const response = await api.post('/api/users/signup', data)
         if(response.status === 201) {
-          toast.success('Success!', {
+          toast.success('User created successfully.', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -165,7 +165,7 @@ export default function AdminUserForm() {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "colored",
+            theme: "light",
             transition: Slide,
           });
   
