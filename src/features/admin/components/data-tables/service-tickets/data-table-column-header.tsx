@@ -22,10 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { officeTypes } from '@/data/office-types'
+import { taskTypes } from "@/data/task-types"
+import { equipmentTypes } from "@/data/equipment-types"
+import { priorities } from "@/data/priority"
 
-
-interface DataTableColumnHeaderProps<TData, TValue>
+interface ServiceTicketDataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   table: Table<TData>
   column: Column<TData, TValue>
@@ -33,13 +34,13 @@ interface DataTableColumnHeaderProps<TData, TValue>
   title: string
 }
 
-export function OfficeDataTableColumnHeader<TData, TValue>({
+export function ServiceTicketDataTableColumnHeader<TData, TValue>({
   table,
   column,
   accessorKey,
   title,
   className,
-}: DataTableColumnHeaderProps<TData, TValue>) {
+}: ServiceTicketDataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
   }
@@ -80,7 +81,7 @@ export function OfficeDataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        {accessorKey !== 'officeType' && accessorKey !== 'parentOffice'  && (
+        { accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }
             className="h-6 text-nowrap p-1"
@@ -91,20 +92,60 @@ export function OfficeDataTableColumnHeader<TData, TValue>({
           />
         )}
 
-        {accessorKey === 'officeType' && (
+        {accessorKey === 'taskType' && (
           <Select onValueChange={(value) => {
             table.getColumn(accessorKey)?.setFilterValue(value)
           }}>
             <SelectTrigger className="h-6 p-1">
-              <SelectValue placeholder="All office types" />
+              <SelectValue placeholder="All task types" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value=" ">
-                <span className="">All office types</span>
+                <span className="">All task types</span>
               </SelectItem>
-              {officeTypes.map((officeType) => (
-                <SelectItem key={officeType.value} value={officeType.value}>
-                  <span className="text-red-700">{officeType.label}</span>
+              {taskTypes.map((taskType) => (
+                <SelectItem key={taskType.value} value={taskType.value}>
+                  <span className="text-red-700">{taskType.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        {accessorKey === 'equipmentType' && (
+          <Select onValueChange={(value) => {
+            table.getColumn(accessorKey)?.setFilterValue(value)
+          }}>
+            <SelectTrigger className="h-6 p-1">
+              <SelectValue placeholder="All equipment types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value=" ">
+                <span className="">All equipment types</span>
+              </SelectItem>
+              {equipmentTypes.map((equipmentType) => (
+                <SelectItem key={equipmentType.value} value={equipmentType.value}>
+                  <span className="text-red-700">{equipmentType.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        {accessorKey === 'priority' && (
+          <Select onValueChange={(value) => {
+            table.getColumn(accessorKey)?.setFilterValue(value)
+          }}>
+            <SelectTrigger className="h-6 p-1">
+              <SelectValue placeholder="All priorities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value=" ">
+                <span className="">All priorities</span>
+              </SelectItem>
+              {priorities.map((priority) => (
+                <SelectItem key={priority.value} value={priority.value}>
+                  <span className="text-red-700">{priority.label}</span>
                 </SelectItem>
               ))}
             </SelectContent>

@@ -79,7 +79,7 @@ export function UserDataTableColumnHeader<TData, TValue>({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className="mt-1 mb-2 w-full">
+      <div className="mt-1 mb-2">
         {accessorKey !== 'role' && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }

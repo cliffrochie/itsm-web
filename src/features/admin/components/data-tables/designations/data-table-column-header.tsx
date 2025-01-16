@@ -14,15 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-import { officeTypes } from '@/data/office-types'
 
 
 interface DataTableColumnHeaderProps<TData, TValue>
@@ -79,7 +70,7 @@ export function DataTableColumnHeader<TData, TValue>({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className="mt-1 mb-2 w-full">
+      <div className="mt-1 mb-2">
         { true && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }
