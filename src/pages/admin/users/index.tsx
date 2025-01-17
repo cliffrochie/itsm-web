@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
           const role = roles.find((role) => role.value === row.getValue('role'))
           if(!role) { return null }
           return (
-            <div className="flex w-[80px] items-center">
+            <div className="flex items-center">
               {role.icon && (
                 <role.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               )}

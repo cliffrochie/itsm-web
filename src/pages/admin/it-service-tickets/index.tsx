@@ -16,6 +16,7 @@ import { isUserInterface } from '@/@types/user'
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
+import { serviceStatuses } from "@/data/service-status"
 
 
 export default function AdminITServiceTicketsPage() {
@@ -91,52 +92,10 @@ export default function AdminITServiceTicketsPage() {
           <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="date" title="Date" />
         ),
       },
-      // {
-      //   accessorKey: "time",
-      //   header: ({ column }) => (
-      //     <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="time" title="Time" />
-      //   ),
-      // },
-      // {
-      //   accessorKey: "taskType",
-      //   header: ({ column }) => (
-      //     <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="taskType" title="Task Type" />
-      //   ),
-      //   cell: ({ row }) => {
-      //     const taskType = taskTypes.find((taskType) => taskType.value === row.getValue('taskType'))
-      //     if(!taskType) { return null }
-      //     return (
-      //       <div className="flex items-center w-[220px]">
-      //         {taskType.icon && (
-      //           <taskType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-      //         )}
-      //         <span>{taskType.label}</span>
-      //       </div>
-      //     )
-      //   },
-      // },
       {
-        accessorKey: "equipmentType",
+        accessorKey: "time",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="equipmentType" title="Equipment/Device" />
-        ),
-        cell: ({ row }) => {
-          const equipmentType = equipmentTypes.find((equipmentType) => equipmentType.value === row.getValue('equipmentType'))
-          if(!equipmentType) { return null }
-          return (
-            <div className="flex items-center w-[220px]">
-              {equipmentType.icon && (
-                <equipmentType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-              )}
-              <span>{equipmentType.label}</span>
-            </div>
-          )
-        },
-      },
-      {
-        accessorKey: "natureOfWork",
-        header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="natureOfWork" title="Nature of Work" />
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="time" title="Time" />
         ),
       },
       {
@@ -148,7 +107,7 @@ export default function AdminITServiceTicketsPage() {
           const priority = priorities.find((priority) => priority.value === row.getValue('priority'))
           if(!priority) { return null }
           return (
-            <div className="flex items-center w-[220px]">
+            <div className="flex items-center">
               {priority.icon && (
                 <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               )}
@@ -157,6 +116,61 @@ export default function AdminITServiceTicketsPage() {
           )
         },
       },
+      {
+        accessorKey: "serviceStatus",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="serviceStatus" title="Service Status" />
+        ),
+        cell: ({ row }) => {
+          const serviceStatus = serviceStatuses.find((serviceStatus) => serviceStatus.value === row.getValue('serviceStatus'))
+          if(!serviceStatus) { return null }
+          return (
+            <div className="flex items-center">
+              {serviceStatus.icon && (
+                <serviceStatus.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{serviceStatus.label}</span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "taskType",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="taskType" title="Task Type" />
+        ),
+        cell: ({ row }) => {
+          const taskType = taskTypes.find((taskType) => taskType.value === row.getValue('taskType'))
+          if(!taskType) { return null }
+          return (
+            <div className="flex items-center">
+              {taskType.icon && (
+                <taskType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{taskType.label}</span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "equipmentType",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="equipmentType" title="Equipment/Device" />
+        ),
+        cell: ({ row }) => {
+          const equipmentType = equipmentTypes.find((equipmentType) => equipmentType.value === row.getValue('equipmentType'))
+          if(!equipmentType) { return null }
+          return (
+            <div className="flex items-center">
+              {equipmentType.icon && (
+                <equipmentType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{equipmentType.label}</span>
+            </div>
+          )
+        },
+      },
+      
       {
         accessorKey: "client",
         header: ({ column }) => (
@@ -197,7 +211,7 @@ export default function AdminITServiceTicketsPage() {
           <DataTableRowActions 
             id={row.original._id} 
             name={row.original.equipmentType} 
-            updatePath={`/admin/offices/${row.original._id}/update`} 
+            updatePath={`/admin/it-service-tickets/${row.original._id}/update`} 
             deleteMutation={deleteMutation} 
           />
         </div>
@@ -242,7 +256,7 @@ export default function AdminITServiceTicketsPage() {
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate('/admin/service-tickets/create')}
+            onClick={() => navigate('/admin/it-service-tickets/create')}
           >
             <Briefcase />
             Create Service Ticket

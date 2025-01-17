@@ -27,7 +27,7 @@ export function AppSidebar() {
     },
     {
       title: 'IT Service Tickets',
-      url: '/admin/tickets',
+      url: '/admin/it-service-tickets',
       icon: ListOrdered,
       isActive: false
     },

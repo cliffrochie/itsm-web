@@ -113,7 +113,7 @@ export default function AdminOfficesPage() {
           const officeType = officeTypes.find((officeType) => officeType.value === row.getValue('officeType'))
           if(!officeType) { return null }
           return (
-            <div className="flex items-center w-[220px]">
+            <div className="flex items-center">
               {officeType.icon && (
                 <officeType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               )}

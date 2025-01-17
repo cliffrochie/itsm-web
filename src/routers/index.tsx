@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import AdminLayout from '@/layouts/admin-layout'
 import AdminPage from '@/pages/admin/index'
 import AdminITServiceTicketsPage from '@/pages/admin/it-service-tickets/index'
+import AdminITServiceTicketForm from '@/pages/admin/it-service-tickets/it-service-ticket-form'
 import AdminClientsPage from '@/pages/admin/clients/index'
 import AdminClientForm from '@/pages/admin/clients/client-form'
 import AdminUsersPage from '@/pages/admin/users/index'
@@ -52,8 +53,16 @@ const router = createBrowserRouter([
         element: <AdminPage />
       },
       {
-        path: '/admin/tickets',
+        path: '/admin/it-service-tickets',
         element: <AdminITServiceTicketsPage />
+      },
+      {
+        path: '/admin/it-service-tickets/create',
+        element: <AdminITServiceTicketForm />
+      },
+      {
+        path: '/admin/it-service-tickets/:serviceTicketId/update',
+        element: <AdminITServiceTicketForm />
       },
       {
         path: '/admin/clients',

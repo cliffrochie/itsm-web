@@ -40,7 +40,6 @@ export default function AdminDesignationForm() {
   const currentPath = location.pathname.split('/')
   const [errors, setErrors] = useState<any>(null)
 
-
   let isUpdate = false
 
   let title = ''
