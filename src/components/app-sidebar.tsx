@@ -90,7 +90,7 @@ export function AppSidebar() {
       }
     }
 
-    console.log(usePath)
+    // console.log(usePath)
 
     const updatedLinks = links.map((link) => ({
       ...link,

@@ -162,6 +162,7 @@ export default function AdminClientForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
 
           navigate('/admin/clients')
@@ -184,6 +185,7 @@ export default function AdminClientForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
 
           navigate('/admin/clients')
@@ -207,7 +209,7 @@ export default function AdminClientForm() {
       <h3 className="text-xl font-semibold">{title} Client</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:w-9/12 sm:w-full">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-9/12 sm:w-full">
             <Label className="text-gray-500">Client Information</Label>
             <div className="grid lg:grid-cols-4 md:grid-cols-1 gap-4">
               <FormField  

@@ -3,10 +3,10 @@ import { useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/app-combobox"
 // import { IDesignation } from '@/@types/designation'
-import { IOffice } from '@/@types/office';
+import { IClient } from '@/@types/client';
 import api from '@/services/use-api'
 
-export default function OfficeComboBox({
+export default function ClientComboBox({
   defaultValue,
   previousValue,
   onValueChange,
@@ -21,18 +21,18 @@ export default function OfficeComboBox({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: [search, "officeComboBox"],
+    queryKey: [search, "clientComboBox"],
     queryFn: async () => {
       let data: {value: string, label: string}[] = []
 
-      let aliasUrl = `/api/offices/?noPage=true&alias=${search}`
-      const aliasResponse = await api.get<IOffice[]>(aliasUrl)
+      let clientUrl = `/api/clients/?noPage=true&fullName=${search}`
+      const clientResponse = await api.get<IClient[]>(clientUrl)
 
-      aliasResponse.data.map(office => {
-        if(office.alias) {
+      clientResponse.data.map(client => {
+        if(client.firstName) {
           data.push({
-            value: office._id,
-            label: office.alias
+            value: client._id,
+            label: client.firstName +' '+ (client.middleName ? client.middleName[0] +'. ' : '') + client.lastName + (client.extensionName ? client.extensionName : '')
           })
         }
       })
@@ -53,9 +53,9 @@ export default function OfficeComboBox({
         onValueChange(value);
       }}
       onSearchChange={setSearch}
-      searchPlaceholder="Search office..."
-      noResultsMsg="No offices found"
-      selectItemMsg={previousValue || "Select an office"}
+      searchPlaceholder="Search client..."
+      noResultsMsg="No client found"
+      selectItemMsg={previousValue || "Select a client"}
     />
   )
 }

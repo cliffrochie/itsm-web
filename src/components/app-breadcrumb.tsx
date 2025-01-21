@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { IBreadcrumbLink } from '@/@types/breadcrumb-link'
-import { capitalizeFirstLetter } from '@/utils'
+import { capitalizeFirstLetterKebab } from '@/utils'
 
 import {
   Breadcrumb,
@@ -29,7 +29,7 @@ export function AppBreadcrumb() {
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem className="hidden md:block">
               <BreadcrumbLink>
-                <BreadcrumbPage>{ capitalizeFirstLetter(link) }</BreadcrumbPage>
+                <BreadcrumbPage>{ capitalizeFirstLetterKebab(link) }</BreadcrumbPage>
               </BreadcrumbLink>
             </BreadcrumbItem>
           </React.Fragment>

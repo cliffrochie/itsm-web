@@ -98,6 +98,7 @@ export default function AdminDesignationForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
   
           navigate('/admin/designations')
@@ -119,6 +120,7 @@ export default function AdminDesignationForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
 
           navigate('/admin/designations')
@@ -141,7 +143,7 @@ export default function AdminDesignationForm() {
       <h3 className="text-xl font-semibold">{title} Designation</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-4/12 md:w-7/12 sm:w-full">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full">
             <Label className="text-gray-500">Designation Information</Label>
             <div className="grid gap-4">
               <FormField  

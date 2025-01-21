@@ -80,7 +80,7 @@ export function DataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        {accessorKey !== 'designation' && accessorKey !== 'office'  && (
+        {true  && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }
             className="h-6 text-nowrap p-1"

@@ -116,6 +116,7 @@ export default function AdminOfficeForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
 
           navigate('/admin/offices')
@@ -137,6 +138,7 @@ export default function AdminOfficeForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
 
           navigate('/admin/offices')
@@ -159,7 +161,7 @@ export default function AdminOfficeForm() {
       <h3 className="text-xl font-semibold">{title} Office</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-4/12 md:w-7/12 sm:w-full">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full">
             <Label className="text-gray-500">Office Information</Label>
             <div className="grid gap-4">
               <FormField

@@ -145,6 +145,7 @@ export default function AdminUserForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
   
           navigate('/admin/users')
@@ -167,6 +168,7 @@ export default function AdminUserForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
+            className: 'text-sm',
           });
   
           navigate('/admin/users')
@@ -192,7 +194,7 @@ export default function AdminUserForm() {
       <h3 className="text-xl font-semibold">{title} User</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-8/12 md:w-7/12 sm:w-full">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full">
             <Label className="text-gray-500">User Information</Label>
             <div className="grid lg:grid-cols-4 sm:grid-cols-1 gap-4">
               <FormField

@@ -170,7 +170,6 @@ export default function AdminITServiceTicketsPage() {
           )
         },
       },
-      
       {
         accessorKey: "client",
         header: ({ column }) => (

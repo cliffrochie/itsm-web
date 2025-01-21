@@ -32,7 +32,6 @@ export default function AppDialogDeleteConfirmation({
   id,
   deleteMutation
 }: IDialogConfirmation) {
-  console.log(open)
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
