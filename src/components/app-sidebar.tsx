@@ -69,17 +69,23 @@ export function AppSidebar() {
   useEffect(() => {
     const currentPath = location.pathname.split('/')
 
-    if(
-      isNumeric(currentPath[currentPath.length-1]) || 
-      currentPath[currentPath.length-1] === 'create' ||
-      currentPath[currentPath.length-1] === 'update'
-    ) {
+    if(currentPath[currentPath.length-1] === 'create') {
       for(let i=0; i<currentPath.length-1; i++) {
         usePath += currentPath[i]
         if(i !== currentPath.length-2) {
           usePath += '/'
         }
       }
+    }
+    else if(currentPath[currentPath.length-1] === 'update') {
+      for(let i=0; i<currentPath.length-2; i++) {
+        usePath += currentPath[i]
+        if(i < currentPath.length-1) {
+          usePath += '/'
+        }
+      }
+
+      usePath = usePath.substring(0, usePath.length-1)
     }
     else {
       for(let i=0; i<currentPath.length; i++) {
@@ -90,7 +96,8 @@ export function AppSidebar() {
       }
     }
 
-    // console.log(usePath)
+    console.log(currentPath)
+    console.log(usePath)
 
     const updatedLinks = links.map((link) => ({
       ...link,

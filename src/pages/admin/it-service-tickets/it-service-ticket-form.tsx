@@ -45,22 +45,24 @@ import { taskTypes } from '@/data/task-types'
 import { equipmentTypes } from '@/data/equipment-types'
 import { serviceStatuses } from '@/data/service-status'
 import { priorities } from '@/data/priority'
+import { IClient } from '@/@types/client'
+import { IUser } from '@/@types/user'
 
 
 
 const formSchema = z.object({
   ticketNo: z.string(),
-  date: z.date(),
+  date: z.date({ required_error: 'Date is required' }),
   time: z.string(),
-  taskType: z.string(),
-  natureOfWork: z.string(),
+  taskType: z.string({ required_error: 'Task type is required' }),
+  natureOfWork: z.string({ required_error: 'Nature of work / problem is required' }),
   serialNo: z.string(),
-  equipmentType: z.string(),
+  equipmentType: z.string({ required_error: 'Equipment type is required' }),
   equipmentTypeOthers: z.string(),
   defectsFound: z.string(),
   serviceRendered: z.string(),
-  serviceStatus: z.string(),
-  priority: z.string(),
+  serviceStatus: z.string({ required_error: 'Service status is required' }),
+  priority: z.string({ required_error: 'Priority level is required' }),
   remarks: z.string(),
   serviceEngineer: z.string(),
   client: z.string(),
@@ -75,7 +77,7 @@ export default function AdminITServiceTicketForm() {
   const [dateString, setDateString] = useState(getDateFormatYYYYMMDD())
   const [timeString, setTimeString] = useState('')
   const [searchUser, setSearchUser] = useState('')
-  const [previousUser, setPreviousDesignation] = useState('')
+  const [previousUser, setPreviousUser] = useState('')
   const [searchClient, setSearchClient] = useState('')
   const [previousClient, setPreviousClient] = useState('')
   const [period, setPeriod] = useState('')
@@ -93,7 +95,7 @@ export default function AdminITServiceTicketForm() {
   }
 
   const { data } = useQuery({
-    queryKey: ['serviceTicket'],
+    queryKey: ['serviceTicketForm'],
     queryFn: async () => {
       let data: IServiceTicket = {
         _id: '',
@@ -107,14 +109,14 @@ export default function AdminITServiceTicketForm() {
         equipmentTypeOthers: '',
         defectsFound: '',
         serviceRendered: '',
-        serviceStatus: 'open',
-        priority: 'low',
+        serviceStatus: '',
+        priority: '',
         remarks: '',
         serviceEngineer: '',
         client: '',
       }
-      let url = `/api/service-tickets/${params.serviceTicketId}`
-      if(params.designationId) {
+      let url = `/api/service-tickets/${params.serviceTicketId}/?includes=all`
+      if(params.serviceTicketId) {
         await api.get(url).then(response => {
           data = response.data
         })
@@ -123,12 +125,19 @@ export default function AdminITServiceTicketForm() {
     }
   }) 
 
+
+  
+
+
+ 
+
   function removeError(key: string) {
     setErrors((prevErrors) => {
       const { [key]: _, ...updatedErrors } = prevErrors
       return updatedErrors
     })
   }
+
 
   function handleTimeValidation() {
     if(timeRegex.test(form.getValues('time'))) {
@@ -144,23 +153,77 @@ export default function AdminITServiceTicketForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        ticketNo:  !isUpdate ? generateTicket() : '',
+        ticketNo: '',
         date: !isUpdate ? new Date(): undefined,
         time: '',
-        taskType: 'incident',
+        taskType: '',
         natureOfWork: '',
         serialNo: '',
-        equipmentType: 'computer',
+        equipmentType: '',
         equipmentTypeOthers: '',
         defectsFound: '',
         serviceRendered: '',
-        serviceStatus: 'open',
-        priority: 'low',
+        serviceStatus: '',
+        priority: '',
         remarks: '',
         serviceEngineer: '',
         client: '',
     },
   })
+
+
+  useEffect(() => {
+    if(isUpdate) {
+
+      console.log(data)
+
+      const retrievedTime = data ? data.time !== undefined ? data.time.split(' ') : '' : '' 
+      setPeriod(retrievedTime[retrievedTime.length-1])
+
+      form.setValue('time', data ? data.time !== undefined ? data.time : '' : '')
+      form.setValue('date', data ? data.date !== undefined ? new Date(data.date) : new Date() : new Date())
+      form.setValue('natureOfWork', data ? data.natureOfWork !== undefined ? data.natureOfWork : '' : '')
+      form.setValue('serviceStatus', data ? data.serviceStatus !== undefined ? data.serviceStatus : '' : '')
+      form.setValue('priority', data ? data.priority : '')
+      console.log(form.getValues('priority'))
+
+      let client = null
+      if(data && data.client) {
+        client = data.client as IClient
+      }
+
+      let serviceEngineer = null
+      if(data && data.serviceEngineer) {
+        serviceEngineer = data.serviceEngineer as IUser
+      }
+
+      let clientFullName = ''
+      if(client) {
+        clientFullName = client.firstName 
+        clientFullName += client.middleName !== undefined 
+          && client.middleName !== null
+          && client.middleName !== ''
+          && client.middleName.charAt(0) 
+          ? ` ${client.middleName.charAt(0)}. ` : ' '
+        clientFullName += client.lastName
+      }
+
+      let serviceEngineerFullName = ''
+      if(serviceEngineer) {
+        serviceEngineerFullName = serviceEngineer.firstName
+        serviceEngineerFullName += serviceEngineer.middleName !== undefined 
+          && serviceEngineer.middleName !== null
+          && serviceEngineer.middleName !== ''
+          && serviceEngineer.middleName.charAt(0) 
+          ? ` ${serviceEngineer.middleName.charAt(0)}. ` : ' '
+        serviceEngineerFullName += serviceEngineer.lastName
+      }
+
+      setPreviousClient(clientFullName)
+      setPreviousUser(serviceEngineerFullName)
+    }
+  }, [data, searchClient, searchUser])
+
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const newData = {
@@ -175,7 +238,23 @@ export default function AdminITServiceTicketForm() {
 
     try {
       if(isUpdate) {
+        const response = await api.put(`/api/service-tickets/${params.serviceTicketId}`, newData)
+        if(response.status === 200) {
+          toast.success(`${response.data.ticketNo} is created successfully.`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Slide,
+            className: 'text-sm',
+          });
 
+          navigate('/admin/it-service-tickets/')
+        } 
       }
       else {
         const response = await api.post('/api/service-tickets/', newData)
@@ -198,24 +277,15 @@ export default function AdminITServiceTicketForm() {
       }
       
     }
-    catch(e) {
-      const err = await handleAxiosError(e)
+    catch(e: unknown) {
+      const err = handleAxiosError(e)
       let obj: any = {}
       obj[err.key] = err.message
+      console.log(obj)
       setErrors(obj)
     }
   }
 
-
-  useEffect(() => {
-    if(isUpdate) {
-      // form.setValue('title', data ? data.title : '')
-    }
-  }, [data])
-
-  // useEffect(() => {
-  //   handleTimeValidation()
-  // }, [form.getValues('time')])
 
 
   return (
@@ -292,7 +362,7 @@ export default function AdminITServiceTicketForm() {
                 />
                 <Select onValueChange={(value) => setPeriod(value) }>
                   <SelectTrigger className="mt-8 h-7">
-                    <SelectValue placeholder="Period" />
+                  { isUpdate ? (<SelectValue placeholder={period} />) : (<SelectValue placeholder="Period" />)}
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -403,7 +473,7 @@ export default function AdminITServiceTicketForm() {
                     >
                       <FormControl>
                         <SelectTrigger className="h-7">
-                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select equipment type" />)}
+                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select priority level" />)}
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

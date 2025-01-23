@@ -6,9 +6,11 @@ export function handleAxiosError(error: unknown): any {
   if(axios.isAxiosError(error)) {
     if(axios.isAxiosError(error)) {
       if (error.response) {
-        console.error(`Server Error: ${error.response.status} - ${error.response.data}`);
+        console.log(error.response)
+        // console.log(`Server Error: ${error.response.status} - ${error.response.data}`);
         
         if(error.response.status === 400) {
+          console.log(400)
           if(error.response.data.code === 11000) {
             const key = Object.keys(error.response.data.keyValue)[0]
             
@@ -25,6 +27,15 @@ export function handleAxiosError(error: unknown): any {
             // });
 
             return {key: key, message: `${error.response.data.keyValue[key]} is already existed.`}
+          }
+          else if(error.response.data.errors) {
+            console.log(error.response.data.errors)
+            const key = Object.keys(error.response.data.errors)[0]
+            let message = ''
+            if(error.response.data.errors[key].kind === 'required') {
+              message = 'This field is required.'
+            }
+            return {key: key, message: message }
           }
 
           return undefined

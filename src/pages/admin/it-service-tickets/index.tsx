@@ -92,12 +92,12 @@ export default function AdminITServiceTicketsPage() {
           <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="date" title="Date" />
         ),
       },
-      {
-        accessorKey: "time",
-        header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="time" title="Time" />
-        ),
-      },
+      // {
+      //   accessorKey: "time",
+      //   header: ({ column }) => (
+      //     <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="time" title="Time" />
+      //   ),
+      // },
       {
         accessorKey: "priority",
         header: ({ column }) => (

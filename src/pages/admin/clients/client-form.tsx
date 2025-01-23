@@ -87,7 +87,7 @@ export default function AdminClientForm() {
   })
 
   useEffect(() => {
-    if(isUpdate) {
+    if(isUpdate && data) {
 
       form.setValue('firstName', data ? data.firstName : '')
       form.setValue('middleName', data ? data.middleName || '' : '')
@@ -199,7 +199,7 @@ export default function AdminClientForm() {
     catch(e) {
       const err = await handleAxiosError(e)
       let obj: any = {}
-      obj[err.key] = err.message
+      obj[err.errors.key] = err.message
       setErrors(obj)
     }
   }
