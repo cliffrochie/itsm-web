@@ -2,7 +2,6 @@ import {
   ChevronDownCircle,
   ChevronUpCircle,
   CircleMinus,
-  
 } from "lucide-react"
 
 export const priorities = [

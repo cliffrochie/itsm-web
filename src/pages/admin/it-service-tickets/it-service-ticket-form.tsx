@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar } from '@/components/ui/calendar'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-
+import { capitalizeFirstLetter } from '@/utils'
 
 import {
   Form,
@@ -54,18 +54,18 @@ const formSchema = z.object({
   ticketNo: z.string(),
   date: z.date({ required_error: 'Date is required' }),
   time: z.string(),
-  taskType: z.string({ required_error: 'Task type is required' }),
-  natureOfWork: z.string({ required_error: 'Nature of work / problem is required' }),
+  taskType: z.string({ required_error: 'Task type is required' }).min(1, {message: 'This field is required'}),
+  natureOfWork: z.string({ required_error: 'Nature of work / problem is required' }).min(1, {message: 'This field is required'}),
   serialNo: z.string(),
-  equipmentType: z.string({ required_error: 'Equipment type is required' }),
+  equipmentType: z.string({ required_error: 'Equipment type is required' }).min(1, {message: 'This field is required'}),
   equipmentTypeOthers: z.string(),
   defectsFound: z.string(),
   serviceRendered: z.string(),
-  serviceStatus: z.string({ required_error: 'Service status is required' }),
-  priority: z.string({ required_error: 'Priority level is required' }),
+  serviceStatus: z.string({ required_error: 'Service status is required' }).min(1, {message: 'This field is required'}),
+  priority: z.string({ required_error: 'Priority level is required' }).min(1, {message: 'This field is required'}),
   remarks: z.string(),
   serviceEngineer: z.string(),
-  client: z.string(),
+  client: z.string().min(1, {message: 'This field is required'}),
 })
 
 
@@ -126,11 +126,6 @@ export default function AdminITServiceTicketForm() {
   }) 
 
 
-  
-
-
- 
-
   function removeError(key: string) {
     setErrors((prevErrors) => {
       const { [key]: _, ...updatedErrors } = prevErrors
@@ -175,17 +170,7 @@ export default function AdminITServiceTicketForm() {
   useEffect(() => {
     if(isUpdate) {
 
-      console.log(data)
-
-      const retrievedTime = data ? data.time !== undefined ? data.time.split(' ') : '' : '' 
-      setPeriod(retrievedTime[retrievedTime.length-1])
-
-      form.setValue('time', data ? data.time !== undefined ? data.time : '' : '')
-      form.setValue('date', data ? data.date !== undefined ? new Date(data.date) : new Date() : new Date())
-      form.setValue('natureOfWork', data ? data.natureOfWork !== undefined ? data.natureOfWork : '' : '')
-      form.setValue('serviceStatus', data ? data.serviceStatus !== undefined ? data.serviceStatus : '' : '')
-      form.setValue('priority', data ? data.priority : '')
-      console.log(form.getValues('priority'))
+      console.log(data?.time?.split(' ')[0])
 
       let client = null
       if(data && data.client) {
@@ -219,10 +204,36 @@ export default function AdminITServiceTicketForm() {
         serviceEngineerFullName += serviceEngineer.lastName
       }
 
+      const retrievedTime = data ? data.time !== undefined ? data.time.split(' ') : '' : '' 
+
       setPreviousClient(clientFullName)
       setPreviousUser(serviceEngineerFullName)
+      setPeriod(retrievedTime[retrievedTime.length-1])
+
+      form.setValue('ticketNo', data ? data.ticketNo : '')
+      form.setValue('taskType', data ? data.taskType : '')
+      form.setValue('equipmentType', data ? data.equipmentType : '')
+      form.setValue('time', data ? data.time !== undefined ? data.time.split(' ')[0] : '' : '')
+      form.setValue('date', data ? data.date !== undefined ? new Date(data.date) : new Date() : new Date())
+      form.setValue('natureOfWork', data ? data.natureOfWork !== undefined ? data.natureOfWork : '' : '')
+      form.setValue('serviceStatus', data ? data.serviceStatus !== undefined ? data.serviceStatus : '' : '')
+      form.setValue('priority', data ? data.priority : '')
+      form.setValue('defectsFound', data ? data.defectsFound !== undefined ? data.defectsFound : '' : '')
+      form.setValue('serviceRendered', data ? data.serviceRendered !== undefined ? data.serviceRendered : '' : '')
+      form.setValue('client', client ? client._id : '')
+      form.setValue('serviceEngineer', serviceEngineer ? serviceEngineer._id : '')
+      
     }
   }, [data, searchClient, searchUser])
+
+
+  useEffect(() => {
+    form.setValue('client', searchClient ? searchClient : '')
+  }, [searchClient])
+
+  useEffect(() => {
+    form.setValue('serviceEngineer', searchUser ? searchUser: '')
+  }, [searchUser])
 
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -230,8 +241,7 @@ export default function AdminITServiceTicketForm() {
       ...data,
       time: data.time ? data.time +' '+ period : '',
       date: changeDateFormatMMDDYYYY(data.date),
-      serviceEngineer: searchUser,
-      client: searchClient
+
     }
 
     console.log(newData)
@@ -240,7 +250,7 @@ export default function AdminITServiceTicketForm() {
       if(isUpdate) {
         const response = await api.put(`/api/service-tickets/${params.serviceTicketId}`, newData)
         if(response.status === 200) {
-          toast.success(`${response.data.ticketNo} is created successfully.`, {
+          toast.success(`${response.data.ticketNo} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -308,7 +318,7 @@ export default function AdminITServiceTicketForm() {
                     >
                       <FormControl>
                         <SelectTrigger className="h-7">
-                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select task type" />)}
+                          { isUpdate ? (<SelectValue placeholder={capitalizeFirstLetter(field.value)} />) : (<SelectValue placeholder="Select task type" />)}
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -317,6 +327,7 @@ export default function AdminITServiceTicketForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage/>
                   </FormItem>
                 )}
               />
@@ -332,7 +343,7 @@ export default function AdminITServiceTicketForm() {
                     >
                       <FormControl>
                         <SelectTrigger className="h-7">
-                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select equipment type" />)}
+                          { isUpdate ? (<SelectValue placeholder={capitalizeFirstLetter(field.value)} />) : (<SelectValue placeholder="Select equipment type" />)}
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -341,6 +352,7 @@ export default function AdminITServiceTicketForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage/>
                   </FormItem>
                 )}
               />
@@ -442,14 +454,14 @@ export default function AdminITServiceTicketForm() {
                 name="serviceStatus"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Service Status</FormLabel>
+                    <FormLabel className={ errors?.serviceStatus ? 'text-red-500' : ''}>Service Status</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="h-7">
-                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select service status" />)}
+                          { isUpdate ? (<SelectValue placeholder={capitalizeFirstLetter(field.value)} />) : (<SelectValue placeholder="Select service status" />)}
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -458,6 +470,7 @@ export default function AdminITServiceTicketForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage/>
                   </FormItem>
                 )}
               />
@@ -473,7 +486,7 @@ export default function AdminITServiceTicketForm() {
                     >
                       <FormControl>
                         <SelectTrigger className="h-7">
-                          { isUpdate ? (<SelectValue placeholder={field.value.charAt(0).toUpperCase() +  field.value.slice(1)} />) : (<SelectValue placeholder="Select priority level" />)}
+                          { isUpdate ? (<SelectValue placeholder={capitalizeFirstLetter(field.value)} />) : (<SelectValue placeholder="Select priority level" />)}
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -482,6 +495,7 @@ export default function AdminITServiceTicketForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -521,6 +535,39 @@ export default function AdminITServiceTicketForm() {
               />
             </div>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+              <FormField  
+                control={form.control}
+                name="client"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={ errors?.client ? 'text-red-500' : ''}>Client</FormLabel>
+                    <FormControl>
+                      <ClientComboBox defaultValue={searchClient} previousValue={previousClient} onValueChange={(value: string) => {
+                        setSearchClient(value)
+                      }} />
+                    </FormControl>
+                    <FormMessage>{ errors?.client }</FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField  
+                control={form.control}
+                name="serviceEngineer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={ errors?.serviceEngineer ? 'text-red-500' : ''}>Service Engineer</FormLabel>
+                    <FormControl>
+                      <UserComboBox defaultValue={searchUser} previousValue={previousUser} onValueChange={(value: string) => {
+                        setSearchUser(value)
+                      }} />
+                    </FormControl>
+                    <FormMessage>{ errors?.serviceEngineer }</FormMessage>
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div className="grid grid-cols-1 gap-2">
                 <span className="text-sm font-medium">Client</span>
                 <ClientComboBox defaultValue={searchClient} previousValue={previousClient} onValueChange={(value: string) => {
@@ -533,7 +580,7 @@ export default function AdminITServiceTicketForm() {
                   setSearchUser(value)
                 }} />
               </div>
-            </div>
+            </div> */}
             <div className="grid">
               <FormField  
                 control={form.control}

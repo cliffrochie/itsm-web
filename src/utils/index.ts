@@ -6,7 +6,7 @@ export function isNumeric(value: string) {
 export function capitalizeFirstLetter(val: string) {
   return val
     .split(' ') // Split the sentence into an array of words
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
     .join(' '); 
 }
 

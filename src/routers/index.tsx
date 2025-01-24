@@ -18,6 +18,8 @@ import AboutPage from '@/pages/about/index'
 import SignInPage from '@/pages/auth/sign-in'
 import SignUpPage from '@/pages/auth/sign-up'
 import Error404Page from '@/pages/error/404'
+import ITServiceTicketView from '@/pages/admin/it-service-tickets/it-service-ticket-view'
+
 
 
 const router = createBrowserRouter([
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: '/admin/it-service-tickets/:serviceTicketId/update',
         element: <AdminITServiceTicketForm />
+      },
+      {
+        path: '/admin/it-service-tickets/:serviceTicketId/view',
+        element: <ITServiceTicketView />
       },
       {
         path: '/admin/clients',

@@ -4,6 +4,13 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+			screens: {
+				'custom-xs': '300px',
+				'custom-sm': '600px',
+				'custom-md': '900px',
+				'custom-lg': '1200px',
+				'custom-xl': '1500px',
+			},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

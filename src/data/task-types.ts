@@ -1,6 +1,6 @@
 import { 
   CircleAlert,
-  ServerCrash,
+  Laptop,
   BookUser, 
   Bike, 
   RefreshCwOff,
@@ -14,14 +14,14 @@ export const taskTypes = [
     icon: CircleAlert
   },
   {
-    value: "problem",
-    label: "Problem",
-    icon: ServerCrash
-  },
-  {
     value: "service request",
     label: "Service Request",
     icon: HandPlatter
+  },
+  {
+    value: "asset request",
+    label: "Asset Request",
+    icon: Laptop
   },
   {
     value: "maintenance",

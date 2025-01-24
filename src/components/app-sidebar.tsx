@@ -77,7 +77,7 @@ export function AppSidebar() {
         }
       }
     }
-    else if(currentPath[currentPath.length-1] === 'update') {
+    else if(currentPath[currentPath.length-1] === 'update' || currentPath[currentPath.length-1] === 'view') {
       for(let i=0; i<currentPath.length-2; i++) {
         usePath += currentPath[i]
         if(i < currentPath.length-1) {
@@ -96,8 +96,8 @@ export function AppSidebar() {
       }
     }
 
-    console.log(currentPath)
-    console.log(usePath)
+    // console.log(currentPath)
+    // console.log(usePath)
 
     const updatedLinks = links.map((link) => ({
       ...link,

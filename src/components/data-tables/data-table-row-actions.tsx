@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AxiosResponse } from 'axios'
 
-import { Row } from "@tanstack/react-table"
+import { Row, StringOrTemplateHeader } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -40,6 +40,7 @@ import AppDialogDeleteConfirmation from '@/components/app-dialog-delete-confirma
 interface DataTableRowActionsProps {
   id: string
   name: string
+  viewPath?: string
   updatePath: string
   deleteMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
@@ -48,6 +49,7 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({
   id,
   name,
+  viewPath,
   updatePath,
   deleteMutation,
 }: DataTableRowActionsProps) {
@@ -70,6 +72,8 @@ export function DataTableRowActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuSeparator />
+          { viewPath && (<><DropdownMenuItem onClick={() => navigate(viewPath) }>View</DropdownMenuItem><DropdownMenuSeparator /></>)}
+          
           <DropdownMenuItem onClick={() => navigate(updatePath) }>
             Edit
           </DropdownMenuItem>

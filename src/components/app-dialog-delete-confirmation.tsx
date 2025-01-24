@@ -64,6 +64,7 @@ export default function AppDialogDeleteConfirmation({
                 progress: undefined,
                 theme: "light",
                 transition: Slide,
+                className: 'text-sm',
               });
             }}>Yes</Button>
           </DialogFooter>
