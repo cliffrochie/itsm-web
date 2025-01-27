@@ -6,7 +6,8 @@ import {
   RefreshCwOff, 
   RefreshCw, 
   Check,
-  Lock
+  Lock,
+  Circle
 } from "lucide-react"
 
 export const serviceStatuses = [

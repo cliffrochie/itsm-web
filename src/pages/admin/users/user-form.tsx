@@ -40,7 +40,7 @@ const formSchema = z.object({
   }).nullable(),
   password: z.string().nonempty(),
   password2: z.string().nonempty(),
-  role: z.enum(['user', 'staff', 'admin'], {
+  role: z.enum(['user', 'staff', 'admin', 'superadmin'], {
     message: 'You need to select a user role.'
   })
 })
@@ -359,6 +359,14 @@ export default function AdminUserForm() {
                             </FormControl>
                             <FormLabel className="font-normal">
                               Admin
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="superadmin" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Super Admin
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>

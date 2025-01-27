@@ -1,5 +1,5 @@
 import { useState} from 'react'
-import DesignationComboBox from '@/features/admin/components/designation-combobox'
+import DesignationComboBox from '@/features/admin/components/comboboxes/designation-combobox'
 
 
 export default function HomePage() {

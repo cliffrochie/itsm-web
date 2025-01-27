@@ -9,7 +9,7 @@ export interface IUser {
   lastName: string
   extensionName?: string
   contactNo?: string
-  role: "user" | "staff" | "admin"
+  role: "user" | "staff" | "admin" | "superadmin"
   createdAt?: Date
   updatedAt?: Date
 }

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import UserComboBox from '@/features/admin/components/user-combobox'
+import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
 import { LucideIcon, Circle } from 'lucide-react'
 import { priorities } from '@/data/priority'
 import { serviceStatuses } from '@/data/service-status'
@@ -28,6 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import EscalateDialog from '@/features/admin/components/dialogs/it-service-tickets/escalate-dialog'
+import { itServiceTicketHistories } from '@/data/it-service-ticket-history'
 
 
 export default function ITServiceTicketView() {
@@ -220,53 +222,7 @@ export default function ITServiceTicketView() {
     },
   ]
 
-  const history = [
-    {
-      _id: '1',
-      serviceTicket: '1234123',
-      serviceStatus: 'open',
-      date: '',
-      time: '',
-      action: 'Assigned to Angelito S. Pajarillo',
-      duration: '',
-      remarks: '',
-      createdAt: new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }).format(new Date())
-    },
-    {
-      _id: '2',
-      serviceTicket: '1234123',
-      serviceStatus: 'open',
-      date: '',
-      time: '',
-      action: '',
-      duration: '',
-      remarks: '',
-      createdAt: new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }).format(new Date())
-    },
-    {
-      _id: '3',
-      serviceTicket: '1234123',
-      serviceStatus: 'open',
-      date: '',
-      time: '',
-      action: '',
-      duration: '',
-      remarks: '',
-      createdAt: new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-      }).format(new Date())
-    },
-  ]
+  
 
 
   return (
@@ -391,28 +347,24 @@ export default function ITServiceTicketView() {
                 <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Invoice</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="w-[100px]">Service Status</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Action</TableHead>
+                    <TableHead>Remarks</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {invoices.map((invoice) => (
-                    <TableRow key={invoice.invoice}>
-                      <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                      <TableCell>{invoice.paymentStatus}</TableCell>
-                      <TableCell>{invoice.paymentMethod}</TableCell>
-                      <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                  {itServiceTicketHistories.map((history) => (
+                    <TableRow key={history.serviceTicket}>
+                      <TableCell className="font-medium">{capitalizeFirstLetter(history.serviceStatus)}</TableCell>
+                      <TableCell>{history.date}</TableCell>
+                      <TableCell>{history.time}</TableCell>
+                      <TableCell>{history.action}</TableCell>
+                      <TableCell>{history.remarks}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={3}>Total</TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                  </TableRow>
-                </TableFooter>
               </Table>
             </div>
           </CardContent>
