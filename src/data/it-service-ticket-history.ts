@@ -3,7 +3,7 @@
 export const itServiceTicketHistories = [
   {
     _id: '1',
-    serviceTicket: '1234123',
+    serviceTicket: '123',
     serviceStatus: 'open',
     date: '',
     time: '',
@@ -18,7 +18,7 @@ export const itServiceTicketHistories = [
   },
   {
     _id: '2',
-    serviceTicket: '1234123',
+    serviceTicket: '124',
     serviceStatus: 'open',
     date: '',
     time: '',
@@ -33,7 +33,7 @@ export const itServiceTicketHistories = [
   },
   {
     _id: '3',
-    serviceTicket: '1234123',
+    serviceTicket: '125',
     serviceStatus: 'open',
     date: '',
     time: '',

@@ -62,9 +62,9 @@ const formSchema = z.object({
   defectsFound: z.string(),
   serviceRendered: z.string(),
   serviceStatus: z.string({ required_error: 'Service status is required' }).min(1, {message: 'This field is required'}),
-  priority: z.string({ required_error: 'Priority level is required' }).min(1, {message: 'This field is required'}),
+  priority: z.string({ required_error: 'Priority level is required' }),
   remarks: z.string(),
-  serviceEngineer: z.string(),
+  serviceEngineer: z.string().nullable(),
   client: z.string().min(1, {message: 'This field is required'}),
 })
 
@@ -148,21 +148,21 @@ export default function AdminITServiceTicketForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        ticketNo: '',
-        date: !isUpdate ? new Date(): undefined,
-        time: '',
-        taskType: '',
-        natureOfWork: '',
-        serialNo: '',
-        equipmentType: '',
-        equipmentTypeOthers: '',
-        defectsFound: '',
-        serviceRendered: '',
-        serviceStatus: '',
-        priority: '',
-        remarks: '',
-        serviceEngineer: '',
-        client: '',
+      ticketNo: '',
+      date: !isUpdate ? new Date(): undefined,
+      time: '',
+      taskType: '',
+      natureOfWork: '',
+      serialNo: '',
+      equipmentType: '',
+      equipmentTypeOthers: '',
+      defectsFound: '',
+      serviceRendered: '',
+      serviceStatus: '',
+      priority: '',
+      remarks: '',
+      serviceEngineer: '',
+      client: '',
     },
   })
 
@@ -221,7 +221,7 @@ export default function AdminITServiceTicketForm() {
       form.setValue('defectsFound', data ? data.defectsFound !== undefined ? data.defectsFound : '' : '')
       form.setValue('serviceRendered', data ? data.serviceRendered !== undefined ? data.serviceRendered : '' : '')
       form.setValue('client', client ? client._id : '')
-      form.setValue('serviceEngineer', serviceEngineer ? serviceEngineer._id : '')
+      form.setValue('serviceEngineer', serviceEngineer ? serviceEngineer._id : null)
       
     }
   }, [data, searchClient, searchUser])
@@ -289,10 +289,11 @@ export default function AdminITServiceTicketForm() {
     }
     catch(e: unknown) {
       const err = handleAxiosError(e)
-      let obj: any = {}
-      obj[err.key] = err.message
-      console.log(obj)
-      setErrors(obj)
+      console.log(err)
+    //   let obj: any = {}
+    //   obj[err.key] = err.message
+    //   console.log(obj)
+    //   setErrors(obj)
     }
   }
 

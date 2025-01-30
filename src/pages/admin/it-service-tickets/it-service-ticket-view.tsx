@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useParams } from "react-router"
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { IServiceTicket } from '@/@types/service-ticket'
 import api from '@/services/use-api'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
 import { LucideIcon, Circle } from 'lucide-react'
 import { priorities } from '@/data/priority'
 import { serviceStatuses } from '@/data/service-status'
@@ -21,24 +17,20 @@ import { IUser } from '@/@types/user'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import EscalateDialog from '@/features/admin/components/dialogs/it-service-tickets/escalate-dialog'
-import { itServiceTicketHistories } from '@/data/it-service-ticket-history'
-
+import { IServiceTicketHistory } from '@/@types/service-ticket-history'
+import UpdateStatusDialog from '@/features/admin/components/dialogs/it-service-tickets/update-status-dialog'
 
 export default function ITServiceTicketView() {
   const location = useLocation()
   const navigate = useNavigate()
   const params = useParams()
+  const queryClient = useQueryClient()
 
-  const [searchUser, setSearchUser] = useState('')
-  const [previousUser, setPreviousUser] = useState('')
   const [clientFullName, setClientFullName] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [officeName, setOfficeName] = useState('')
@@ -46,10 +38,10 @@ export default function ITServiceTicketView() {
   const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
   const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
+  const [updateServiceStatusDialogOpen, setUpdateServiceStatusDialogOpen] = useState(false)
 
-
-  const { data } = useQuery({
-    queryKey: ['serviceTicketForm'],
+  const dataQuery = useQuery({
+    queryKey: ['serviceTicketView'],
     queryFn: async () => {
       let data: IServiceTicket = {
         _id: '',
@@ -79,39 +71,63 @@ export default function ITServiceTicketView() {
     }
   }) 
 
-  console.log(data)
+  const updateMutation = useMutation({
+    mutationKey: ['updateServiceStatusDialogMutation'],
+    mutationFn: async(data: string) => {
+      const parsedData = JSON.parse(data)
+      return await api.put(`/api/service-tickets/${parsedData.id}/update-service-status`, {serviceStatus: parsedData.serviceStatus})
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+    }
+  })
+
+  const serviceTicketHistoryQuery = useQuery({
+    queryKey: ['serviceTicketHistory', dataQuery.data],
+    queryFn: async () => {
+      let result: IServiceTicketHistory[] = []
+      if(dataQuery.data) {
+        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${dataQuery.data._id ? dataQuery.data._id : undefined}`
+        await api.get(url).then(response => {
+          result = response.data
+        })
+      }
+      return result
+    }
+  })
+  // console.log(serviceTicketHistoryQuery.data)
 
   useEffect(() => {
-    if(data?.priority) {
-      const obj = priorities.find(p => p.value === data?.priority)
+    if(dataQuery.data?.priority) {
+      const obj = priorities.find(p => p.value === dataQuery.data?.priority)
       if(obj) {
         setPriorityIcon(() => obj.icon)
       }
     }
 
-    if(data?.serviceStatus) {
-      const obj = serviceStatuses.find(s => s.value == data?.serviceStatus)
+    if(dataQuery.data?.serviceStatus) {
+      const obj = serviceStatuses.find(s => s.value == dataQuery.data?.serviceStatus)
       if(obj) {
         setServiceStatusIcon(() => obj.icon)
       }
     }
 
-    if(data?.taskType) {
-      const obj = taskTypes.find(t => t.value === data.taskType)
+    if(dataQuery.data?.taskType) {
+      const obj = taskTypes.find(t => t.value === dataQuery.data.taskType)
       if(obj) {
         setTaskTypeIcon(() => obj.icon)
       }
     }
 
-    if(data?.equipmentType) {
-      const obj = equipmentTypes.find(e => e.value === data.equipmentType)
+    if(dataQuery.data?.equipmentType) {
+      const obj = equipmentTypes.find(e => e.value === dataQuery.data.equipmentType)
       if(obj) {
         setEquipmentTypeIcon(() => obj.icon)
       }
     }
 
-    if(data?.client) {
-      const obj = data.client as IClient
+    if(dataQuery.data?.client) {
+      const obj = dataQuery.data.client as IClient
       setClientFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)} 
@@ -123,118 +139,29 @@ export default function ITServiceTicketView() {
         })
     }
 
-    if(data?.serviceEngineer) {
-      const obj = data.serviceEngineer as IUser
+    if(dataQuery.data?.serviceEngineer) {
+      const obj = dataQuery.data.serviceEngineer as IUser
       setUserFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
 
-  }, [data])
-
-
-
-
-  const invoices = [
-    {
-      invoice: "INV001",
-      paymentStatus: "Paid",
-      totalAmount: "$250.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV002",
-      paymentStatus: "Pending",
-      totalAmount: "$150.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV003",
-      paymentStatus: "Unpaid",
-      totalAmount: "$350.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV004",
-      paymentStatus: "Paid",
-      totalAmount: "$450.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV005",
-      paymentStatus: "Paid",
-      totalAmount: "$550.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV006",
-      paymentStatus: "Pending",
-      totalAmount: "$200.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV007",
-      paymentStatus: "Unpaid",
-      totalAmount: "$300.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV008",
-      paymentStatus: "Paid",
-      totalAmount: "$250.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV009",
-      paymentStatus: "Pending",
-      totalAmount: "$150.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV010",
-      paymentStatus: "Unpaid",
-      totalAmount: "$350.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV011",
-      paymentStatus: "Paid",
-      totalAmount: "$450.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV012",
-      paymentStatus: "Paid",
-      totalAmount: "$550.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV013",
-      paymentStatus: "Pending",
-      totalAmount: "$200.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV014",
-      paymentStatus: "Unpaid",
-      totalAmount: "$300.00",
-      paymentMethod: "Credit Card",
-    },
-  ]
-
-  
+  }, [dataQuery.data])
 
 
   return (
     <section>
-      <h3 className="text-xl font-semibold">Ticket No: &nbsp;&nbsp;<span className="font-mono font-normal">{data?.ticketNo}</span></h3>
+      <h3 className="text-xl font-semibold">Ticket No: &nbsp;&nbsp;<span className="font-mono font-normal">{dataQuery.data?.ticketNo}</span></h3>
       <div className="mt-5 mb-5 flex justify-start items-center gap-4">
         <div>Actions:</div>
-        <Button variant="outline">Escalate</Button>
-        <Button variant="outline">Assign Service Engineer</Button>
-        <Button variant="outline">Update Status</Button>
+        <Button variant="outline" type="submit" onClick={() => {
+          setUpdateServiceStatusDialogOpen(true)
+        }}>Update Service Status</Button>
+
+        {dataQuery.data && dataQuery.data.serviceEngineer === null && (<Button variant="outline" type="submit">Assign Service Engineer</Button>)}
+        {dataQuery.data && dataQuery.data.serviceEngineer !== null && (<Button variant="outline" type="submit">Escalate Service</Button>)}
       </div>
-      <div className="grid gap-4 custom-xl:grid-cols-[400px,auto,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
+      <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
       {/* <div className="grid gap-4 lg:grid-cols-[400px,auto,auto] md:grid-cols-1"> */}
       {/* <div className="flex w-full justify-stretch gap-4 flex-wrap"> */}
         <Card className="w-full h-[480px]">
@@ -247,22 +174,22 @@ export default function ITServiceTicketView() {
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Date Requested:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ data ? String(data.date) : ''}</span>
+                    <span className="text-sm">{ dataQuery.data ? String(dataQuery.data.date) : ''}</span>
                   </div>
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Time Requested:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ data ? data.time : '' }</span>
+                    <span className="text-sm">{ dataQuery.data ? dataQuery.data.time : '' }</span>
                   </div>
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Priority Level:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <PriorityIcon size={16} /> 
-                    <span className="text-sm">{data ? capitalizeFirstLetter(data.priority) : ''}</span>
+                    {dataQuery.data && dataQuery.data.priority && (<PriorityIcon size={16} />)} 
+                    <span className="text-sm">{dataQuery.data && dataQuery.data.priority ? capitalizeFirstLetter(dataQuery.data.priority) : 'None'}</span>
                   </div>
                 </div>
                 <hr/>
@@ -270,7 +197,7 @@ export default function ITServiceTicketView() {
                   <div className="text-sm">Current Service Status:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <ServiceStatusIcon size={16} /> 
-                    <span className="text-sm">{data ? capitalizeFirstLetter(String(data.serviceStatus)) : ''}</span>
+                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(String(dataQuery.data.serviceStatus)) : ''}</span>
                   </div>
                 </div>
                 <hr/>
@@ -278,7 +205,7 @@ export default function ITServiceTicketView() {
                   <div className="text-sm">Type:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <TaskTypeIcon size={16} /> 
-                    <span className="text-sm">{data ? capitalizeFirstLetter(data.taskType) : ''}</span>
+                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.taskType) : ''}</span>
                   </div>
                 </div>
                 <hr/>
@@ -286,7 +213,7 @@ export default function ITServiceTicketView() {
                   <div className="text-sm">Equipment:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <EquipmentTypeIcon size={16} /> 
-                    <span className="text-sm">{data ? capitalizeFirstLetter(data.equipmentType) : ''}</span>
+                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.equipmentType) : ''}</span>
                   </div>
                 </div>
                 <hr/>
@@ -310,19 +237,19 @@ export default function ITServiceTicketView() {
               <div className="grid gap-2">
                 <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
                 <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
-                  {data ? data.natureOfWork : ''}
+                  {dataQuery.data ? dataQuery.data.natureOfWork : ''}
                 </div>
               </div>
               <div className="grid gap-2">
                 <span className="text-sm text-gray-500 font-semibold">Findings</span>
                 <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
-                  {data ? data.natureOfWork : ''}
+                  {dataQuery.data ? dataQuery.data.defectsFound : ''}
                 </div>
               </div>
               <div className="grid gap-2">
                 <span className="text-sm text-gray-500 font-semibold">Service Rendered</span>
                 <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
-                  {data ? data.natureOfWork : ''}
+                  {dataQuery.data ? dataQuery.data.serviceRendered : ''}
                 </div>
               </div>
               <div className="flex justify-between">
@@ -344,24 +271,19 @@ export default function ITServiceTicketView() {
           <CardContent className="h-full overflow-y-auto overflow-x-auto">
             <div className="grid grid-cols-1">
               <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Service Status</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Time</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Remarks</TableHead>
+                    <TableHead>Details</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itServiceTicketHistories.map((history) => (
-                    <TableRow key={history.serviceTicket}>
-                      <TableCell className="font-medium">{capitalizeFirstLetter(history.serviceStatus)}</TableCell>
+                  {serviceTicketHistoryQuery.data && serviceTicketHistoryQuery.data.map((history) => (
+                    <TableRow key={history._id}>
                       <TableCell>{history.date}</TableCell>
                       <TableCell>{history.time}</TableCell>
-                      <TableCell>{history.action}</TableCell>
-                      <TableCell>{history.remarks}</TableCell>
+                      <TableCell>{history.details}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -369,7 +291,14 @@ export default function ITServiceTicketView() {
             </div>
           </CardContent>
         </Card>
-        
+        <UpdateStatusDialog 
+          dialogOpen={updateServiceStatusDialogOpen} 
+          setDialogOpen={setUpdateServiceStatusDialogOpen} 
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
+          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          selectedServiceStatus={dataQuery.data ? dataQuery.data.serviceStatus : ''}
+          updateMutation={updateMutation}
+        />
       </div>
     </section>
   )

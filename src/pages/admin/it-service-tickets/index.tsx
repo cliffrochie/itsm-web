@@ -212,7 +212,6 @@ export default function AdminITServiceTicketsPage() {
             name={row.original.ticketNo} 
             viewPath={`/admin/it-service-tickets/${row.original._id}/view`}
             updatePath={`/admin/it-service-tickets/${row.original._id}/update`} 
-            deleteMutation={deleteMutation} 
           />
         </div>
       }

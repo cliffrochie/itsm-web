@@ -41,8 +41,8 @@ interface DataTableRowActionsProps {
   id: string
   name: string
   viewPath?: string
-  updatePath: string
-  deleteMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  updatePath?: string
+  deleteMutation?: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
 
 
@@ -73,23 +73,15 @@ export function DataTableRowActions({
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuSeparator />
           { viewPath && (<><DropdownMenuItem onClick={() => navigate(viewPath) }>View</DropdownMenuItem><DropdownMenuSeparator /></>)}
-          
-          <DropdownMenuItem onClick={() => navigate(updatePath) }>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {updatePath && (<><DropdownMenuItem onClick={() => navigate(updatePath) }>Edit</DropdownMenuItem></>)}
+          {deleteMutation && (<><DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => {
             setDialogOpen(true)
             setDropdownOpen(false)
-          } }>
-            Delete
-          </DropdownMenuItem>
-          {/* <DropdownMenuItem onClick={() => deleteMutation.mutate(id) }>
-            Delete
-          </DropdownMenuItem> */}
-        </DropdownMenuContent>
+          } }>Delete</DropdownMenuItem></>)}
+        </DropdownMenuContent>  
       </DropdownMenu>
-      <AppDialogDeleteConfirmation dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} name={name} id={id} deleteMutation={deleteMutation} />
+      {deleteMutation && (<AppDialogDeleteConfirmation dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} name={name} id={id} deleteMutation={deleteMutation} />)}
     </>
   )
 }
