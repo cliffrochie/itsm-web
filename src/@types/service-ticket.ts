@@ -6,7 +6,7 @@ export interface IServiceTicket {
   ticketNo: string
   date?: Date | string
   time?: string
-  taskType: "" | "incident" | "service request" | "asset request" | "maintenance"  | "consultation"
+  taskType: "" | "incident" | "service request" | "asset request" | "maintenance"  | "consultation" | "accessibility"
   natureOfWork: string
   serialNo?: string
   equipmentType: "" | "computer" | "software application" | "printer" | "phone" | "network" | "others"

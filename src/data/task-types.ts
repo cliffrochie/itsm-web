@@ -4,7 +4,8 @@ import {
   BookUser, 
   Bike, 
   RefreshCwOff,
-  HandPlatter
+  HandPlatter,
+  Info
 } from "lucide-react"
 
 export const taskTypes = [
@@ -37,5 +38,10 @@ export const taskTypes = [
     value: "consultation",
     label: "Consultation",
     icon: BookUser
+  },
+  {
+    value: "accessibility",
+    label: "Accessibility",
+    icon: Info
   },
 ]

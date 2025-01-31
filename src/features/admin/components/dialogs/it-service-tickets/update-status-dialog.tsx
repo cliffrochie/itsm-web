@@ -59,21 +59,17 @@ export default function UpdateStatusDialog({
     }
   }, [selectedServiceStatus])
 
-  useEffect(() => {
-    console.log(selectedOption)
-  }, [selectedOption])
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* Optional inline button to trigger the dialog */}
         <button className="hidden">Hidden Trigger</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Update Service Status</DialogTitle>
           <DialogDescription>
-          <span className="text-sm">For IT Service Ticket No: {name}.</span>
+            <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
           <div className="grid gap-4 py-3">
@@ -83,7 +79,7 @@ export default function UpdateStatusDialog({
                 setSelectedOption(value)
               }}
             >
-              <SelectTrigger className="w-full text-foreground">
+              <SelectTrigger className="w-full text-foreground h-7">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -103,7 +99,11 @@ export default function UpdateStatusDialog({
           </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
-            updateMutation.mutate(JSON.stringify({id: String(id), serviceStatus: selectedOption}))
+            updateMutation.mutate(JSON.stringify({
+              id: String(id), 
+              name: name, 
+              serviceStatus: selectedOption
+            }))
             setDialogOpen(false)
           }}>Submit</Button>
         </DialogFooter>

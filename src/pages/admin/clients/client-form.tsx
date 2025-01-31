@@ -268,13 +268,13 @@ export default function AdminClientForm() {
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div className="grid grid-cols-1 gap-2">
                 <span className="text-sm font-medium">Designation</span>
-                <DesignationComboBox defaultValue={searchDesignation} previousValue={previousDesignation} onValueChange={(value: string) => {
+                <DesignationComboBox className="h-7" defaultValue={searchDesignation} previousValue={previousDesignation} onValueChange={(value: string) => {
                   setSearchDesignation(value)
                 }} />
               </div>
               <div className="grid grid-cols-1 gap-2">
                 <span className="text-sm font-medium">Office</span>
-                <OfficeComboBox defaultValue={searchOffice} previousValue={previousOffice} onValueChange={(value: string) => {
+                <OfficeComboBox className="h-7" defaultValue={searchOffice} previousValue={previousOffice} onValueChange={(value: string) => {
                   setSearchOffice(value)
                 }} />
               </div>

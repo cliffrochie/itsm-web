@@ -304,7 +304,7 @@ export default function AdminITServiceTicketForm() {
       <h3 className="text-xl font-semibold">{title} IT Service Ticket</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 custom-lg:w-6/12 custom-md:w-7/12 sm:w-full">
             <Label className="text-gray-500">Service Ticket Information</Label>
             <div className="grid gap-4 md:grid-cols-2 sm:grid-cols-1">
               <FormField 
@@ -543,7 +543,7 @@ export default function AdminITServiceTicketForm() {
                   <FormItem>
                     <FormLabel className={ errors?.client ? 'text-red-500' : ''}>Client</FormLabel>
                     <FormControl>
-                      <ClientComboBox defaultValue={searchClient} previousValue={previousClient} onValueChange={(value: string) => {
+                      <ClientComboBox className="h-7" defaultValue={searchClient} previousValue={previousClient} onValueChange={(value: string) => {
                         setSearchClient(value)
                       }} />
                     </FormControl>
@@ -558,7 +558,7 @@ export default function AdminITServiceTicketForm() {
                   <FormItem>
                     <FormLabel className={ errors?.serviceEngineer ? 'text-red-500' : ''}>Service Engineer</FormLabel>
                     <FormControl>
-                      <UserComboBox defaultValue={searchUser} previousValue={previousUser} onValueChange={(value: string) => {
+                      <UserComboBox className="h-7" defaultValue={searchUser} previousValue={previousUser} onValueChange={(value: string) => {
                         setSearchUser(value)
                       }} />
                     </FormControl>

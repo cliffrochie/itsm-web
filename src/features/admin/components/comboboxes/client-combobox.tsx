@@ -5,15 +5,18 @@ import { AppComboBox } from "@/components/app-combobox"
 // import { IDesignation } from '@/@types/designation'
 import { IClient } from '@/@types/client';
 import api from '@/services/use-api'
+import { cn } from "@/lib/utils";
 
 export default function ClientComboBox({
   defaultValue,
   previousValue,
   onValueChange,
+  className,
 }: {
   defaultValue?: string;
   previousValue?: string;
   onValueChange: (value: string) => void;
+  className?: string;
 }) {
   
   const [value, setValue] = useState(defaultValue);
@@ -43,7 +46,7 @@ export default function ClientComboBox({
 
   return (
     <AppComboBox
-      className="w-full h-7"
+    className={cn("w-full font-normal", className)}
       items={data || []}
       value={value}
       label={label}

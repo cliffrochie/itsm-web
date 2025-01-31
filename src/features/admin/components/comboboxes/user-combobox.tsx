@@ -7,16 +7,20 @@ import { IUser } from '@/@types/user';
 import api from '@/services/use-api'
 import { cn } from "@/lib/utils";
 
+
+
 export default function UserComboBox({
   defaultValue,
   previousValue,
   onValueChange,
   className,
+  excludeUser,
 }: {
-  defaultValue?: string;
+  defaultValue?: string
   previousValue?: string;
-  onValueChange: (value: string) => void;
-  className?: string;
+  onValueChange: (value: string) => void
+  className?: string
+  excludeUser?: string
 }) {
   
   const [value, setValue] = useState(defaultValue);
@@ -29,6 +33,9 @@ export default function UserComboBox({
       let data: {value: string, label: string}[] = []
 
       let userUrl = `/api/users/?noPage=true&personnel=true&fullName=${search}`
+      if(excludeUser) {
+        userUrl += `&exclude=${excludeUser}`
+      }
       const userResponse = await api.get<IUser[]>(userUrl)
 
       userResponse.data.map(user => {
@@ -46,7 +53,7 @@ export default function UserComboBox({
 
   return (
     <AppComboBox
-      className={cn("w-full h-7 font-normal", className)}
+      className={cn("w-full font-normal", className)}
       items={data || []}
       value={value}
       label={label}

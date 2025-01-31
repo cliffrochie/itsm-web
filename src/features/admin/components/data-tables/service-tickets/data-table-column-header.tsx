@@ -134,7 +134,12 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
 
         {accessorKey === 'priority' && (
           <Select onValueChange={(value) => {
-            table.getColumn(accessorKey)?.setFilterValue(value)
+            if(value === ' ') {
+              table.getColumn(accessorKey)?.setFilterValue('')
+            }
+            else {
+              table.getColumn(accessorKey)?.setFilterValue(value)
+            }
           }}>
             <SelectTrigger className="h-6 p-1">
               <SelectValue placeholder="All priorities" />

@@ -34,20 +34,25 @@ import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
 import { Textarea } from "@/components/ui/textarea"
 
 
-
 interface IUpdateStatusDialogProps {
   dialogOpen: boolean
   setDialogOpen: Dispatch<SetStateAction<boolean>>
   id?: string
   name?: string
+  currentServiceEngineer: string
+  currentPriorityLevel: string
+  excludeUser: string
   updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
 
-export default function AssignServiceEngineerDialog({
+export default function EscalateServiceDialog({
   dialogOpen, 
   setDialogOpen,
   id,
   name,
+  currentServiceEngineer,
+  currentPriorityLevel,
+  excludeUser,
   updateMutation
 }: IUpdateStatusDialogProps) {
   const [selectedPriority, setSelectedPriority] = useState('')
@@ -55,7 +60,6 @@ export default function AssignServiceEngineerDialog({
   const [previousUser, setPreviousUser] = useState('')
   const [adminRemarks, setAdminRemarks] = useState('')
 
-  
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -64,33 +68,52 @@ export default function AssignServiceEngineerDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Assin Service Engineer</DialogTitle>
+          <DialogTitle>Escalate Service</DialogTitle>
           <DialogDescription>
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
-            <UserComboBox defaultValue={searchUser} previousValue={previousUser} onValueChange={(value: string) => {
-              setSearchUser(value)
-            }} />
-            <Select 
-              value={selectedPriority}
-              onValueChange={(value) => {
-                setSelectedPriority(value)
-              }}
-            >
-              <SelectTrigger className="w-full text-foreground px-4">
-                <SelectValue placeholder="Select a priority level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Priority level</SelectLabel>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="grid gap-6 py-3">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Current Service Engineer</Label>
+                <div className="text-gray-600 text-sm border rounded-[6px] p-[7px] bg-gray-50">{currentServiceEngineer}</div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Escalted Service Engineer</Label>
+                <UserComboBox defaultValue={searchUser} previousValue={previousUser} excludeUser={excludeUser} onValueChange={(value: string) => {
+                  setSearchUser(value)
+                }} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Current Priority Level</Label>
+                <div className="text-gray-600 text-sm border rounded-[6px] p-[7px] bg-gray-50">{capitalizeFirstLetter(currentPriorityLevel)}</div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Escalate Priority Level</Label>
+                <Select 
+                  value={selectedPriority}
+                  onValueChange={(value) => {
+                    setSelectedPriority(value)
+                  }}
+                >
+                  <SelectTrigger className="w-full text-foreground px-4">
+                    <SelectValue placeholder="Select a priority level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Priority level</SelectLabel>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
             <Textarea
               placeholder="Remarks"
               className="h-24"
@@ -102,11 +125,11 @@ export default function AssignServiceEngineerDialog({
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({
-              id,
+              id: id,
               name: name,
               serviceEngineer: searchUser,
               priority: selectedPriority,
-              adminRemarks: adminRemarks,
+              adminRemarks: adminRemarks
             }))
             setDialogOpen(false)
           }}>Submit</Button>

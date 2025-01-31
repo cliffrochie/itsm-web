@@ -4,15 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/app-combobox"
 import { IDesignation } from '@/@types/designation'
 import api from '@/services/use-api'
+import { cn } from "@/lib/utils";
 
 export default function DesignationComboBox({
   defaultValue,
   previousValue,
   onValueChange,
+  className,
 }: {
   defaultValue?: string;
   previousValue?: string;
   onValueChange: (value: string) => void;
+  className?: string;
 }) {
   
   const [value, setValue] = useState(defaultValue);
@@ -45,7 +48,7 @@ export default function DesignationComboBox({
   return (
     <>
       <AppComboBox
-        className="w-full h-7"
+        className={cn("w-full font-normal", className)}
         items={data || []}
         value={value}
         label={label}

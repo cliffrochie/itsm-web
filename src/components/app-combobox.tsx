@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, ChevronDown } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { cn } from "@/lib/utils";
@@ -77,7 +77,7 @@ export function AppComboBox({
           className={cn("justify-between", className)}
         >
           {label || selectItemMsg}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent

@@ -17,6 +17,7 @@ import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
 import { serviceStatuses } from "@/data/service-status"
+import { capitalizeFirstLetter } from "@/utils"
 
 
 export default function AdminITServiceTicketsPage() {
@@ -51,7 +52,11 @@ export default function AdminITServiceTicketsPage() {
       }
       
       if(columnFilters.length > 0) {
-        columnFilters.forEach(filter => url += `&${filter.id}=${filter.value}` )
+        columnFilters.forEach(filter => {
+          if(filter.value && filter.value !== ' ') {
+            url += `&${filter.id}=${filter.value}`
+          }
+        })
       } 
 
       await api.get(url).then(response => {
@@ -195,7 +200,7 @@ export default function AdminITServiceTicketsPage() {
         cell: ({ row }) => {
           const firstName = isUserInterface(row.original.serviceEngineer) ? row.original.serviceEngineer.firstName : ''
           const lastName = isUserInterface(row.original.serviceEngineer) ? row.original.serviceEngineer.lastName : ''
-          const fullName = String(firstName).charAt(0).toUpperCase() + String(firstName).slice(1).toLowerCase() +' '+ String(lastName).charAt(0).toUpperCase() + String(lastName).slice(1).toLowerCase()
+          const fullName = capitalizeFirstLetter(firstName) +' '+ capitalizeFirstLetter(lastName)
 
           return (
             <div className="flex w-full items-center">

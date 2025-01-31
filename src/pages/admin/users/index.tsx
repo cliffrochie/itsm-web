@@ -55,7 +55,11 @@ export default function AdminUsersPage() {
       }
       
       if(columnFilters.length > 0) {
-        columnFilters.forEach(filter => url += `&${filter.id}=${filter.value}`)
+        columnFilters.forEach(filter => {
+          if(filter.value && filter.value !== ' ') {
+            url += `&${filter.id}=${filter.value}`
+          }
+        })
       } 
 
       await api.get(url).then(response => {

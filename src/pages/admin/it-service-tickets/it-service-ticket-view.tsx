@@ -24,6 +24,11 @@ import {
 } from "@/components/ui/table"
 import { IServiceTicketHistory } from '@/@types/service-ticket-history'
 import UpdateStatusDialog from '@/features/admin/components/dialogs/it-service-tickets/update-status-dialog'
+import AssignServiceEngineerDialog from '@/features/admin/components/dialogs/it-service-tickets/assign-service-engineer-dialog'
+import EscalateServiceDialog from '@/features/admin/components/dialogs/it-service-tickets/escalate-service-dialog'
+import { Slide, toast } from 'react-toastify'
+
+
 
 export default function ITServiceTicketView() {
   const location = useLocation()
@@ -33,12 +38,16 @@ export default function ITServiceTicketView() {
 
   const [clientFullName, setClientFullName] = useState('')
   const [userFullName, setUserFullName] = useState('')
+  const [serviceEngineerId, setServiceEngineerId] = useState('')
   const [officeName, setOfficeName] = useState('')
   const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
   const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
   const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
   const [updateServiceStatusDialogOpen, setUpdateServiceStatusDialogOpen] = useState(false)
+  const [assignServiceEngineerDialogOpen, setAssignServiceEngineerDialogOpen] = useState(false)
+  const [escalateServiceDialogOpen, setEscalateServiceDialogOpen] = useState(false)
+  
 
   const dataQuery = useQuery({
     queryKey: ['serviceTicketView'],
@@ -71,17 +80,6 @@ export default function ITServiceTicketView() {
     }
   }) 
 
-  const updateMutation = useMutation({
-    mutationKey: ['updateServiceStatusDialogMutation'],
-    mutationFn: async(data: string) => {
-      const parsedData = JSON.parse(data)
-      return await api.put(`/api/service-tickets/${parsedData.id}/update-service-status`, {serviceStatus: parsedData.serviceStatus})
-    },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
-    }
-  })
-
   const serviceTicketHistoryQuery = useQuery({
     queryKey: ['serviceTicketHistory', dataQuery.data],
     queryFn: async () => {
@@ -95,7 +93,88 @@ export default function ITServiceTicketView() {
       return result
     }
   })
-  // console.log(serviceTicketHistoryQuery.data)
+
+  const updateStatusDialogMutation = useMutation({
+    mutationKey: ['updateServiceStatusDialogMutation'],
+    mutationFn: async(data: string) => {
+      const parsedData = JSON.parse(data)
+      return await api.patch(`/api/service-tickets/${parsedData.id}/update-service-status`, {serviceStatus: parsedData.serviceStatus})
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      toast.success(`IT Service status updated successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
+  const assignServiceEngineerDialogMutation = useMutation({
+    mutationKey: ['assignServiceEngineerDialogMutation'],
+    mutationFn: async(data: string) => {
+      const parsedData = JSON.parse(data)
+      const body = {
+        serviceEngineer: parsedData.serviceEngineer,
+        priority: parsedData.priority,
+        adminRemarks: parsedData.adminRemarks
+      }
+      return await api.patch(`/api/service-tickets/${parsedData.id}/assign-service-engineer`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      toast.success(`Service Engineer assigned successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
+  const escalateServiceDialogMutation = useMutation({
+    mutationKey: ['escalateServiceDialogMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        serviceEngineer: parsedData.serviceEngineer,
+        priority: parsedData.priority,
+        adminRemarks: parsedData.adminRemarks
+      } 
+      return await api.patch(`/api/service-tickets/${parsedData.id}/escalate-service`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      toast.success(`IT Service is escalated successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
+  
 
   useEffect(() => {
     if(dataQuery.data?.priority) {
@@ -141,6 +220,7 @@ export default function ITServiceTicketView() {
 
     if(dataQuery.data?.serviceEngineer) {
       const obj = dataQuery.data.serviceEngineer as IUser
+      setServiceEngineerId(obj._id)
       setUserFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)}`)
@@ -158,8 +238,20 @@ export default function ITServiceTicketView() {
           setUpdateServiceStatusDialogOpen(true)
         }}>Update Service Status</Button>
 
-        {dataQuery.data && dataQuery.data.serviceEngineer === null && (<Button variant="outline" type="submit">Assign Service Engineer</Button>)}
-        {dataQuery.data && dataQuery.data.serviceEngineer !== null && (<Button variant="outline" type="submit">Escalate Service</Button>)}
+        {dataQuery.data && dataQuery.data.serviceEngineer === null && (
+          <Button variant="outline" type="submit" onClick={() => {
+            setAssignServiceEngineerDialogOpen(true)
+          }}>
+            Assign Service Engineer
+          </Button>
+        )}
+        {dataQuery.data && dataQuery.data.serviceEngineer !== null && (
+          <Button variant="outline" type="submit" onClick={() => {
+            setEscalateServiceDialogOpen(true)
+          }}>
+            Escalate Service
+          </Button>
+        )}
       </div>
       <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
       {/* <div className="grid gap-4 lg:grid-cols-[400px,auto,auto] md:grid-cols-1"> */}
@@ -297,7 +389,24 @@ export default function ITServiceTicketView() {
           id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
           name={dataQuery.data ? dataQuery.data.ticketNo : ''}
           selectedServiceStatus={dataQuery.data ? dataQuery.data.serviceStatus : ''}
-          updateMutation={updateMutation}
+          updateMutation={updateStatusDialogMutation}
+        />
+        <AssignServiceEngineerDialog 
+          dialogOpen={assignServiceEngineerDialogOpen}
+          setDialogOpen={setAssignServiceEngineerDialogOpen}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
+          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          updateMutation={assignServiceEngineerDialogMutation}
+        />
+        <EscalateServiceDialog 
+          dialogOpen={escalateServiceDialogOpen}
+          setDialogOpen={setEscalateServiceDialogOpen}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
+          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          currentServiceEngineer={userFullName}
+          currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ''}
+          excludeUser={serviceEngineerId}
+          updateMutation={escalateServiceDialogMutation}
         />
       </div>
     </section>
