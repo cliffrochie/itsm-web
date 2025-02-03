@@ -22,6 +22,7 @@ export default function useGetUser(url: string): ThisResponse {
         setUser(response.data)
       }
       catch(error: any) {
+        console.log(error)
         const err = {
           code: error?.response?.data?.errorResponse?.code,
           message: error?.response?.data?.errorResponse?.errmsg,

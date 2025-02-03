@@ -155,7 +155,7 @@ export default function AdminUsersPage() {
   return (
     <section>
       <h3 className="text-xl font-semibold">Users</h3>
-      <div className="container py-5">
+      <div className="py-5">
         <div className="flex justify-start gap-2">
           <Button
             variant="outline"

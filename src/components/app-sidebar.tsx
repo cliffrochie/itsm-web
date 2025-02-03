@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { LayoutDashboard, ListOrdered, UserRound, SquareUserRound, Settings, BriefcaseBusiness, House } from "lucide-react"
 import { NavLink, useLocation } from 'react-router-dom'
 import { INavLink } from '@/@types/nav-link'
@@ -17,52 +17,13 @@ import {
 
 
 
-export function AppSidebar() {
-  const [links, setLinks] = useState<INavLink[]>([
-    {
-      title: 'Dashboard',
-      url: '/admin',
-      icon: LayoutDashboard,
-      isActive: true
-    },
-    {
-      title: 'IT Service Tickets',
-      url: '/admin/it-service-tickets',
-      icon: ListOrdered,
-      isActive: false
-    },
-    {
-      title: 'Users',
-      url: '/admin/users',
-      icon: UserRound,
-      isActive: false
-    },
-    {
-      title: 'Clients',
-      url: '/admin/clients',
-      icon: SquareUserRound,
-      isActive: false
-    },
-    {
-      title: 'Designations',
-      url: '/admin/designations',
-      icon: BriefcaseBusiness,
-      isActive: false
-    },
-    {
-      title: 'Offices',
-      url: '/admin/offices',
-      icon: House,
-      isActive: false
-    },
-    // {
-    //   title: 'Settings',
-    //   url: '/admin/settings',
-    //   icon: Settings,
-    //   isActive: false
-    // },
-  ])
-
+export function AppSidebar({
+  links,
+  setLinks
+}: {
+  links: INavLink[],
+  setLinks: Dispatch<SetStateAction<INavLink[]>>
+}) {
   const location = useLocation()
   let usePath = ''
 
@@ -96,8 +57,6 @@ export function AppSidebar() {
       }
     }
 
-    // console.log(currentPath)
-    // console.log(usePath)
 
     const updatedLinks = links.map((link) => ({
       ...link,
@@ -130,3 +89,5 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+

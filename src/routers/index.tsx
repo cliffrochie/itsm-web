@@ -19,6 +19,10 @@ import SignInPage from '@/pages/auth/sign-in'
 import SignUpPage from '@/pages/auth/sign-up'
 import Error404Page from '@/pages/error/404'
 import ITServiceTicketView from '@/pages/admin/it-service-tickets/it-service-ticket-view'
+import StaffLayout from '@/layouts/staff-layout'
+import ServiceEngineerPage from '@/pages/service-engineer'
+import ServiceEngineerITServiceTicket from '@/pages/service-engineer/it-service-ticket'
+import ServiceEngineerRecords from '@/pages/service-engineer/records'
 
 
 
@@ -46,6 +50,23 @@ const router = createBrowserRouter([
   { 
     path: '/signup',
     element: <SignUpPage />
+  },
+  {
+    element: <StaffLayout />,
+    children: [
+      {
+        path: '/service-engineer/',
+        element: <ServiceEngineerPage />
+      },
+      {
+        path: '/service-engineer/it-service-tickets',
+        element: <ServiceEngineerITServiceTicket />
+      },
+      {
+        path: '/service-engineer/records',
+        element: <ServiceEngineerRecords />
+      },
+    ]
   },
   {
     element: <AdminLayout />,
