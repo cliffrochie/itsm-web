@@ -3,7 +3,11 @@ import env from '@/utils/env'
 import Cookies from 'js-cookie'
 
 
-const api = axios.create({ baseURL: env('SERVER_URL') || 'http://localhost:5500' })
+const api = axios.create({ 
+  baseURL: env('SERVER_URL') || 'http://localhost:5500',
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
+})
 
 api.interceptors.request.use(
   config => {

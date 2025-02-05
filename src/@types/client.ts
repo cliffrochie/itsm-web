@@ -20,7 +20,7 @@ export interface IClient {
 
 
 export function isClientInterface(obj: any): obj is IClient {
-  console.log(obj)
+  // console.log(obj)
   return (
     obj &&
     typeof obj._id === 'string' &&

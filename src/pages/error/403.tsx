@@ -1,11 +1,11 @@
 
 
-export default function Error404Page() {
+export default function Error403Page() {
   return (
     <>
       <div className="flex justify-center h-screen items-center">
-        <h3>Error 404: Page not found!</h3>
+        <h3>Error 403: Unauthorized Access!</h3>
       </div>
     </>
-  ) 
+  )
 }

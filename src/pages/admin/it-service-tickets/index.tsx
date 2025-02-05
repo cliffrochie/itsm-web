@@ -80,7 +80,7 @@ export default function AdminITServiceTicketsPage() {
     }
   })
 
-  console.log(dataQuery.data)
+  // console.log(dataQuery.data)
   
 
   const columns: ColumnDef<IServiceTicket>[] = useMemo<ColumnDef<IServiceTicket>[]>(
@@ -122,24 +122,6 @@ export default function AdminITServiceTicketsPage() {
         },
       },
       {
-        accessorKey: "serviceStatus",
-        header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="serviceStatus" title="Service Status" />
-        ),
-        cell: ({ row }) => {
-          const serviceStatus = serviceStatuses.find((serviceStatus) => serviceStatus.value === row.getValue('serviceStatus'))
-          if(!serviceStatus) { return null }
-          return (
-            <div className="flex items-center">
-              {serviceStatus.icon && (
-                <serviceStatus.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-              )}
-              <span>{serviceStatus.label}</span>
-            </div>
-          )
-        },
-      },
-      {
         accessorKey: "taskType",
         header: ({ column }) => (
           <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="taskType" title="Task Type" />
@@ -153,6 +135,24 @@ export default function AdminITServiceTicketsPage() {
                 <taskType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               )}
               <span>{taskType.label}</span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "serviceStatus",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="serviceStatus" title="Service Status" />
+        ),
+        cell: ({ row }) => {
+          const serviceStatus = serviceStatuses.find((serviceStatus) => serviceStatus.value === row.getValue('serviceStatus'))
+          if(!serviceStatus) { return null }
+          return (
+            <div className="flex items-center">
+              {serviceStatus.icon && (
+                <serviceStatus.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{serviceStatus.label}</span>
             </div>
           )
         },

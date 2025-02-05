@@ -10,12 +10,13 @@ export interface IUser {
   extensionName?: string
   contactNo?: string
   role: "user" | "staff" | "admin" | "superadmin"
+  isActive: boolean
   createdAt?: Date
   updatedAt?: Date
 }
 
 export function isUserInterface(obj: any): obj is IUser {
-  console.log(obj)
+  // console.log(obj)
   return (
     obj && 
     typeof obj._id === 'string' &&

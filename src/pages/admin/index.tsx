@@ -8,8 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useAuth } from "@/contexts/auth-context"
+import { Navigate } from "react-router-dom"
 
 export default function AdminPage() {
+
+  // const { user } = useAuth()
+  // if(user) {
+  //   console.log(user)
+  //   if(user.role === 'user') {
+  //     return <Navigate to='/' replace />
+  //   } 
+  // }
+
   return (
     <section className="w-full grid lg:grid-cols-3 md:grid-cols-2 gap-2">
       <Card className="w-full">
