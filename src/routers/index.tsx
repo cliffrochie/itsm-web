@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, redirect, useLocation } from 'react-router-dom'
 import api from '@/services/use-api'
 import { AxiosError, isAxiosError } from "axios";
+import UserLayout from "@/layouts/user-layout";
 
 const AdminLayout = lazy(() => import('@/layouts/admin-layout'))
 const AdminPage = lazy(() => import('@/pages/admin'))
@@ -81,7 +82,7 @@ async function userPrivilegeLoader() {
   }
 }
 
-async function authenticatedLoader() {
+async function shouldNotAuthenticatedLoader() {
   try {
     const response = await api.get('/api/users/current-user', { withCredentials: true })
     if(response.status === 200) {
@@ -92,7 +93,7 @@ async function authenticatedLoader() {
     }
   }
   catch(error) {
-    console.log(isAxiosError(error))
+    // console.log(isAxiosError(error))
   }
 }
 
@@ -116,12 +117,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/client',
-    element: (
-      <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
-        <ClientPage />
-      </Suspense>
-    ),
+    element: <UserLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <ClientPage />
+          </Suspense>
+        ),
+      },
+    ]
   },
+  
   { 
     path: '/sign-in',
     element: (
@@ -129,7 +137,7 @@ const router = createBrowserRouter([
         <SignInPage />
       </Suspense>
     ),
-    loader: authenticatedLoader,
+    loader: shouldNotAuthenticatedLoader,
   },
   { 
     path: '/sign-up',
@@ -138,7 +146,7 @@ const router = createBrowserRouter([
         <SignUpPage />
       </Suspense>
     ),
-    loader: authenticatedLoader,
+    loader: shouldNotAuthenticatedLoader,
   },
   {
     path: '/service-engineer',

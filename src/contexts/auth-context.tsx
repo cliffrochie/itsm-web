@@ -9,7 +9,7 @@ interface AuthContextType {
   user: IUser | null
   loading: boolean
   error: string | null
-  handleLogin: (email: string, password: string) => Promise<void>
+  handleLogin: (email: string, password: string) => Promise<any>
   handleLogout: () => void
 }
 
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       })
   }, [])
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string): Promise<any> => {
     const result = await login(email, password);
     if(result) {
       const response = await api.get('/api/users/current-user')
@@ -73,7 +73,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       else {
         setLoading(false)
       }
+      return response
     }
+    return undefined
   };
 
   const handleLogout = () => {

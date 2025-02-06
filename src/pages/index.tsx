@@ -29,10 +29,10 @@ export default function HomePage() {
             Welcome to NIA IT Service Management System
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            The best place to seek IT assistance in our office.
+            The best place to seek IT assistance in NIA Caraga.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="default" size="lg" onClick={() => navigate('/sign-up')}>Sign Up</Button>
+            <Button variant="default" className="bg-gray-600" size="lg" onClick={() => navigate('/sign-up')}>Sign Up</Button>
             <Button variant="outline" size="lg" onClick={() => navigate('/sign-in')}>Sign In</Button>
           </div>
         </div>

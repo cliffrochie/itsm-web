@@ -75,7 +75,8 @@ export default function AdminUserForm() {
         username: '',
         email: '',
         contactNo: '',
-        role: 'user'
+        role: 'user',
+        isActive: false
       }
       let url = `/api/users/${params.userId}`
       if(params.userId) {

@@ -1,51 +1,75 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/contexts/auth-context"
+import api from "@/services/use-api"
+import { handleAxiosError } from "@/utils/error-handler"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Label } from "@radix-ui/react-dropdown-menu"
 import { LogIn } from "lucide-react"
 import { FormEvent, useState } from "react"
+import { useForm } from "react-hook-form"
 import { useNavigate, Link } from "react-router-dom"
+import { z } from "zod"
+import { Loader2 } from 'lucide-react'
+
+
+
+const formSchema = z.object({
+  username: z.string().nonempty({ message: 'Username is required'}),
+  password: z.string().nonempty({ message: 'Username is required'}),
+})
+
 
 
 
 export default function SignInPage() {
   const navigate = useNavigate()
   const { user, loading, handleLogin } = useAuth()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<any>(null)
+  const [submitIsLoading, setSubmitIsLoading] = useState<any>(false)
 
-  
-  
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+      password: '', 
+    },
+  })
 
-  async function submitHandler(e: FormEvent) {
-    e.preventDefault()
-
-    console.log('submit')
-
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    // console.log(data)
     try {
-      await handleLogin(username, password)
-
-      if(!loading && user && user.role === 'admin') {
-        console.log(user)
-        console.log('go to admin')
-        navigate('/admin')
+      const result = await handleLogin(data.username, data.password)
+      console.log(result.data)
+      if(result.status === 200) {
+        if(result.data && result.data.role === 'admin') {
+          navigate('/admin')
+        }
+        else if(result.data && result.data.role === 'staff') {
+          navigate('/service-engineer')
+        }
+        else if(result.data && result.data.role === 'user') {
+          navigate('/client')
+        }
+        else {
+          console.log('last condition for navigation')
+        }
       }
-      else if(!loading && user && user.role === 'staff') {
-        console.log(user)
-        console.log('go to service engineer')
-        navigate('/service-engineer')
-      }
-      else if(!loading && user && user.role === 'user') {
-        console.log(user)
-        console.log('go to client')
-        navigate('/client')
-      }
+      
     }
-    catch(error: any) {
-      alert(error)
+    catch(e) {
+      const err = await handleAxiosError(e)
+      console.log(err)
+      let obj: any = {}
+      obj[err.key] = err.message
+      setErrors(obj)
     }
   }
+
+  
+
 
   return (
     <div className="flex flex-row justify-center h-screen items-center">
@@ -60,22 +84,48 @@ export default function SignInPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={submitHandler}>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label>Username</Label>
-                  <Input id="username" name="username" type="text" placeholder="Your username here" onChange={(e) => setUsername(e.target.value) } />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-7" />
+                        </FormControl>
+                        <FormMessage>{ errors?.username }</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="password" className="h-7" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label>Password</Label>
-                  <Input id="password" name="password" type="password" placeholder="Your password here" onChange={(e) => setPassword(e.target.value) } />
+                <div className="grid w-full items-center gap-4 mt-4">
+                  <div className="text-sm">Don't have an account? <Link to="/sign-up" className="text-blue-500">Sign-up here.</Link></div>
                 </div>
-              </div>
-              <div className="grid w-full items-center gap-4 mt-4">
-                <div className="text-sm">Don't have an account? <Link to="/sign-up" className="text-blue-500">Sign-up here.</Link></div>
-              </div>
-              <Button variant="outline" type="submit" className="mt-5">Sign-in</Button>
-            </form>
+                <Button variant="outline" type="submit" className="mt-5 bg-blue-500 text-white w-full">
+                  Sign-in
+                </Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>

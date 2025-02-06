@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Link, useParams } from "react-router"
+import { useParams } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { IUser } from '@/@types/user'
-import { withMask } from 'use-mask-input'
 
 
 const formSchema = z.object({
@@ -41,6 +40,9 @@ const formSchema = z.object({
   }).nullable(),
   password: z.string().nonempty(),
   password2: z.string().nonempty(),
+  role: z.enum(['user', 'staff', 'admin', 'superadmin'], {
+    message: 'You need to select a user role.'
+  })
 })
 
 
@@ -82,9 +84,7 @@ export default function SignUpPage() {
           className: 'text-sm',
         });
 
-        setTimeout(() => {
-          navigate('/sign-in')
-        }, 500)
+        navigate('/sign-in')
       }
       else {
         console.log(response.status)
@@ -108,54 +108,14 @@ export default function SignUpPage() {
               <CardTitle className="text-center">
                 <div className="flex justify-center align-middle w-auto mb-5">
                 </div>
-                <div className="text-5xl font-mono font-bold text-gray-600">Create an Account</div>
+                <div className="text-3xl font-mono font-bold text-gray-600">Register an Account</div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-16">
+            <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full grid gap-4">
-                  <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="h-7" />
-                          </FormControl>
-                          <FormMessage>{ errors?.username }</FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="email" className="h-7" />
-                          </FormControl>
-                          <FormMessage>{ errors?.email }</FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="contactNo"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} ref={withMask('99999999999')} type="contactNo" className="h-7" />
-                          </FormControl>
-                          <FormMessage>{ errors?.contactNo }</FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid lg:grid-cols-[auto,auto,auto,100px] sm:grid-cols-1 gap-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+                  <Label className="text-gray-500">User Information</Label>
+                  <div className="grid lg:grid-cols-4 sm:grid-cols-1 gap-4">
                     <FormField
                       control={form.control}
                       name="firstName"
@@ -200,11 +160,52 @@ export default function SignUpPage() {
                       name="extensionName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Extension</FormLabel>
+                          <FormLabel>Extension Name</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value || ""} className="h-7" />
                           </FormControl>
                           <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="h-7" />
+                          </FormControl>
+                          <FormMessage>{ errors?.username }</FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" className="h-7" />
+                          </FormControl>
+                          <FormMessage>{ errors?.email }</FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="contactNo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} type="contactNo" className="h-7" />
+                          </FormControl>
+                          <FormMessage>{ errors?.contactNo }</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -240,9 +241,6 @@ export default function SignUpPage() {
                   <Button type="submit" className="bg-blue-500">Submit</Button>
                 </form>
               </Form>
-              <div className="py-5 text-sm">
-                Already have an account? <Link to="/sign-in" className="text-blue-500">Sign-in here.</Link>
-              </div>
             </CardContent>
           </Card>
         </div>
