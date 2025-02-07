@@ -1,4 +1,4 @@
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { IOffice } from '@/@types/office'
 import { useState, useEffect } from 'react'
 

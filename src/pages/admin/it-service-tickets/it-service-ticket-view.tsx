@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useParams } from "react-router"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { IServiceTicket } from '@/@types/service-ticket'
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LucideIcon, Circle } from 'lucide-react'

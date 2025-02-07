@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, ReactNode, useContext, Suspense } from "react";
 import Cookies from "js-cookie";
 import { IUser } from "@/@types/user";
-import { login, logout } from "@/services/use-auth";  // Ensure correct path
-import api from "@/services/use-api";
+import { login, logout } from "@/services/auth-service";  // Ensure correct path
+import api from "@/hooks/use-api";
 
 
 interface AuthContextType {

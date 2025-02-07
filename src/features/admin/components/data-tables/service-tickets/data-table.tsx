@@ -13,22 +13,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 
 
 
 interface ServiceTicketDataTableProps<T> {
   table: TanstackTable<T>
-  totalColumns: number
+  totalColumns: number,
+  className?: string
 }
 
 export function ServiceTicketDataTable<T>({
   table,
-  totalColumns
+  totalColumns,
+  className
 }: ServiceTicketDataTableProps<T>) {
 
 
   return (
-    <div className="rounded-md border mb-3 mt-4">
+    <div className={cn("rounded-md border mb-3 mt-4", className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/contexts/auth-context";
-import api from "@/services/use-api";
+import api from "@/hooks/use-api";
 import { useNavigate } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils";
 

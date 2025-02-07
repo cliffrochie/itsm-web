@@ -20,7 +20,7 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 
 import { ClientDataTable } from '@/features/admin/components/data-tables/clients/data-table' 
 import { DataTableColumnHeader } from '@/features/admin/components/data-tables/clients/data-table-column-header'

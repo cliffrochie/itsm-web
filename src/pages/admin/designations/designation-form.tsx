@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { handleAxiosError } from '@/utils/error-handler'
 
 import { useQuery } from '@tanstack/react-query'

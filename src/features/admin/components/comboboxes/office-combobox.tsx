@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/app-combobox"
 // import { IDesignation } from '@/@types/designation'
 import { IOffice } from '@/@types/office';
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { cn } from "@/lib/utils";
 
 export default function OfficeComboBox({

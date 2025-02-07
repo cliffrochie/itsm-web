@@ -52,12 +52,10 @@ export function AppSidebar({
       usePath = '/admin'
     }
     else if(currentPath[currentPath.length-1] === 'service-engineer') {
-      console.log('bbb')
       usePath = '/service-engineer'
     }
     else {
       for(let i=0; i<currentPath.length; i++) {
-        console.log('aaa')
         usePath += currentPath[i]
         if(i !== currentPath.length-1) {
           usePath += '/'
@@ -65,8 +63,8 @@ export function AppSidebar({
       }
     }
 
-    console.log(currentPath)
-    console.log(usePath)
+    // console.log(currentPath)
+    // console.log(usePath)
 
     if(usePath.slice(-1) === '/') {
       usePath = usePath.slice(0, -1)

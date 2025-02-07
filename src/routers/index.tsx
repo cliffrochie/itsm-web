@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, redirect, useLocation } from 'react-router-dom'
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { AxiosError, isAxiosError } from "axios";
 import UserLayout from "@/layouts/user-layout";
 

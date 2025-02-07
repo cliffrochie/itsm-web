@@ -16,7 +16,7 @@ import {
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 
 import { UserDataTable } from '@/features/admin/components/data-tables/users/data-table'
 import { UserDataTableColumnHeader } from '@/features/admin/components/data-tables/users/data-table-column-header'

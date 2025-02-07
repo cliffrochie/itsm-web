@@ -1,4 +1,4 @@
-import api from "./use-api"
+import api from "@/hooks/use-api"
 import Cookies from "js-cookie"
 
 

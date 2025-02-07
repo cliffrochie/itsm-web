@@ -15,7 +15,7 @@ export default function StaffLayout() {
       isActive: true
     },
     {
-      title: 'IT Service Tickets',
+      title: 'Assigned Service Tickets',
       url: '/service-engineer/it-service-tickets',
       icon: ListOrdered,
       isActive: false

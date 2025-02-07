@@ -2,12 +2,12 @@ import { useMemo, useState } from "react"
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table"
 import { useNavigate } from "react-router-dom"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import api from "@/services/use-api"
+import api from "@/hooks/use-api"
 import { IServiceTicket } from "@/@types/service-ticket"
-import { ServiceTicketDataTableColumnHeader } from "@/features/admin/components/data-tables/service-tickets/data-table-column-header"
-import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions"
 import { Button } from "@/components/ui/button"
 import { Briefcase } from "lucide-react"
+import { ServiceTicketDataTableColumnHeader } from "@/features/admin/components/data-tables/service-tickets/data-table-column-header"
+import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions"
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 import { ServiceTicketDataTable } from "@/features/admin/components/data-tables/service-tickets/data-table"
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
@@ -30,7 +30,6 @@ export default function AdminITServiceTicketsPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const defaultData = useMemo(() => [], [])
-
   const serviceTicketQueryKey = ['serviceTicket', pagination, sorting, columnFilters]
 
   const dataQuery = useQuery({

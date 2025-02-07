@@ -1,4 +1,4 @@
-import api from '@/services/use-api'
+import api from '@/hooks/use-api'
 import { useState, useEffect } from 'react'
 import { handleAxiosError } from '@/utils/error-handler' 
 
@@ -18,7 +18,7 @@ interface Tickets {
 }
 
 interface ThisResponse {
-  tickets?: Tickets
+  totalServiceStatuses?: Tickets
   loading: boolean
   error?: object | string | undefined 
 }
@@ -35,24 +35,24 @@ const queryParams = [
 ]
 
 
-export default function useGetTotalTickets(): ThisResponse {
-  const [tickets, setTickets] = useState<Tickets | undefined>(undefined)
+export default function useGetTotalServiceStatus(): ThisResponse {
+  const [totalServiceStatuses, setServiceStatuses] = useState<Tickets | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<object | string | undefined>(undefined)
 
-  let url = '/api/service-tickets/total/?totalTickets=true'
+  let url = '/api/service-tickets/total-service-status/?totalTickets=true'
   queryParams.forEach(a => url += `&${a}=true`)
 
   // console.log(url)
 
   useEffect(() => {
-    async function getTotalTickets() {
+    async function getTotalServiceStatus() {
       try {
         setLoading(true)
         
         const response = await api.get(url)
         if(response.status === 200) {
-          setTickets(response.data)
+          setServiceStatuses(response.data)
         }
       }
       catch(error) {
@@ -64,8 +64,8 @@ export default function useGetTotalTickets(): ThisResponse {
       }
     }
 
-    getTotalTickets()
+    getTotalServiceStatus()
   }, [])
 
-  return {tickets, loading, error}
+  return {totalServiceStatuses, loading, error}
 }
