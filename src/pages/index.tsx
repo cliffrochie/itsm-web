@@ -26,9 +26,12 @@ export default function HomePage() {
       <main className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-2xl">
           <h2 className="text-4xl font-extrabold text-gray-800 mb-4">
-            Welcome to NIA IT Service Management System
+            NIA ITSM
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-600">
+            IT Service Management System
+          </p>
+          <p className="text-lg text-gray-500 mb-8">
             The best place to seek IT assistance in NIA Caraga.
           </p>
           <div className="flex justify-center space-x-4">

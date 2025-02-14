@@ -112,7 +112,6 @@ export default function AdminPage() {
 
   const { totalUserRoles } = useGetTotalUserRole()
   let userRolesData = [
-    { keyName: 'total', name: "Total Users", total: 0 },
     { keyName: 'totalAdmin', name: "Admin", total: 0 },
     { keyName: 'totalStaff', name: "Service Engineer", total: 0 },
     { keyName: 'totalUser', name: "Client", total: 0 },

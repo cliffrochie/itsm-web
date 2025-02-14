@@ -21,10 +21,10 @@ export default function SidebarLayout({
     <SidebarProvider>
       <AppSidebar links={links} setLinks={setLinks} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
+        <header className="flex z-50 h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 p-4 space-y-4 bg-white">
+          <SidebarTrigger className="pt-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="flex justify-between w-full items-center">
+          <div className="flex justify-between w-full items-center pb-2">
             <AppBreadcrumb />
             <div className="flex mr-5 gap-4">
               <DropdownUser />

@@ -19,6 +19,7 @@ interface ThisResponse {
 }
 
 const queryParams = [
+  'totalSuperAdmin',
   'totalAdmin',
   'totalStaff',
   'totalUser',
