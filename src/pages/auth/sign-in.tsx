@@ -95,7 +95,7 @@ export default function SignInPage() {
                       <FormItem>
                         <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
                         <FormControl>
-                          <Input {...field} className="h-7" />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage>{ errors?.username }</FormMessage>
                       </FormItem>
@@ -110,7 +110,7 @@ export default function SignInPage() {
                         <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                            <Input {...field} type="password" className="h-7" />
+                            <Input {...field} type="password" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

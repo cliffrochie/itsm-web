@@ -166,7 +166,7 @@ const router = createBrowserRouter([
         loader: staffPrivilegeLoader,
       },
       {
-        path: '/service-engineer/it-service-tickets',
+        path: '/service-engineer/:ticketNo',
         element: (
           <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
             <ServiceEngineerITServiceTicket />

@@ -47,7 +47,6 @@ export default function useGetTotalUserRole(): ThisResponse {
         }
       }
       catch(error) {
-
         setError(handleAxiosError(error))
       }
       finally {

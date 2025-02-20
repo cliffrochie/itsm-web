@@ -11,7 +11,8 @@ export default defineConfig({
     }
   },
   server: {
-    host: true,
+    host: 'localhost',
     port: 3500,
+    // origin: 'http://localhost:3500'
   },
 })

@@ -3,6 +3,7 @@ import { LayoutDashboard, ListOrdered, UserRound, SquareUserRound, Settings, Bri
 import { NavLink, useLocation } from 'react-router-dom'
 import { INavLink } from '@/@types/nav-link'
 import { isNumeric } from '@/utils'
+import ReactImg from '@/assets/react.svg'
 
 import { 
   Sidebar, 
@@ -81,6 +82,9 @@ export function AppSidebar({
     <Sidebar collapsible='icon'>
       <SidebarContent>
         <SidebarGroup>
+          <div className="flex justify-center py-4">
+            <img src={ReactImg} width="70" />
+          </div>
           <SidebarGroupLabel className="font-bold">Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu> 

@@ -15,6 +15,7 @@ import { DataTableViewOptions } from "@/components/data-tables/data-table-view-o
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 import { isClientInterface } from "@/@types/client"
 import { isUserInterface } from '@/@types/user'
+import getAssignedServiceTickets from "@/features/service-engineer/hooks/get-assigned-service-tickets"
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
@@ -22,6 +23,9 @@ import { serviceStatuses } from "@/data/service-status"
 import { capitalizeFirstLetter } from "@/utils"
 import api from "@/hooks/use-api"
 import { IServiceTicket } from "@/@types/service-ticket"
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+
+
 
 export default function ServiceEngineerPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -32,6 +36,7 @@ export default function ServiceEngineerPage() {
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { assignedTickets } = getAssignedServiceTickets()
   const defaultData = useMemo(() => [], [])
   const serviceTicketQueryKey = ['serviceTicket', pagination, sorting, columnFilters]
 
@@ -218,7 +223,7 @@ export default function ServiceEngineerPage() {
 
   return (
     <div className="grid gap-4">
-      <section className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+      <section className="grid custom-md:grid-cols-2 grid-cols-1 gap-4">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-bold font-mono flex justify-between text-gray-500">
@@ -227,24 +232,13 @@ export default function ServiceEngineerPage() {
             <Ticket className="text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">21</div>
+            <div className="text-3xl font-bold">{ assignedTickets ? assignedTickets.length : 0 }</div>
           </CardContent>
         </Card>
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-bold font-mono flex justify-between text-gray-500">
-              IN-PROGRESS TICKETS
-            </CardTitle>
-            <TicketSlash className="text-gray-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">21</div>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xl font-bold font-mono flex justify-between text-gray-500">
-              CLOSED TICKETS
+              CLOSED/COMPLETED TICKETS
             </CardTitle>
             <TicketCheck className="text-gray-500"  />
           </CardHeader>
@@ -253,14 +247,29 @@ export default function ServiceEngineerPage() {
           </CardContent>
         </Card>
       </section>
-      {/* <section className="grid gap-4">
-        <div className="flex justify-start gap-2">
-          <DataTableViewOptions table={table} />
-        </div>
-        <ServiceTicketDataTable table={table} totalColumns={columns.length} className="shadow p-3" />
-        <DataTablePagination table={table} />
-      </section> */}
       
+      <section className="grid custom-md:grid-cols-1 gap-4">
+        <div className="">
+          <div className="py-4 font-semibold">List of Assigned Tickets</div>
+          <div className="rounded-md border shadow">
+            <Table>
+              <TableBody>
+                { assignedTickets ? assignedTickets.map((data) => (
+                  <TableRow key={data._id} onClick={() => { navigate(`/service-engineer/${data.ticketNo}`) }} className="cursor-pointer">
+                    <TableCell className="font-medium p-5">{data.ticketNo} <span className="text-xs font-normal text-gray-500">({capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')})</span></TableCell>
+                    {/* <TableCell className="font-medium p-5">{capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')}</TableCell> */}
+                    <TableCell className="font-medium p-5">{capitalizeFirstLetter(data.priority ? data.priority : 'No')} Priority</TableCell>
+                  </TableRow>
+                ))
+                : (<TableRow>
+                   <TableCell className="font-medium p-5">No assigned service tickets</TableCell>
+                  </TableRow>)
+                }
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

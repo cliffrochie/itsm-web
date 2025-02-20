@@ -254,8 +254,6 @@ export default function ITServiceTicketView() {
         )}
       </div>
       <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
-      {/* <div className="grid gap-4 lg:grid-cols-[400px,auto,auto] md:grid-cols-1"> */}
-      {/* <div className="flex w-full justify-stretch gap-4 flex-wrap"> */}
         <Card className="w-full h-[480px]">
           <CardHeader>
             <CardTitle>IT Service Details</CardTitle>
@@ -310,10 +308,22 @@ export default function ITServiceTicketView() {
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Service Engineer:</div>
+                  <div className="text-sm">Requestor Name:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
+                    <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
                   </div>
+                  {/* <div className="font-bold flex justify-between gap-2">
+                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
+                  </div> */}
+                </div>
+                <div className="flex gap-4 justify-between">
+                  <div className="text-sm">Requestor Office:</div>
+                  <div className="font-bold flex justify-between gap-2">
+                    <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
+                  </div>
+                  {/* <div className="font-bold flex justify-between gap-2">
+                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -345,12 +355,8 @@ export default function ITServiceTicketView() {
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Requestor Name:</span>
-                <span className="font-bold text-sm">{clientFullName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm">Requestor Office:</span>
-                <span className="font-bold text-sm">{officeName}</span>
+                <span className="text-sm">Service Engineer:</span>
+                <span  className={ officeName ? "text-sm" : "text-sm text-red-500 font-bold" }>{userFullName ? userFullName : 'Unassigned'}</span>
               </div>
             </div>
           </CardContent>
