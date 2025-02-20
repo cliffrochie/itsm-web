@@ -31,10 +31,13 @@ import api from "@/hooks/use-api"
 import { useNavigate, useParams } from "react-router-dom"
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { Circle, LucideIcon } from "lucide-react"
-
+import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
+import { Slide, toast } from "react-toastify"
 
 
 export default function ServiceEngineerITServiceTicket() {
+  const [dateRequested, setDateRequested] = useState('')
+  const [inputFindingsDialogOpen, setInputFindingsDialogOpen] = useState(false)
   const [serviceTicket, setServiceTicket] = useState<IServiceTicket | undefined>(undefined)
   const [userFullName, setUserFullName] = useState('')
   const [clientFullName, setClientFullName] = useState('')
@@ -66,6 +69,20 @@ export default function ServiceEngineerITServiceTicket() {
   })
 
   useEffect(() => {
+    if(serviceTicket && serviceTicket.createdAt) {
+      const result = new Date(serviceTicket.createdAt)
+      const formattedDate = result.toLocaleDateString('en-US', { 
+          timeZone: "Asia/Singapore",
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true // Set to false for 24-hour format
+      });
+      setDateRequested(formattedDate)
+    }
+
     if(serviceTicket && serviceTicket.priority) {
       const obj = priorities.find(p => p.value === serviceTicket?.priority)
       if(obj) {
@@ -109,8 +126,35 @@ export default function ServiceEngineerITServiceTicket() {
         })
     }
 
-    console.log(serviceTicket?.createdAt?.toLocaleDateString)
   }, [serviceTicket])
+
+
+  const inputFindingsDialogMutation = useMutation({
+    mutationKey: ['inputFindingsDialogMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        findings: parsedData.findings
+      } 
+      return await api.patch(`/api/service-tickets/${parsedData.id}/input-findings`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['assignedTicket'] })
+      toast.success(`Findings inputted successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
   
   return (
     <section className="grid custom-md:grid-cols-1 gap-4">
@@ -128,16 +172,10 @@ export default function ServiceEngineerITServiceTicket() {
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Date Requested:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ serviceTicket ? String(serviceTicket.date) : ''}</span>
+                    <span className="text-sm">{dateRequested}</span>
                   </div>
                 </div>
                 <hr/>
-                <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Time Requested:</div>
-                  <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ serviceTicket ? serviceTicket.time : '' }</span>
-                  </div>
-                </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Priority Level:</div>
@@ -208,8 +246,8 @@ export default function ServiceEngineerITServiceTicket() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Findings</span>
-                <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
+                <span className="text-sm text-gray-500 font-semibold">Finding <span className="text-xs">(click the box below)</span></span> 
+                <div className="border p-3 min-h-20 h-auto rounded-md text-sm cursor-pointer" onClick={() => setInputFindingsDialogOpen(true) }>
                   {serviceTicket ? serviceTicket.defectsFound : ''}
                 </div>
               </div>
@@ -227,7 +265,17 @@ export default function ServiceEngineerITServiceTicket() {
           </CardContent>
         </Card>
       </div>
+
+
+      <InputFindingsDialog 
+        dialogOpen={inputFindingsDialogOpen}
+        setDialogOpen={setInputFindingsDialogOpen}
+        id={serviceTicket ? serviceTicket._id : ''} 
+        currentValue={serviceTicket ? serviceTicket.defectsFound : ''}
+        name={serviceTicket ? serviceTicket.ticketNo : ''}
+        updateMutation={inputFindingsDialogMutation}
+      />
     </section>
-   
   )
+
 }

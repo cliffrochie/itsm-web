@@ -8,6 +8,7 @@ import { handleAxiosError } from '@/utils/error-handler'
 interface Tickets {
   totalTickets: number
   totalOpenedTickets: number
+  totalAssignedTickets: number
   totalInProgressTickets: number
   totalOnHoldTickets: number
   totalEscalatedTickets: number
@@ -25,6 +26,7 @@ interface ThisResponse {
 
 const queryParams = [
   'totalOpenedTickets',
+  'totalAssignedTickets',
   'totalInProgressTickets',
   'totalOnHoldTickets',
   'totalEscalatedTickets',

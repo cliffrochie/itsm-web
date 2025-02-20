@@ -91,10 +91,52 @@ export default function AdminITServiceTicketsPage() {
         ),
       },
       {
-        accessorKey: "title",
+        accessorKey: "date",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="title" title="Title" />
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="date" title="Date" />
         ),
+      },
+      // {
+      //   accessorKey: "time",
+      //   header: ({ column }) => (
+      //     <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="time" title="Time" />
+      //   ),
+      // },
+      {
+        accessorKey: "priority",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="priority" title="Priority Level" />
+        ),
+        cell: ({ row }) => {
+          const priority = priorities.find((priority) => priority.value === row.getValue('priority'))
+          if(!priority) { return null }
+          return (
+            <div className="flex items-center">
+              {priority.icon && (
+                <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{priority.label}</span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "taskType",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="taskType" title="Task Type" />
+        ),
+        cell: ({ row }) => {
+          const taskType = taskTypes.find((taskType) => taskType.value === row.getValue('taskType'))
+          if(!taskType) { return null }
+          return (
+            <div className="flex items-center">
+              {taskType.icon && (
+                <taskType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{taskType.label}</span>
+            </div>
+          )
+        },
       },
       {
         accessorKey: "serviceStatus",
@@ -110,6 +152,24 @@ export default function AdminITServiceTicketsPage() {
                 <serviceStatus.icon className="mr-2 h-4 w-4 text-muted-foreground" />
               )}
               <span>{serviceStatus.label}</span>
+            </div>
+          )
+        },
+      },
+      {
+        accessorKey: "equipmentType",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="equipmentType" title="Equipment/Device" />
+        ),
+        cell: ({ row }) => {
+          const equipmentType = equipmentTypes.find((equipmentType) => equipmentType.value === row.getValue('equipmentType'))
+          if(!equipmentType) { return null }
+          return (
+            <div className="flex items-center">
+              {equipmentType.icon && (
+                <equipmentType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{equipmentType.label}</span>
             </div>
           )
         },
@@ -147,31 +207,6 @@ export default function AdminITServiceTicketsPage() {
             </div>
           )
         },
-      },
-      {
-        accessorKey: "createdAt",
-        header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="createdAt" title="Date Created" />
-        ),
-        cell: ({ row }) => {
-          const createdAt = new Date(row.getValue('createdAt'))
-
-          const formattedDate = createdAt.toLocaleDateString('en-US', { 
-              timeZone: "Asia/Singapore",
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-              hour12: true // Set to false for 24-hour format
-          });
-
-          return (
-            <div className="flex items-center">
-              <span>{formattedDate}</span>
-            </div>
-          )
-        }
       },
       {
         id: "actions",

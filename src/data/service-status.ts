@@ -1,6 +1,7 @@
 import { 
   LockOpen,
   Loader,
+  CircleUser,
   CirclePause,
   TrendingUp,
   RefreshCwOff, 
@@ -15,6 +16,11 @@ export const serviceStatuses = [
     value: "open",
     label: "Open",
     icon: LockOpen
+  },
+  {
+    value: "assigned",
+    label: "Assigned",
+    icon: CircleUser
   },
   {
     value: "in progress",

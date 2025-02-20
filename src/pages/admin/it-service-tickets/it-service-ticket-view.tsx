@@ -36,6 +36,7 @@ export default function ITServiceTicketView() {
   const params = useParams()
   const queryClient = useQueryClient()
 
+  const [dateRequested, setDateRequested] = useState('')
   const [clientFullName, setClientFullName] = useState('')
   const [userFullName, setUserFullName] = useState('')
   const [serviceEngineerId, setServiceEngineerId] = useState('')
@@ -55,9 +56,8 @@ export default function ITServiceTicketView() {
       let data: IServiceTicket = {
         _id: '',
         ticketNo: '',
-        date: '',
-        time: '',
         taskType: '',
+        title: '',
         natureOfWork: '',
         serialNo: '',
         equipmentType: '',
@@ -177,6 +177,20 @@ export default function ITServiceTicketView() {
   
 
   useEffect(() => {
+    if(dataQuery.data?.createdAt) {
+      const result = new Date(dataQuery.data?.createdAt)
+      const formattedDate = result.toLocaleDateString('en-US', { 
+          timeZone: "Asia/Singapore",
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true // Set to false for 24-hour format
+      });
+      setDateRequested(formattedDate)
+    }
+
     if(dataQuery.data?.priority) {
       const obj = priorities.find(p => p.value === dataQuery.data?.priority)
       if(obj) {
@@ -264,14 +278,7 @@ export default function ITServiceTicketView() {
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Date Requested:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ dataQuery.data ? String(dataQuery.data.date) : ''}</span>
-                  </div>
-                </div>
-                <hr/>
-                <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Time Requested:</div>
-                  <div className="font-bold flex justify-between gap-2">
-                    <span className="text-sm">{ dataQuery.data ? dataQuery.data.time : '' }</span>
+                    <span className="text-sm">{dateRequested}</span>
                   </div>
                 </div>
                 <hr/>

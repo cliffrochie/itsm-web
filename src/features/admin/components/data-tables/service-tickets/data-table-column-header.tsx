@@ -81,7 +81,7 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        { accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && (
+        { accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && accessorKey !== 'createdAt' && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }
             className="h-6 text-nowrap p-1"

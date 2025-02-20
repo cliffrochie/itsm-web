@@ -27,7 +27,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { capitalizeFirstLetter } from "@/utils"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import api from "@/services/use-api"
 import { Slide, toast } from "react-toastify"
 import { AxiosResponse } from "axios"
 import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'

@@ -175,7 +175,16 @@ const router = createBrowserRouter([
         loader: staffPrivilegeLoader,
       },
       {
-        path: '/service-engineer/records',
+        path: '/service-engineer/occupied',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <ServiceEngineerRecords />
+          </Suspense>
+        ),
+        loader: staffPrivilegeLoader,
+      },
+      {
+        path: '/service-engineer/history',
         element: (
           <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
             <ServiceEngineerRecords />

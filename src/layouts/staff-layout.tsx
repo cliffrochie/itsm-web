@@ -3,7 +3,7 @@ import SidebarLayout from "@/layouts/sidebar-layout"
 import { ToastContainer, Slide } from 'react-toastify';
 import { useState } from 'react';
 import { INavLink } from '@/@types/nav-link';
-import { Home, ListOrdered, UserRound, SquareUserRound, Settings, BriefcaseBusiness, Database } from "lucide-react"
+import { Home, ListOrdered, UserRound, SquareUserRound, Settings, BriefcaseBusiness, Database, BicepsFlexed } from "lucide-react"
 
 
 export default function StaffLayout() {
@@ -15,8 +15,14 @@ export default function StaffLayout() {
       isActive: true
     },
     {
-      title: 'Records',
-      url: '/service-engineer/records',
+      title: 'Occupied Tickets',
+      url: '/service-engineer/occupied',
+      icon: BicepsFlexed,
+      isActive: false
+    },
+    {
+      title: 'History',
+      url: '/service-engineer/history',
       icon: Database,
       isActive: false
     },

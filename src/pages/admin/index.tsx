@@ -63,6 +63,7 @@ export default function AdminPage() {
   const { totalServiceStatuses } = useGetTotalServiceStatus()
   let serviceStatusesData = [
     { keyName: 'totalOpenedTickets', name: "Opened", total: 0 },
+    { keyName: 'totalAssignedTickets', name: "Assigned", total: 0 },
     { keyName: 'totalInProgressTickets', name: "In-Progress", total: 0 },
     { keyName: 'totalOnHoldTickets', name: "On-Hold", total: 0 },
     { keyName: 'totalEscalatedTickets', name: "Escalated", total: 0 },

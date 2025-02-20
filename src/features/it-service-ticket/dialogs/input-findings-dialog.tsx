@@ -31,32 +31,32 @@ import { Slide, toast } from "react-toastify"
 import { AxiosResponse } from "axios"
 
 
-
-
-interface IUpdateStatusDialogProps {
+interface IInputFindings {
   dialogOpen: boolean
   setDialogOpen: Dispatch<SetStateAction<boolean>>
   id?: string
+  currentValue?: string
   name?: string
-  selectedServiceStatus?: string
   updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
 
-export default function UpdateStatusDialog({
+
+export default function InputFindingsDialog({
   dialogOpen, 
   setDialogOpen,
   id,
+  currentValue,
   name,
-  selectedServiceStatus,
   updateMutation
-}: IUpdateStatusDialogProps) {
-  const [selectedOption, setSelectedOption] = useState('')
+}: IInputFindings) {
+  const [findings, setFindings] = useState<string | undefined>('')
+
 
   useEffect(() => {
-    if(selectedServiceStatus) {
-      setSelectedOption(selectedServiceStatus)
+    if(currentValue) {
+      setFindings(currentValue)
     }
-  }, [selectedServiceStatus])
+  }, [currentValue])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -66,43 +66,21 @@ export default function UpdateStatusDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Update Service Status</DialogTitle>
+          <DialogTitle>Findings</DialogTitle>
           <DialogDescription>
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
           <div className="grid gap-4 py-3">
-            <Select 
-              value={selectedOption}
-              onValueChange={(value) => {
-                setSelectedOption(value)
-              }}
-            >
-              <SelectTrigger className="w-full text-foreground h-7">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Service Status</SelectLabel>
-                  <SelectItem value="open">Open</SelectItem>
-                  {/* <SelectItem value="assigned">Assigned</SelectItem> */}
-                  {/* <SelectItem value="in progress">In Progress</SelectItem> */}
-                  <SelectItem value="on hold">On Hold</SelectItem>
-                  {/* <SelectItem value="escalated">Escalated</SelectItem> */}
-                  <SelectItem value="canceled">Canceled</SelectItem>
-                  <SelectItem value="reopened">Reopened</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="closed">Closed</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Label>Defects found</Label>
+            <Input onChange={ (e) => setFindings(e.target.value) } />
           </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({
               id: String(id), 
               name: name, 
-              serviceStatus: selectedOption
+              findings: findings
             }))
             setDialogOpen(false)
           }}>Submit</Button>

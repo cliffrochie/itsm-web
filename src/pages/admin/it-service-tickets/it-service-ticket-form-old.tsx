@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useParams } from "react-router"
 
@@ -52,8 +52,9 @@ import { IUser } from '@/@types/user'
 
 const formSchema = z.object({
   ticketNo: z.string(),
+  date: z.date({ required_error: 'Date is required' }),
+  time: z.string(),
   taskType: z.string({ required_error: 'Task type is required' }).min(1, {message: 'This field is required'}),
-  title: z.string({ required_error: 'Title is required' }).min(1, {message: 'This field is required'}),
   natureOfWork: z.string({ required_error: 'Nature of work / problem is required' }).min(1, {message: 'This field is required'}),
   serialNo: z.string(),
   equipmentType: z.string({ required_error: 'Equipment type is required' }).min(1, {message: 'This field is required'}),
@@ -99,8 +100,9 @@ export default function AdminITServiceTicketForm() {
       let data: IServiceTicket = {
         _id: '',
         ticketNo: '',
+        date: undefined,
+        time: '',
         taskType: '',
-        title: '',
         natureOfWork: '',
         serialNo: '',
         equipmentType: '',
@@ -131,13 +133,25 @@ export default function AdminITServiceTicketForm() {
     })
   }
 
+
+  function handleTimeValidation() {
+    if(timeRegex.test(form.getValues('time'))) {
+      removeError('time')
+    }
+    else {
+      form.setValue('time', '')
+      setErrors({ time: 'Invalid time format.' })
+    }
+  }
+
  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ticketNo: '',
+      date: !isUpdate ? new Date(): undefined,
+      time: '',
       taskType: '',
-      title: '', 
       natureOfWork: '',
       serialNo: '',
       equipmentType: '',
@@ -155,6 +169,8 @@ export default function AdminITServiceTicketForm() {
 
   useEffect(() => {
     if(isUpdate) {
+
+      console.log(data?.time?.split(' ')[0])
 
       let client = null
       if(data && data.client) {
@@ -188,14 +204,17 @@ export default function AdminITServiceTicketForm() {
         serviceEngineerFullName += serviceEngineer.lastName
       }
 
+      const retrievedTime = data ? data.time !== undefined ? data.time.split(' ') : '' : '' 
 
       setPreviousClient(clientFullName)
       setPreviousUser(serviceEngineerFullName)
+      setPeriod(retrievedTime[retrievedTime.length-1])
 
       form.setValue('ticketNo', data ? data.ticketNo : '')
       form.setValue('taskType', data ? data.taskType : '')
       form.setValue('equipmentType', data ? data.equipmentType : '')
-      form.setValue('title', data ? data.title !== undefined ? data.title : '' : '')
+      form.setValue('time', data ? data.time !== undefined ? data.time.split(' ')[0] : '' : '')
+      form.setValue('date', data ? data.date !== undefined ? new Date(data.date) : new Date() : new Date())
       form.setValue('natureOfWork', data ? data.natureOfWork !== undefined ? data.natureOfWork : '' : '')
       form.setValue('serviceStatus', data ? data.serviceStatus !== undefined ? data.serviceStatus : '' : '')
       form.setValue('priority', data ? data.priority : '')
@@ -220,6 +239,9 @@ export default function AdminITServiceTicketForm() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const newData = {
       ...data,
+      time: data.time ? data.time +' '+ period : '',
+      date: changeDateFormatMMDDYYYY(data.date),
+
     }
 
     console.log(newData)
@@ -276,9 +298,6 @@ export default function AdminITServiceTicketForm() {
   }
 
 
-  function upperCaseText(e: React.ChangeEvent<HTMLInputElement>) {
-    form.setValue('title', e.target.value.toLocaleUpperCase())
-  }
 
   return (
     <section>
@@ -287,22 +306,7 @@ export default function AdminITServiceTicketForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 custom-lg:w-6/12 custom-md:w-7/12 sm:w-full">
             <Label className="text-gray-500">Service Ticket Information</Label>
-            <div className="grid">
-              <FormField  
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={ errors?.title ? 'text-red-500' : ''}>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="h-7" placeholder="Title here.." onChange={upperCaseText} />
-                    </FormControl>
-                    <FormMessage>{ errors?.title }</FormMessage>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid gap-4 md:grid-cols-4 sm:grid-cols-1">
+            <div className="grid gap-4 md:grid-cols-2 sm:grid-cols-1">
               <FormField 
                 control={form.control}
                 name="taskType"
@@ -353,6 +357,99 @@ export default function AdminITServiceTicketForm() {
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 sm:grid-cols-1">
+              <div className="grid gap-1 lg:grid-cols-[auto,100px] md:grid-cols-2">
+                <FormField  
+                  control={form.control}
+                  name="time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={ errors?.time ? 'text-red-500' : ''}>Time</FormLabel>
+                      <FormControl>
+                        <Input {...field}  ref={withMask('99:99')} className="h-7" onBlur={handleTimeValidation} />
+                      </FormControl>
+                      <FormMessage>{ errors?.time }</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <Select onValueChange={(value) => setPeriod(value) }>
+                  <SelectTrigger className="mt-8 h-7">
+                  { isUpdate ? (<SelectValue placeholder={period} />) : (<SelectValue placeholder="Period" />)}
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Period</SelectLabel>
+                      <SelectItem value="AM">AM</SelectItem>
+                      <SelectItem value="PM">PM</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <FormField  
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={ errors?.date ? 'text-red-500' : ''}>Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal h-7",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'MM/dd/yyyy')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage>{ errors?.date }</FormMessage>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid">
+              <FormField
+                control={form.control}
+                name="natureOfWork"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nature of Work / Problem</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Write your query here.."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Provide a comprehensive information but concise.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 sm:grid-cols-1">
               <FormField 
                 control={form.control}
                 name="serviceStatus"
@@ -399,27 +496,6 @@ export default function AdminITServiceTicketForm() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid">
-              <FormField
-                control={form.control}
-                name="natureOfWork"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nature of Work / Problem</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Write your query here.."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Provide a comprehensive information but concise.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -491,6 +567,21 @@ export default function AdminITServiceTicketForm() {
                 )}
               />
             </div>
+            
+            {/* <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-2">
+                <span className="text-sm font-medium">Client</span>
+                <ClientComboBox defaultValue={searchClient} previousValue={previousClient} onValueChange={(value: string) => {
+                  setSearchClient(value)
+                }} />
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                <span className="text-sm font-medium">Service Engineer</span>
+                <UserComboBox defaultValue={searchUser} previousValue={previousUser} onValueChange={(value: string) => {
+                  setSearchUser(value)
+                }} />
+              </div>
+            </div> */}
             <div className="grid">
               <FormField  
                 control={form.control}
