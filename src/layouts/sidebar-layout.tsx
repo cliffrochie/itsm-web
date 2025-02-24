@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Outlet } from 'react-router-dom';
 import { ToastContainer, Slide } from 'react-toastify';
 import { AppSidebar } from "@/components/app-sidebar";
@@ -7,7 +7,6 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator"
 import DropdownUser  from "@/components/app-dropdown-user";
 import { INavLink } from "@/@types/nav-link";
-
 
 export default function SidebarLayout({
   links,
@@ -24,11 +23,9 @@ export default function SidebarLayout({
         <header className="flex z-50 h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 p-4 space-y-4 bg-white">
           <SidebarTrigger className="pt-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="flex justify-between w-full items-center pb-2">
+          <div className="flex justify-between w-full items-center">
             <AppBreadcrumb />
-            <div className="flex mr-5 gap-4">
-              <DropdownUser />
-            </div>
+            <DropdownUser />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">

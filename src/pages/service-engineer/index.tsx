@@ -76,7 +76,7 @@ export default function ServiceEngineerPage() {
               <TableBody>
                 { assignedTickets ? assignedTickets.map((data) => (
                   <TableRow key={data._id} onClick={() => { navigate(`/service-engineer/${data.ticketNo}`) }} className="cursor-pointer">
-                    <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-1/5">{data.ticketNo} <span className="text-xs font-normal text-gray-500">({capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')})</span></TableCell>
+                    <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-1/2 custom-xl:w-1/4">{data.ticketNo} <span className="text-xs font-normal text-gray-500">({capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')})</span></TableCell>
                     {/* <TableCell className="font-medium p-5">{capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')}</TableCell> */}
                     <TableCell className="font-medium p-5">{capitalizeFirstLetter(data.priority ? data.priority : 'No')} Priority</TableCell>
                   </TableRow>

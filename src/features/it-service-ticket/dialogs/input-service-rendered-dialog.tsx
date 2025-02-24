@@ -31,31 +31,31 @@ import { Slide, toast } from "react-toastify"
 import { AxiosResponse } from "axios"
 
 
-
-interface IUpdateStatusDialogProps {
+interface IInputServiceRendered {
   dialogOpen: boolean
   setDialogOpen: Dispatch<SetStateAction<boolean>>
   id?: string
+  currentValue?: string
   name?: string
-  selectedServiceStatus?: string
   updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
 
-export default function UpdateStatusDialog({
+
+export default function InputServiceRenderDialog({
   dialogOpen, 
   setDialogOpen,
   id,
+  currentValue,
   name,
-  selectedServiceStatus,
   updateMutation
-}: IUpdateStatusDialogProps) {
-  const [selectedOption, setSelectedOption] = useState('')
+}: IInputServiceRendered) {
+  const [serviceRendered, setServiceRendered] = useState<string | undefined>('')
 
   useEffect(() => {
-    if(selectedServiceStatus) {
-      setSelectedOption(selectedServiceStatus)
+    if(currentValue) {
+      setServiceRendered(currentValue)
     }
-  }, [selectedServiceStatus])
+  }, [dialogOpen])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -65,37 +65,21 @@ export default function UpdateStatusDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Update Service Status</DialogTitle>
+          <DialogTitle>Service Rendered / Action Taken</DialogTitle>
           <DialogDescription>
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
           <div className="grid gap-4 py-3">
-            <Select 
-              value={selectedOption}
-              onValueChange={(value) => {
-                setSelectedOption(value)
-              }}
-            >
-              <SelectTrigger className="w-full text-foreground h-7">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Service Status</SelectLabel>
-                  {serviceStatuses.map((serviceStatus) => (
-                    <SelectItem key={serviceStatus.value} value={serviceStatus.value}>{serviceStatus.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Label>Service Rendered</Label>
+            <Input value={serviceRendered} onChange={ (e) => setServiceRendered(e.target.value) } />
           </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({
               id: String(id), 
               name: name, 
-              serviceStatus: selectedOption
+              serviceRendered: serviceRendered
             }))
             setDialogOpen(false)
           }}>Submit</Button>

@@ -15,12 +15,6 @@ export default function StaffLayout() {
       isActive: true
     },
     {
-      title: 'Occupied Tickets',
-      url: '/service-engineer/occupied',
-      icon: BicepsFlexed,
-      isActive: false
-    },
-    {
       title: 'History',
       url: '/service-engineer/history',
       icon: Database,

@@ -38,6 +38,7 @@ interface IUpdateStatusDialogProps {
   setDialogOpen: Dispatch<SetStateAction<boolean>>
   id?: string
   name?: string
+  adminRemarks?: string
   currentServiceEngineer: string
   currentPriorityLevel: string
   excludeUser: string
@@ -49,6 +50,7 @@ export default function EscalateServiceDialog({
   setDialogOpen,
   id,
   name,
+  adminRemarks,
   currentServiceEngineer,
   currentPriorityLevel,
   excludeUser,
@@ -57,7 +59,14 @@ export default function EscalateServiceDialog({
   const [selectedPriority, setSelectedPriority] = useState('')
   const [searchUser, setSearchUser] = useState('')
   const [previousUser, setPreviousUser] = useState('')
-  const [adminRemarks, setAdminRemarks] = useState('')
+  const [newAdminRemarks, setNewAdminRemarks] = useState('')
+
+  useEffect(() => {
+    if(adminRemarks) {
+      setNewAdminRemarks(adminRemarks)
+      console.log(adminRemarks)
+    }
+  }, [adminRemarks])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -116,8 +125,9 @@ export default function EscalateServiceDialog({
             <Textarea
               placeholder="Remarks"
               className="h-24"
+              value={newAdminRemarks}
               onChange={(event) => {
-                setAdminRemarks(event.target.value)
+                setNewAdminRemarks(event.target.value)
               }}
             />
           </div>

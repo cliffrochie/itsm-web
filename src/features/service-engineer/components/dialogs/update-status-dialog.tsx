@@ -37,25 +37,22 @@ interface IUpdateStatusDialogProps {
   setDialogOpen: Dispatch<SetStateAction<boolean>>
   id?: string
   name?: string
+  newValue?: string
+  currentValue?: string
   selectedServiceStatus?: string
   updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
 }
 
-export default function UpdateStatusDialog({
+export default function UpdateStatusAssignedTicketDialog({
   dialogOpen, 
   setDialogOpen,
   id,
   name,
-  selectedServiceStatus,
+  newValue,
+  currentValue,
   updateMutation
 }: IUpdateStatusDialogProps) {
-  const [selectedOption, setSelectedOption] = useState('')
-
-  useEffect(() => {
-    if(selectedServiceStatus) {
-      setSelectedOption(selectedServiceStatus)
-    }
-  }, [selectedServiceStatus])
+ 
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -71,34 +68,20 @@ export default function UpdateStatusDialog({
           </DialogDescription>
         </DialogHeader>
           <div className="grid gap-4 py-3">
-            <Select 
-              value={selectedOption}
-              onValueChange={(value) => {
-                setSelectedOption(value)
-              }}
-            >
-              <SelectTrigger className="w-full text-foreground h-7">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Service Status</SelectLabel>
-                  {serviceStatuses.map((serviceStatus) => (
-                    <SelectItem key={serviceStatus.value} value={serviceStatus.value}>{serviceStatus.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <p>Update service status from <span className="font-bold text-red-500">{currentValue}</span> to <span className="font-bold text-green-500">{newValue}</span>?</p>
           </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({
               id: String(id), 
               name: name, 
-              serviceStatus: selectedOption
+              serviceStatus: newValue
             }))
             setDialogOpen(false)
-          }}>Submit</Button>
+          }}>Yes</Button>
+          <Button type="submit" variant="outline" onClick={() => setDialogOpen(false)}>
+            No
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

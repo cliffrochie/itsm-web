@@ -416,6 +416,7 @@ export default function ITServiceTicketView() {
           setDialogOpen={setEscalateServiceDialogOpen}
           id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
           name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks : ''}
           currentServiceEngineer={userFullName}
           currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ''}
           excludeUser={serviceEngineerId}

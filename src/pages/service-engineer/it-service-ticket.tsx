@@ -20,7 +20,7 @@ import {
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { IServiceTicket } from "@/@types/service-ticket"
 import { IClient, isClientInterface } from "@/@types/client"
-import { isUserInterface } from '@/@types/user'
+import { isUserInterface, IUser } from '@/@types/user'
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
@@ -32,12 +32,21 @@ import { useNavigate, useParams } from "react-router-dom"
 import { Suspense, useEffect, useMemo, useState } from "react"
 import { Circle, LucideIcon } from "lucide-react"
 import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
+import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input-service-rendered-dialog"
 import { Slide, toast } from "react-toastify"
+import { IServiceTicketHistory } from "@/@types/service-ticket-history"
+import { Button } from "@/components/ui/button"
+import UpdateStatusAssignedTicketDialog from "@/features/service-engineer/components/dialogs/update-status-dialog"
+
+
 
 
 export default function ServiceEngineerITServiceTicket() {
   const [dateRequested, setDateRequested] = useState('')
   const [inputFindingsDialogOpen, setInputFindingsDialogOpen] = useState(false)
+  const [inputServiceRenderedDialogOpen, setInputServiceRenderedDialogOpen] = useState(false)
+  const [updateStatusAssignedTicketDialogOpen, setUpdateStatusAssignedTicketDialogOpen] = useState(false)
+  const [serviceStatusValue, setServiceStatusValue] = useState('')
   const [serviceTicket, setServiceTicket] = useState<IServiceTicket | undefined>(undefined)
   const [userFullName, setUserFullName] = useState('')
   const [clientFullName, setClientFullName] = useState('')
@@ -53,7 +62,7 @@ export default function ServiceEngineerITServiceTicket() {
   const defaultData = useMemo(() => [], [])
   const queryKey = ['assignedTicket']
 
-  const { data } = useQuery({
+  const dataQuery = useQuery({
     queryKey: queryKey,
     queryFn: async () => {
       let url = `/api/service-tickets/?ticketNo=${params.ticketNo}&includes=all`
@@ -66,6 +75,20 @@ export default function ServiceEngineerITServiceTicket() {
       return 0
     },
     placeholderData: keepPreviousData
+  })
+
+  const serviceTicketHistoryQuery = useQuery({
+    queryKey: ['serviceTicketHistory', serviceTicket],
+    queryFn: async () => {
+      let result: IServiceTicketHistory[] = []
+      if(serviceTicket) {
+        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${serviceTicket._id ? serviceTicket._id : undefined}`
+        await api.get(url).then(response => {
+          result = response.data
+        })
+      }
+      return result
+    }
   })
 
   useEffect(() => {
@@ -126,6 +149,13 @@ export default function ServiceEngineerITServiceTicket() {
         })
     }
 
+     if(serviceTicket?.serviceEngineer) {
+      const obj = serviceTicket.serviceEngineer as IUser
+      setUserFullName(`${capitalizeFirstLetter(obj.firstName)} 
+        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
+        ${capitalizeFirstLetter(obj.lastName)}`)
+    }
+
   }, [serviceTicket])
 
 
@@ -155,14 +185,98 @@ export default function ServiceEngineerITServiceTicket() {
       });
     }
   })
+
+  const inputServiceRenderedDialogMutation = useMutation({
+    mutationKey: ['inputServiceRenderedDialogMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        serviceRendered: parsedData.serviceRendered
+      } 
+      return await api.patch(`/api/service-tickets/${parsedData.id}/service-rendered`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['assignedTicket'] })
+      toast.success(`Service rendered inputted successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
+  const updateStatusAssignedTicketDialogMutation = useMutation({
+    mutationKey: ['updateServiceStatusDialogMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        serviceRendered: parsedData.serviceRendered
+      } 
+      return await api.patch(`/api/service-tickets/${parsedData.id}/update-service-status`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['assignedTicket'] })
+      toast.success(`Service status updated successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
   
   return (
     <section className="grid custom-md:grid-cols-1 gap-4">
-      <div className="">
-        <h3 className="text-xl font-semibold">Ticket No: &nbsp;&nbsp;<span className="font-mono font-normal">{params.ticketNo}</span></h3>
+      <div className="text-xl font-semibold m-0 mb-2">
+        <table>
+          <tr>
+            <td className="font-bold text-xl" width="120">Ticket no:</td>
+            <td className="font-mono font-normal text-2xl ml-4">{params.ticketNo}</td>
+          </tr>
+          <tr>
+            <td className="text-sm text-gray-600">Status:</td>
+            <td className="text-sm text-gray-600">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</td>
+          </tr>
+        </table>
+        {/* <p className="font-bold text-xl">Ticket No:<span className="font-mono font-normal text-2xl ml-4">{params.ticketNo}</span></p>
+        <p className="m-0 text-sm text-gray-600">Status: <span className="ml-2">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</span></p> */}
       </div>
-      <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
-      <Card className="w-full h-[480px]">
+      <div className="mt-1 mb-1 flex justify-start items-center gap-2">
+        <div className="mr-2">Actions:</div>
+        <Button variant="outline" type="submit" onClick={() => { 
+          setUpdateStatusAssignedTicketDialogOpen(true) 
+          setServiceStatusValue('in progress')
+        }}>In-progress</Button>
+        <Button variant="outline" type="submit" onClick={() => { 
+          setUpdateStatusAssignedTicketDialogOpen(true) 
+          setServiceStatusValue('on hold')
+        }}>On-hold</Button>
+        <Button variant="outline" type="submit" onClick={() => { 
+          setUpdateStatusAssignedTicketDialogOpen(true) 
+          setServiceStatusValue('resolved')
+        }}>Resolved</Button>
+        <Button variant="outline" type="submit" onClick={() => { 
+          setUpdateStatusAssignedTicketDialogOpen(true) 
+          setServiceStatusValue('closed')
+        }}>Closed</Button>
+      </div>   
+      <div className="grid gap-4 custom-xl:grid-cols-[450px,450px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
+      <Card className="w-full h-[500px]">
           <CardHeader>
             <CardTitle>IT Service Details</CardTitle>
           </CardHeader>
@@ -176,7 +290,6 @@ export default function ServiceEngineerITServiceTicket() {
                   </div>
                 </div>
                 <hr/>
-                <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Priority Level:</div>
                   <div className="font-bold flex justify-between gap-2">
@@ -184,15 +297,13 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className="text-sm">{serviceTicket && serviceTicket.priority ? capitalizeFirstLetter(serviceTicket.priority) : 'None'}</span>
                   </div>
                 </div>
-                <hr/>
-                <div className="flex gap-4 justify-between">
+                {/* <div className="flex gap-4 justify-between">
                   <div className="text-sm">Current Service Status:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <ServiceStatusIcon size={16} /> 
                     <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</span>
                   </div>
-                </div>
-                <hr/>
+                </div> */}
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Type:</div>
                   <div className="font-bold flex justify-between gap-2">
@@ -200,7 +311,6 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(serviceTicket.taskType) : ''}</span>
                   </div>
                 </div>
-                <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Equipment:</div>
                   <div className="font-bold flex justify-between gap-2">
@@ -218,7 +328,6 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
                   </div> */}
                 </div>
-                <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Office:</div>
                   <div className="font-bold flex justify-between gap-2">
@@ -228,12 +337,20 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
                   </div> */}
                 </div>
+                <hr/>
+                <div className="flex gap-4 justify-between">
+                  <div className="text-sm">Service Engineer:</div>
+                  <div className="font-bold flex justify-between gap-2">
+                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
+                  </div>
+                </div>
+
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="custom-lg:w-full w-auto h-[480px]">
+        <Card className="custom-lg:w-full w-auto h-[500px]">
           <CardHeader>
             <CardTitle>Description</CardTitle>
           </CardHeader>
@@ -241,26 +358,59 @@ export default function ServiceEngineerITServiceTicket() {
             <div className="grid gap-3 items-stretch h-full ">
               <div className="grid gap-2">
                 <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
-                <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
+                <div className="border p-3 min-h-16 h-auto rounded-md text-sm bg-gray-100">
                   {serviceTicket ? serviceTicket.natureOfWork : ''}
                 </div>
               </div>
+              <div className="flex justify-between">
+                <div className="grid gap-2 w-full">
+                  <span className="text-sm text-gray-500 font-semibold">Remarks by the Admin</span>
+                  <div className="border p-3 min-h-16 h-auto rounded-md text-sm bg-gray-100">
+                    {serviceTicket ? serviceTicket.adminRemarks : ''}
+                  </div>
+                </div>
+              </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Finding <span className="text-xs">(click the box below)</span></span> 
-                <div className="border p-3 min-h-20 h-auto rounded-md text-sm cursor-pointer" onClick={() => setInputFindingsDialogOpen(true) }>
+                <span className="text-sm text-gray-500 font-semibold">Findings <span className="text-xs">(click the box below)</span></span> 
+                <div className="border border-gray-500 p-3 h-16 rounded-md text-sm cursor-pointer" onClick={() => setInputFindingsDialogOpen(true) }>
                   {serviceTicket ? serviceTicket.defectsFound : ''}
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Service Rendered</span>
-                <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
+                <span className="text-sm text-gray-500 font-semibold">Action Taken <span className="text-xs">(click the box below)</span></span>
+                <div className="border border-gray-500 p-3 min-h-16 h-auto rounded-md text-sm cursor-pointer" onClick={() => setInputServiceRenderedDialogOpen(true) }>
                   {serviceTicket ? serviceTicket.serviceRendered : ''}
                 </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500 font-semibold">Service Engineer:</span>
-                <span  className={ officeName ? "text-sm" : "text-sm text-red-500 font-bold" }>{userFullName ? userFullName : 'Unassigned'}</span>
-              </div>
+              
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="custom-xl:col-span-1 custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
+          <CardHeader>
+            <CardTitle>History</CardTitle>
+          </CardHeader>
+          <CardContent className="h-full overflow-y-auto overflow-x-auto">
+            <div className="grid grid-cols-1">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Details</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {serviceTicketHistoryQuery.data && serviceTicketHistoryQuery.data.map((history) => (
+                    <TableRow key={history._id}>
+                      <TableCell>{history.date}</TableCell>
+                      <TableCell>{history.time}</TableCell>
+                      <TableCell>{history.details}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </CardContent>
         </Card>
@@ -274,6 +424,23 @@ export default function ServiceEngineerITServiceTicket() {
         currentValue={serviceTicket ? serviceTicket.defectsFound : ''}
         name={serviceTicket ? serviceTicket.ticketNo : ''}
         updateMutation={inputFindingsDialogMutation}
+      />
+      <InputServiceRenderDialog 
+        dialogOpen={inputServiceRenderedDialogOpen}
+        setDialogOpen={setInputServiceRenderedDialogOpen}
+        id={serviceTicket ? serviceTicket._id : ''} 
+        currentValue={serviceTicket ? serviceTicket.serviceRendered : ''}
+        name={serviceTicket ? serviceTicket.ticketNo : ''}
+        updateMutation={inputServiceRenderedDialogMutation}
+      />
+      <UpdateStatusAssignedTicketDialog 
+        dialogOpen={updateStatusAssignedTicketDialogOpen}
+        setDialogOpen={setUpdateStatusAssignedTicketDialogOpen}
+        id={serviceTicket? serviceTicket._id : ''}
+        newValue={serviceStatusValue}
+        currentValue={serviceTicket? serviceTicket.serviceStatus : ''}
+        name={serviceTicket ? serviceTicket.ticketNo : ''}
+        updateMutation={updateStatusAssignedTicketDialogMutation}
       />
     </section>
   )

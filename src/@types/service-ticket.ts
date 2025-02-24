@@ -15,6 +15,7 @@ export interface IServiceTicket {
   serviceStatus?: "" | "open" | "assigned" | "in progress" | "on hold" | "escalated" | "canceled" | "reopened" | "resolved" | "closed"
   priority: "" | "low" | "medium" | "high"
   remarks?: string
+  adminRemarks?: string
   serviceEngineer: IUser | string | null
   client: IClient | string | null
   createdBy?: IUser | string | null

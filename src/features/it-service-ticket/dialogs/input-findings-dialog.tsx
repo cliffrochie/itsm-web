@@ -51,12 +51,11 @@ export default function InputFindingsDialog({
 }: IInputFindings) {
   const [findings, setFindings] = useState<string | undefined>('')
 
-
   useEffect(() => {
     if(currentValue) {
       setFindings(currentValue)
     }
-  }, [currentValue])
+  }, [dialogOpen])
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -73,7 +72,7 @@ export default function InputFindingsDialog({
         </DialogHeader>
           <div className="grid gap-4 py-3">
             <Label>Defects found</Label>
-            <Input onChange={ (e) => setFindings(e.target.value) } />
+            <Input value={findings} onChange={ (e) => setFindings(e.target.value) } />
           </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
