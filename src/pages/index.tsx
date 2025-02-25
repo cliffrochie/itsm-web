@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LogIn } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
-
+import Logo from '@/assets/logo.svg'
 
 
 export default function HomePage() {
@@ -24,8 +24,9 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col items-center justify-between bg-gray-100">
       {/* Hero Section */}
       <main className="flex-1 flex items-center justify-center">
-        <div className="text-center max-w-2xl">
-          <h2 className="text-4xl font-extrabold text-gray-800 mb-4">
+        <div className="flex flex-col items-center text-center max-w-2xl">
+          <img src={Logo} width="250" alt="logo" className="" />
+          <h2 className="text-6xl font-semibold font-mono text-gray-700 mb-4">
             NIA ITSM
           </h2>
           <p className="text-lg text-gray-600">

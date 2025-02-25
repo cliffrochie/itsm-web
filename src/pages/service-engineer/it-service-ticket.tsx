@@ -36,7 +36,7 @@ import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input
 import { Slide, toast } from "react-toastify"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
-import UpdateStatusAssignedTicketDialog from "@/features/service-engineer/components/dialogs/update-status-dialog"
+import UpdateStatusAssignedTicketDialog from "@/features/service-engineer/components/dialogs/confirm-update-status-dialog"
 
 
 
@@ -219,7 +219,7 @@ export default function ServiceEngineerITServiceTicket() {
       console.log(data)
       const parsedData = JSON.parse(data)
       const body = {
-        serviceRendered: parsedData.serviceRendered
+        serviceStatus: parsedData.serviceStatus
       } 
       return await api.patch(`/api/service-tickets/${parsedData.id}/update-service-status`, body)
     },
@@ -243,34 +243,34 @@ export default function ServiceEngineerITServiceTicket() {
   return (
     <section className="grid custom-md:grid-cols-1 gap-4">
       <div className="text-xl font-semibold m-0 mb-2">
-        <table>
-          <tr>
-            <td className="font-bold text-xl" width="120">Ticket no:</td>
-            <td className="font-mono font-normal text-2xl ml-4">{params.ticketNo}</td>
-          </tr>
-          <tr>
-            <td className="text-sm text-gray-600">Status:</td>
-            <td className="text-sm text-gray-600">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</td>
-          </tr>
+        <table className="">
+          <tbody>
+            <tr>
+              <td className="font-bold text-2xl" width="150">Ticket no:</td>
+              <td className="font-bold text-2xl ml-4">{params.ticketNo}</td>
+            </tr>
+            <tr>
+              <td className="text-sm text-gray-600">Service Status:</td>
+              <td className="text-sm text-gray-600">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</td>
+            </tr>
+          </tbody>
         </table>
-        {/* <p className="font-bold text-xl">Ticket No:<span className="font-mono font-normal text-2xl ml-4">{params.ticketNo}</span></p>
-        <p className="m-0 text-sm text-gray-600">Status: <span className="ml-2">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</span></p> */}
       </div>
       <div className="mt-1 mb-1 flex justify-start items-center gap-2">
-        <div className="mr-2">Actions:</div>
-        <Button variant="outline" type="submit" onClick={() => { 
+        <div className="mr-4">Status:</div>
+        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'in progress' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('in progress')
         }}>In-progress</Button>
-        <Button variant="outline" type="submit" onClick={() => { 
+        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'on hold' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('on hold')
         }}>On-hold</Button>
-        <Button variant="outline" type="submit" onClick={() => { 
+        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('resolved')
         }}>Resolved</Button>
-        <Button variant="outline" type="submit" onClick={() => { 
+        <Button variant="outline" type="submit" {...(serviceTicket?.serviceStatus === 'closed' && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('closed')
         }}>Closed</Button>
@@ -297,13 +297,6 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className="text-sm">{serviceTicket && serviceTicket.priority ? capitalizeFirstLetter(serviceTicket.priority) : 'None'}</span>
                   </div>
                 </div>
-                {/* <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Current Service Status:</div>
-                  <div className="font-bold flex justify-between gap-2">
-                    <ServiceStatusIcon size={16} /> 
-                    <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</span>
-                  </div>
-                </div> */}
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Type:</div>
                   <div className="font-bold flex justify-between gap-2">
@@ -333,9 +326,12 @@ export default function ServiceEngineerITServiceTicket() {
                   <div className="font-bold flex justify-between gap-2">
                     <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
                   </div>
-                  {/* <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
-                  </div> */}
+                </div>
+                <div className="grid gap-2">
+                  <span className="text-sm">Requestor Remarks:</span>
+                  <div className="border p-3 min-h-20 h-auto rounded-md text-sm bg-gray-100">
+                    {serviceTicket ? serviceTicket.remarks : ''}
+                  </div>
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
@@ -344,7 +340,7 @@ export default function ServiceEngineerITServiceTicket() {
                     <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
                   </div>
                 </div>
-
+                
               </div>
             </div>
           </CardContent>
@@ -371,14 +367,26 @@ export default function ServiceEngineerITServiceTicket() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Findings <span className="text-xs">(click the box below)</span></span> 
-                <div className="border border-gray-500 p-3 h-16 rounded-md text-sm cursor-pointer" onClick={() => setInputFindingsDialogOpen(true) }>
+                <span className="text-sm text-gray-500 font-semibold">Findings&nbsp;
+                  {serviceTicket?.serviceStatus !== 'closed' && (<span className="text-xs">
+                    (click the box below)
+                  </span>)}
+                </span> 
+                <div className={`border p-3 h-16 rounded-md text-sm ${serviceTicket?.serviceStatus !== 'closed' ? 'cursor-pointer border-gray-500' : 'bg-gray-100' }`} onClick={
+                  serviceTicket?.serviceStatus !== 'closed' ? () => setInputFindingsDialogOpen(true) : undefined 
+                }>
                   {serviceTicket ? serviceTicket.defectsFound : ''}
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Action Taken <span className="text-xs">(click the box below)</span></span>
-                <div className="border border-gray-500 p-3 min-h-16 h-auto rounded-md text-sm cursor-pointer" onClick={() => setInputServiceRenderedDialogOpen(true) }>
+                <span className="text-sm text-gray-500 font-semibold">Service Rendered / Action Taken&nbsp;
+                  {serviceTicket?.serviceStatus !== 'closed' && (<span className="text-xs">
+                    (click the box below)
+                  </span>)}
+                </span>
+                <div className={`border p-3 h-16 rounded-md text-sm ${serviceTicket?.serviceStatus !== 'closed' ? 'cursor-pointer border-gray-500' : 'bg-gray-100' }`} onClick={ 
+                  serviceTicket?.serviceStatus !== 'closed' ? () => setInputServiceRenderedDialogOpen(true) : undefined 
+                }>
                   {serviceTicket ? serviceTicket.serviceRendered : ''}
                 </div>
               </div>
@@ -396,8 +404,8 @@ export default function ServiceEngineerITServiceTicket() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Time</TableHead>
+                    <TableHead className="w-5">Date</TableHead>
+                    <TableHead className="w-20">Time</TableHead>
                     <TableHead>Details</TableHead>
                   </TableRow>
                 </TableHeader>

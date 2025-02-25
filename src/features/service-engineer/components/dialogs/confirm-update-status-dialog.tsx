@@ -60,18 +60,21 @@ export default function UpdateStatusAssignedTicketDialog({
         {/* Optional inline button to trigger the dialog */}
         <button className="hidden">Hidden Trigger</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="custom-sm:w-[420px]">
         <DialogHeader>
           <DialogTitle>Update Service Status</DialogTitle>
           <DialogDescription>
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
-            <p>Update service status from <span className="font-bold text-red-500">{currentValue}</span> to <span className="font-bold text-green-500">{newValue}</span>?</p>
+          <div className="grid gap-4 py-3 px-4 border rounded-md">
+            <p className="text-md">Change to <span className="font-semibold text-green-600">{capitalizeFirstLetter(newValue as string)}</span>?</p>
           </div>
-        <DialogFooter>
-          <Button type="submit" className="bg-blue-500" onClick={() => {
+        <DialogFooter className="gap-2">
+          <Button type="submit" className="custom-md:w-20" variant="outline" onClick={() => setDialogOpen(false)}>
+            No
+          </Button>
+          <Button type="submit" className="custom-md:w-20 bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({
               id: String(id), 
               name: name, 
@@ -79,9 +82,7 @@ export default function UpdateStatusAssignedTicketDialog({
             }))
             setDialogOpen(false)
           }}>Yes</Button>
-          <Button type="submit" variant="outline" onClick={() => setDialogOpen(false)}>
-            No
-          </Button>
+          
         </DialogFooter>
       </DialogContent>
     </Dialog>

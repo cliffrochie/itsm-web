@@ -2,8 +2,8 @@
 
 export default function ClientPage() {
   return (
-    <>
-      <h3>Client page</h3>
-    </>
+    <div className="grid gap-4">
+
+    </div>
   )
 }

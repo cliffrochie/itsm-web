@@ -15,7 +15,6 @@ import { DataTableViewOptions } from "@/components/data-tables/data-table-view-o
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 import { isClientInterface } from "@/@types/client"
 import { isUserInterface } from '@/@types/user'
-import getAssignedServiceTickets from "@/features/service-engineer/hooks/get-assigned-service-tickets"
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
@@ -23,7 +22,9 @@ import { serviceStatuses } from "@/data/service-status"
 import { capitalizeFirstLetter } from "@/utils"
 import api from "@/hooks/use-api"
 import { IServiceTicket } from "@/@types/service-ticket"
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import getAssignedServiceTickets from "@/features/service-engineer/hooks/get-assigned-service-tickets"
+
 
 
 
@@ -43,11 +44,11 @@ export default function ServiceEngineerPage() {
 
   return (
     <div className="grid gap-4">
-      <section className="grid custom-md:grid-cols-2 grid-cols-1 gap-4">
+      {/* <section className="grid custom-md:grid-cols-2 custom-lg:grid-cols-3 custom-sm:grid-cols-1 gap-4">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-bold font-mono flex justify-between text-gray-500">
-              ASSIGNED TICKETS
+              ACTIVE TICKETS
             </CardTitle>
             <Ticket className="text-gray-500" />
           </CardHeader>
@@ -55,18 +56,7 @@ export default function ServiceEngineerPage() {
             <div className="text-3xl font-bold">{ assignedTickets ? assignedTickets.length : 0 }</div>
           </CardContent>
         </Card>
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xl font-bold font-mono flex justify-between text-gray-500">
-              CLOSED/COMPLETED TICKETS
-            </CardTitle>
-            <TicketCheck className="text-gray-500"  />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">21</div>
-          </CardContent>
-        </Card>
-      </section>
+      </section> */}
       
       <section className="grid custom-md:grid-cols-1 gap-4">
         <div className="">
@@ -74,7 +64,7 @@ export default function ServiceEngineerPage() {
           <div className="rounded-md border shadow">
             <Table>
               <TableBody>
-                { assignedTickets ? assignedTickets.map((data) => (
+                { assignedTickets && assignedTickets.length > 0 ? assignedTickets.map((data) => (
                   <TableRow key={data._id} onClick={() => { navigate(`/service-engineer/${data.ticketNo}`) }} className="cursor-pointer">
                     <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-1/2 custom-xl:w-1/4">{data.ticketNo} <span className="text-xs font-normal text-gray-500">({capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')})</span></TableCell>
                     {/* <TableCell className="font-medium p-5">{capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')}</TableCell> */}

@@ -110,6 +110,7 @@ export default function AdminITServiceTicketForm() {
         serviceStatus: '',
         priority: '',
         remarks: '',
+        adminRemarks: '',
         serviceEngineer: '',
         client: '',
       }

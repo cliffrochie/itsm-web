@@ -37,7 +37,7 @@ export default function DropdownUser() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="mb-2">
+      <DropdownMenuTrigger asChild className="">
         <Button variant="ghost">
           {user ? capitalizeFirstLetter(user.firstName) +' '+ capitalizeFirstLetter(user.lastName) : 'User'}
         </Button>

@@ -3,22 +3,16 @@ import SidebarLayout from "@/layouts/sidebar-layout"
 import { ToastContainer, Slide } from 'react-toastify';
 import { useState } from 'react';
 import { INavLink } from '@/@types/nav-link';
-import { Home, ListOrdered, UserRound, SquareUserRound, Settings, BriefcaseBusiness, Database, BicepsFlexed } from "lucide-react"
+import { Tickets, TicketCheckIcon, ListOrdered, UserRound, SquareUserRound, Settings, BriefcaseBusiness, Database, BicepsFlexed } from "lucide-react"
 
 
 export default function StaffLayout() {
   const [links, setLinks] = useState<INavLink[]>([
     {
-      title: 'Home',
+      title: 'Active Tickets',
       url: '/service-engineer',
-      icon: Home,
+      icon: Tickets,
       isActive: true
-    },
-    {
-      title: 'History',
-      url: '/service-engineer/history',
-      icon: Database,
-      isActive: false
     },
   ])
 

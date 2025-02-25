@@ -4,6 +4,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { INavLink } from '@/@types/nav-link'
 import { isNumeric } from '@/utils'
 import ReactImg from '@/assets/react.svg'
+import MainLogo from '@/assets/logo-title.svg'
 
 import { 
   Sidebar, 
@@ -79,11 +80,11 @@ export function AppSidebar({
   }, [location.pathname])
 
   return (
-    <Sidebar collapsible='icon'>
+    <Sidebar collapsible='offcanvas'>
       <SidebarContent>
         <SidebarGroup>
           <div className="flex justify-center py-4">
-            <img src={ReactImg} width="70" />
+            <img src={MainLogo} width="250" alt="logo" className=" h-32 aspect-square object-cover" />
           </div>
           <SidebarGroupLabel className="font-bold">Application</SidebarGroupLabel>
           <SidebarGroupContent>

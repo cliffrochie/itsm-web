@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form"
 import { useNavigate, Link } from "react-router-dom"
 import { z } from "zod"
 import { Loader2 } from 'lucide-react'
-
+import Logo from '@/assets/logo.svg'
 
 
 const formSchema = z.object({
@@ -78,7 +78,7 @@ export default function SignInPage() {
           <CardHeader>
             <CardTitle className="text-center">
               <div className="flex justify-center align-middle w-auto mb-5">
-                <LogIn size={40} color="gray" />
+                <img src={Logo} width="100" alt="logo" className="" />
               </div>
               <div className="text-4xl font-mono font-bold text-gray-600">NIA ITSM</div>
             </CardTitle>

@@ -27,7 +27,6 @@ const ITServiceTicketView = lazy(() => import('@/pages/admin/it-service-tickets/
 const StaffLayout = lazy(() => import('@/layouts/staff-layout'))
 const ServiceEngineerPage = lazy(() => import('@/pages/service-engineer'))
 const ServiceEngineerITServiceTicket = lazy(() => import('@/pages/service-engineer/it-service-ticket'))
-const ServiceEngineerRecords = lazy(() => import('@/pages/service-engineer/records'))
 
 
 
@@ -170,15 +169,6 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
             <ServiceEngineerITServiceTicket />
-          </Suspense>
-        ),
-        loader: staffPrivilegeLoader,
-      },
-      {
-        path: '/service-engineer/history',
-        element: (
-          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
-            <ServiceEngineerRecords />
           </Suspense>
         ),
         loader: staffPrivilegeLoader,
