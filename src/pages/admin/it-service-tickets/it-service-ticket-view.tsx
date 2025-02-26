@@ -276,7 +276,7 @@ export default function ITServiceTicketView() {
             <div className="grid grid-cols-1">
               <div className="flex gap-4 flex-col">
                 <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Date Requested:</div>
+                  <div className="text-sm">Date & Time Requested:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <span className="text-sm">{dateRequested}</span>
                   </div>

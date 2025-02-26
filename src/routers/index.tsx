@@ -18,6 +18,8 @@ const AdminOfficesPage = lazy(() => import('@/pages/admin/offices'))
 const AdminOfficeForm = lazy(() => import('@/pages/admin/offices/office-form'))
 const HomePage = lazy(() => import('@/pages'))
 const ClientPage = lazy(() => import('@/pages/client'))
+const ClientTicketForm = lazy(() => import('@/pages/client/ticket-form'))
+const ClientTicketView = lazy(() => import('@/pages/client/ticket-view'))
 const AboutPage = lazy(() => import('@/pages/about/index'))
 const SignInPage = lazy(() => import('@/pages/auth/sign-in'))
 const SignUpPage = lazy(() => import('@/pages/auth/sign-up'))
@@ -125,6 +127,25 @@ const router = createBrowserRouter([
             <ClientPage />
           </Suspense>
         ),
+        loader: userPrivilegeLoader
+      },
+      {
+        path: '/client/ticket-form',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <ClientTicketForm />
+          </Suspense>
+        ),
+        loader: userPrivilegeLoader
+      },
+      {
+        path: '/client/ticket-view',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <ClientTicketView />
+          </Suspense>
+        ),
+        loader: userPrivilegeLoader
       },
     ]
   },
