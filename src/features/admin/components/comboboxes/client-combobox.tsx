@@ -12,11 +12,17 @@ export default function ClientComboBox({
   previousValue,
   onValueChange,
   className,
+  searchPlaceholder,
+  noResultsMsg,
+  selectItemMsg,
 }: {
   defaultValue?: string;
   previousValue?: string;
   onValueChange: (value: string) => void;
   className?: string;
+  searchPlaceholder?: string
+  noResultsMsg?: string
+  selectItemMsg?: string
 }) {
   
   const [value, setValue] = useState(defaultValue);
@@ -56,9 +62,9 @@ export default function ClientComboBox({
         onValueChange(value);
       }}
       onSearchChange={setSearch}
-      searchPlaceholder="Search client..."
-      noResultsMsg="No client found"
-      selectItemMsg={previousValue || "Select a client"}
+      searchPlaceholder={searchPlaceholder? searchPlaceholder : "Search client..."}
+      noResultsMsg={ noResultsMsg ? noResultsMsg : "No client found"}
+      selectItemMsg={previousValue || selectItemMsg || "Select a client"}
     />
   )
 }

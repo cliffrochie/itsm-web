@@ -47,7 +47,7 @@ import { serviceStatuses } from '@/data/service-status'
 import { priorities } from '@/data/priority'
 import { IClient } from '@/@types/client'
 import { IUser } from '@/@types/user'
-
+import { formatParagraph } from '@/utils'
 
 
 const formSchema = z.object({
@@ -277,8 +277,8 @@ export default function AdminITServiceTicketForm() {
   }
 
 
-  function upperCaseText(e: React.ChangeEvent<HTMLInputElement>) {
-    form.setValue('title', e.target.value.toLocaleUpperCase())
+  function formatParagraphText(e: React.ChangeEvent<HTMLInputElement>) {
+    form.setValue('title', formatParagraph(e.target.value))
   }
 
   return (
@@ -296,7 +296,15 @@ export default function AdminITServiceTicketForm() {
                   <FormItem>
                     <FormLabel className={ errors?.title ? 'text-red-500' : ''}>Title</FormLabel>
                     <FormControl>
-                      <Input {...field} className="h-7" placeholder="Title here.." onChange={upperCaseText} />
+                      <Input 
+                        {...field} 
+                        className="h-7" 
+                        placeholder="Title here.." 
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          field.onChange(formatParagraph(value));
+                        }}
+                        />
                     </FormControl>
                     <FormMessage>{ errors?.title }</FormMessage>
                   </FormItem>
@@ -416,6 +424,10 @@ export default function AdminITServiceTicketForm() {
                       <Textarea
                         placeholder="Write your query here.."
                         {...field}
+                        onChange={(e) => {
+                          const { value } = e.target;
+                          field.onChange(formatParagraph(value));
+                        }}
                       />
                     </FormControl>
                     <FormDescription>

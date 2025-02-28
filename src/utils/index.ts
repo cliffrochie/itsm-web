@@ -19,6 +19,11 @@ export function capitalizeFirstLetterKebab(val: string) {
 }
 
 
+export function formatParagraph(val: string) {
+  return val.replace(/(?:^|\.\s+)([a-z])/g, (match, char) => match.replace(char, char.toUpperCase()));
+}
+
+
 export const timeRegex = /^(0[1-9]|1[0-2]):[0-5][0-9]$/
 
 
