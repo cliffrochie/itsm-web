@@ -68,7 +68,7 @@ export default function UpdateStatusAssignedTicketDialog({
           </DialogDescription>
         </DialogHeader>
           <div className="grid gap-4 py-3 px-4 border rounded-md">
-            <p className="text-md">Change to <span className="font-semibold text-green-600">{capitalizeFirstLetter(newValue as string)}</span>?</p>
+            <p className="text-md">Change to <span className="font-semibold text-blue-600">{capitalizeFirstLetter(newValue as string)}</span>?</p>
           </div>
         <DialogFooter className="gap-2">
           <Button type="submit" className="custom-md:w-20" variant="outline" onClick={() => setDialogOpen(false)}>
