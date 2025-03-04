@@ -5,10 +5,34 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus } from "lucide-react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import getSearchedServiceTickets from "@/features/client/hooks/get-searched-service-tickets";
+import getRequestedServiceTicket from "@/features/client/hooks/get-requested-service-tickets";
+import { useEffect, useState } from "react";
+import { IServiceTicket } from "@/@types/service-ticket";
 
 export default function ClientPage() {
+  const [search, setSearch] = useState('')
+  const [tickets, setTickets] = useState<IServiceTicket[] | []>([])
+
   const navigate = useNavigate()
+  const params = useParams()
+
+  function formatDate(date: Date) {
+    const result = new Date(date)
+    const formattedDate = result.toLocaleDateString('en-US', { 
+        timeZone: "Asia/Singapore",
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true // Set to false for 24-hour format
+    });
+    return formattedDate
+  }
+
+
   return (
     <div className="grid gap-4">
       <section className="grid mx-4 custom-md:grid-cols-1 gap-4 custom-xl:mx-72 custom-lg:mx-60 custom-md:mx-36 custom-sm:mx-20">
@@ -19,31 +43,38 @@ export default function ClientPage() {
               <CardHeader>
                 <CardTitle>Requests</CardTitle>
                 <CardDescription>
-                  List of requested tickets created by you.
+                  List of requested tickets created by you, or the one you searched.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4">
                 <div className="grid grid-cols-2 gap-2 custom-md:w-1/2"> 
                   <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={18} />
-                    <Input className="pl-10" placeholder="Search other ticket no." />
+                    <Input className="pl-10" placeholder="Search other ticket no." defaultValue={search} onChange={(e) => setSearch(e.target.value) } />
                   </div>
-                  <Button variant="outline" className="w-40" onClick={() => navigate('/client/ticket-form') }><Plus /> Create a Request</Button>
+                  <Button variant="outline" className="w-40" onClick={() => navigate('/client/ticket-form') }><Plus /> Create Request</Button>
                 </div>
                 <Table>
-                  <TableBody className="border ">
-                    <TableRow className="cursor-pointer" onClick={() => alert('clicked') }>
-                      <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">ITSM-250303-001</TableCell>
-                      <TableCell className="font-medium p-5"><Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">Assigned</Badge></TableCell>
-                    </TableRow>
-                    <TableRow className="cursor-pointer" onClick={() => alert('clicked') }>
-                      <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">ITSM-250303-001</TableCell>
-                      <TableCell className="font-medium p-5"><Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">Assigned</Badge></TableCell>
-                    </TableRow>
-                    <TableRow className="cursor-pointer" onClick={() => alert('clicked') }>
-                      <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">ITSM-250303-001</TableCell>
-                      <TableCell className="font-medium p-5"><Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">Assigned</Badge></TableCell>
-                    </TableRow>
+                  <TableBody className="border">
+                    {tickets.length > 0 ? tickets.map((ticket) => (
+                      <TableRow key={ticket._id} className="cursor-pointer" onClick={() => navigate('/client/'+ ticket.ticketNo) }>
+                        <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">{ticket.ticketNo}</TableCell>
+                        <TableCell className="font-medium p-5">
+                          <Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">
+                            {ticket.serviceStatus ? capitalizeFirstLetter(ticket.serviceStatus): ''}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium p-5 custom-md:w-48">
+                          <span className="text-gray-500 hidden custom-md:block">{ ticket.createdAt ? formatDate(ticket.createdAt) : undefined }</span>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                    : (
+                      <TableRow  className="cursor-pointer">
+                        <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">No tickets found.</TableCell>
+                      </TableRow>
+                    )
+                  }
                   </TableBody>
                 </Table>
               </CardContent>

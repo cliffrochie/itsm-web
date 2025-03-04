@@ -241,7 +241,7 @@ export default function ClientTicketForm() {
                       )}
                     />
                     <div className="flex gap-2 mt-2">
-                      <Button className="bg-blue-500" form="ticketForm">Submit</Button>
+                      <Button type="submit" className="bg-blue-500" form="ticketForm">Submit</Button>
                       <Button variant="outline" onClick={() => {
                         navigate('/client')
                       }}>Cancel</Button>

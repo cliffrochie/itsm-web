@@ -4,7 +4,7 @@ import { IClient } from "./client"
 export interface IServiceTicket {
   _id: string
   ticketNo: string
-  taskType: "" | "incident" | "service request" | "asset request" | "maintenance"  | "consultation" | "accessibility"
+  taskType: "" | "incident" | "service request" | "maintenance"  | "consultation" | "accessibility"
   title: string
   natureOfWork: string
   serialNo?: string

@@ -20,11 +20,6 @@ export const taskTypes = [
     icon: HandPlatter
   },
   {
-    value: "asset request",
-    label: "Asset Request",
-    icon: Laptop
-  },
-  {
     value: "maintenance",
     label: "Maintenance",
     icon: RefreshCwOff

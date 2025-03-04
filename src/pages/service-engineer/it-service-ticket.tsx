@@ -77,6 +77,8 @@ export default function ServiceEngineerITServiceTicket() {
     placeholderData: keepPreviousData
   })
 
+  console.log(dataQuery.data)
+
   const serviceTicketHistoryQuery = useQuery({
     queryKey: ['serviceTicketHistory', serviceTicket],
     queryFn: async () => {
