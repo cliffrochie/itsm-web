@@ -48,8 +48,9 @@ export default function ServiceEngineerITServiceTicket() {
   const [updateStatusAssignedTicketDialogOpen, setUpdateStatusAssignedTicketDialogOpen] = useState(false)
   const [serviceStatusValue, setServiceStatusValue] = useState('')
   const [serviceTicket, setServiceTicket] = useState<IServiceTicket | undefined>(undefined)
-  const [userFullName, setUserFullName] = useState('')
+  const [serviceEngineerFullName, setServiceEngineerFullName] = useState('')
   const [clientFullName, setClientFullName] = useState('')
+  const [createdByFullName, setCreatedByFullName] = useState('')
   const [officeName, setOfficeName] = useState('')
   const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
   const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
@@ -77,7 +78,7 @@ export default function ServiceEngineerITServiceTicket() {
     placeholderData: keepPreviousData
   })
 
-  console.log(dataQuery.data)
+  // console.log(dataQuery.data)
 
   const serviceTicketHistoryQuery = useQuery({
     queryKey: ['serviceTicketHistory', serviceTicket],
@@ -153,7 +154,14 @@ export default function ServiceEngineerITServiceTicket() {
 
      if(serviceTicket?.serviceEngineer) {
       const obj = serviceTicket.serviceEngineer as IUser
-      setUserFullName(`${capitalizeFirstLetter(obj.firstName)} 
+      setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
+        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
+        ${capitalizeFirstLetter(obj.lastName)}`)
+    }
+
+    if(serviceTicket?.createdBy) {
+      const obj = serviceTicket.createdBy as IUser
+      setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
@@ -278,7 +286,7 @@ export default function ServiceEngineerITServiceTicket() {
         }}>Closed</Button>
       </div>   
       <div className="grid gap-4 custom-xl:grid-cols-[450px,450px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
-      <Card className="w-full h-[500px]">
+        <Card className="w-full h-[500px]">
           <CardHeader>
             <CardTitle>IT Service Details</CardTitle>
           </CardHeader>
@@ -319,9 +327,6 @@ export default function ServiceEngineerITServiceTicket() {
                   <div className="font-bold flex justify-between gap-2">
                     <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
                   </div>
-                  {/* <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
-                  </div> */}
                 </div>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Office:</div>
@@ -331,18 +336,23 @@ export default function ServiceEngineerITServiceTicket() {
                 </div>
                 <div className="grid gap-2">
                   <span className="text-sm">Requestor Remarks:</span>
-                  <div className="border p-3 min-h-20 h-auto rounded-md text-sm bg-gray-100">
+                  <div className="border p-3 min-h-12 h-auto rounded-md text-sm bg-gray-100">
                     {serviceTicket ? serviceTicket.remarks : ''}
+                  </div>
+                </div>
+                <div className="flex gap-4 justify-between">
+                  <div className="text-sm">Created by:</div>
+                  <div className="font-bold flex justify-between gap-2">
+                    <span className={ createdByFullName ? "text-sm" : "text-sm text-red-500" }>{ createdByFullName ? createdByFullName : 'Unassigned' }</span>
                   </div>
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Service Engineer:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
+                    <span className={ serviceEngineerFullName ? "text-sm" : "text-sm text-red-500" }>{ serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned' }</span>
                   </div>
                 </div>
-                
               </div>
             </div>
           </CardContent>

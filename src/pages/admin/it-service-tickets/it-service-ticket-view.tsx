@@ -38,7 +38,8 @@ export default function ITServiceTicketView() {
 
   const [dateRequested, setDateRequested] = useState('')
   const [clientFullName, setClientFullName] = useState('')
-  const [userFullName, setUserFullName] = useState('')
+  const [createdByFullName, setCreatedByFullName] = useState('')
+  const [serviceEngineerFullName, setServiceEngineerFullName] = useState('')
   const [serviceEngineerId, setServiceEngineerId] = useState('')
   const [officeName, setOfficeName] = useState('')
   const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
@@ -235,10 +236,20 @@ export default function ITServiceTicketView() {
     if(dataQuery.data?.serviceEngineer) {
       const obj = dataQuery.data.serviceEngineer as IUser
       setServiceEngineerId(obj._id)
-      setUserFullName(`${capitalizeFirstLetter(obj.firstName)} 
+      setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
+
+    if(dataQuery.data?.createdBy) {
+      const obj = dataQuery.data.createdBy as IUser
+      setServiceEngineerId(obj._id)
+      setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
+        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
+        ${capitalizeFirstLetter(obj.lastName)}`)
+    }
+
+    console.log(dataQuery.data)
 
   }, [dataQuery.data])
 
@@ -299,14 +310,6 @@ export default function ITServiceTicketView() {
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Type:</div>
-                  <div className="font-bold flex justify-between gap-2">
-                    <TaskTypeIcon size={16} /> 
-                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.taskType) : ''}</span>
-                  </div>
-                </div>
-                <hr/>
-                <div className="flex gap-4 justify-between">
                   <div className="text-sm">Equipment:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <EquipmentTypeIcon size={16} /> 
@@ -315,22 +318,32 @@ export default function ITServiceTicketView() {
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
+                  <div className="text-sm">Type:</div>
+                  <div className="font-bold flex justify-between gap-2">
+                    <TaskTypeIcon size={16} /> 
+                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.taskType) : ''}</span>
+                  </div>
+                </div>
+                <hr/>
+                <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Name:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
                   </div>
-                  {/* <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
-                  </div> */}
                 </div>
+                <hr/>
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Office:</div>
                   <div className="font-bold flex justify-between gap-2">
                     <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
                   </div>
-                  {/* <div className="font-bold flex justify-between gap-2">
-                    <span className={ userFullName ? "text-sm" : "text-sm text-red-500" }>{ userFullName ? userFullName : 'Unassigned' }</span>
-                  </div> */}
+                </div>
+                <hr />
+                <div className="flex gap-4 justify-between">
+                  <div className="text-sm">Created by:</div>
+                  <div className="font-bold flex justify-between gap-2">
+                    <span className={ createdByFullName ? "text-sm" : "text-sm text-red-500" }>{ createdByFullName ? createdByFullName : 'Unassigned' }</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -363,7 +376,7 @@ export default function ITServiceTicketView() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm">Service Engineer:</span>
-                <span  className={ officeName ? "text-sm" : "text-sm text-red-500 font-bold" }>{userFullName ? userFullName : 'Unassigned'}</span>
+                <span  className={ officeName ? "text-sm" : "text-sm text-red-500 font-bold" }>{serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned'}</span>
               </div>
             </div>
           </CardContent>
@@ -417,7 +430,7 @@ export default function ITServiceTicketView() {
           id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
           name={dataQuery.data ? dataQuery.data.ticketNo : ''}
           adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks : ''}
-          currentServiceEngineer={userFullName}
+          currentServiceEngineer={serviceEngineerFullName}
           currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ''}
           excludeUser={serviceEngineerId}
           updateMutation={escalateServiceDialogMutation}

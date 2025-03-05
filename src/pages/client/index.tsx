@@ -10,6 +10,8 @@ import getSearchedServiceTickets from "@/features/client/hooks/get-searched-serv
 import getRequestedServiceTicket from "@/features/client/hooks/get-requested-service-tickets";
 import { useEffect, useState } from "react";
 import { IServiceTicket } from "@/@types/service-ticket";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import api from "@/hooks/use-api";
 
 export default function ClientPage() {
   const [search, setSearch] = useState('')
@@ -17,6 +19,7 @@ export default function ClientPage() {
 
   const navigate = useNavigate()
   const params = useParams()
+  const clientKey = ['clientRequestTracker', search]
 
   function formatDate(date: Date) {
     const result = new Date(date)
@@ -31,6 +34,35 @@ export default function ClientPage() {
     });
     return formattedDate
   }
+
+  const dataQuery = useQuery({
+    queryKey: clientKey,
+    queryFn: async () => {
+      let data: any[] = []
+      let url = ''
+      if(search.length >= 2) {
+        url = `/api/service-tickets/?noPage=true&ticketNo=${search}`
+      }
+      else {
+        url = `/api/service-tickets/requested`
+      }
+
+      await api.get(url).then(response => {
+        data = response.data
+      })
+
+      return data
+    },
+    placeholderData: keepPreviousData
+  })
+
+  useEffect(() => {
+    if(dataQuery.data) {
+      setTickets(dataQuery.data)
+    }
+
+    // console.log(dataQuery.data)
+  }, [dataQuery.data])
 
 
   return (
@@ -50,7 +82,7 @@ export default function ClientPage() {
                 <div className="grid grid-cols-2 gap-2 custom-md:w-1/2"> 
                   <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={18} />
-                    <Input className="pl-10" placeholder="Search other ticket no." defaultValue={search} onChange={(e) => setSearch(e.target.value) } />
+                    <Input className="pl-10" placeholder="Search ticket" defaultValue={search} onChange={(e) => setSearch(e.target.value) } />
                   </div>
                   <Button variant="outline" className="w-40" onClick={() => navigate('/client/ticket-form') }><Plus /> Create Request</Button>
                 </div>
@@ -70,8 +102,8 @@ export default function ClientPage() {
                       </TableRow>
                     ))
                     : (
-                      <TableRow  className="cursor-pointer">
-                        <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">No tickets found.</TableCell>
+                      <TableRow  className="">
+                        <TableCell className="font-medium p-5 custom-sm:w-auto custom-md:w-44">No requested tickets found.</TableCell>
                       </TableRow>
                     )
                   }
