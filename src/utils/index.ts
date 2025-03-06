@@ -61,3 +61,19 @@ function generateShortUUID(length: number) {
     .substring(0, length);
 }
 
+
+
+
+export function formatDate(date: Date) {
+  const result = new Date(date)
+  const formattedDate = result.toLocaleDateString('en-US', { 
+      timeZone: "Asia/Singapore",
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true // Set to false for 24-hour format
+  });
+  return formattedDate
+}

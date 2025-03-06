@@ -5,6 +5,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from '@/components/ui/badge';
+import { formatDate } from '@/utils';
 
 import { ServiceTicketDataTable } from "@/features/admin/components/data-tables/service-tickets/data-table"
 import { ServiceTicketDataTableColumnHeader } from "@/features/admin/components/data-tables/service-tickets/data-table-column-header"
@@ -65,10 +66,13 @@ export default function ServiceEngineerPage() {
                         <TableCell className="font-medium p-5 custom-sm:w-60 ">
                           <Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">{capitalizeFirstLetter(data.priority ? data.priority : 'No')} Priority</Badge>
                         </TableCell>
-                        <TableCell className="font-medium p-5 custom-sm:w-60 hidden custom-md:block ">
+                        {/* <TableCell className="font-medium p-5 custom-sm:w-60 hidden custom-md:block ">
                           <Badge className="border-transparent bg-blue-400 text-primary-foreground shadow hover:bg-primary/80">
                             {capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')}
                           </Badge>
+                        </TableCell> */}
+                        <TableCell className="font-medium p-5 custom-md:w-48">
+                          <span className="text-gray-500 hidden custom-md:block">{ data.createdAt ? formatDate(data.createdAt) : undefined }</span>
                         </TableCell>
                       </TableRow>
                     ))

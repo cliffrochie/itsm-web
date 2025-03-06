@@ -63,7 +63,7 @@ export default function InputFindingsDialog({
         {/* Optional inline button to trigger the dialog */}
         <button className="hidden">Hidden Trigger</button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[550px] fixed top-10 left-1/2 -translate-x-1/2 translate-y-0 w-full max-w-md">
         <DialogHeader>
           <DialogTitle>Findings</DialogTitle>
           <DialogDescription>

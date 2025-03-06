@@ -60,7 +60,7 @@ export default function UpdateStatusAssignedTicketDialog({
         {/* Optional inline button to trigger the dialog */}
         <button className="hidden">Hidden Trigger</button>
       </DialogTrigger>
-      <DialogContent className="custom-sm:w-[420px]">
+      <DialogContent className="custom-sm:w-[420px] fixed top-10 left-1/2 -translate-x-1/2 translate-y-0 w-full max-w-md">
         <DialogHeader>
           <DialogTitle>Update Service Status</DialogTitle>
           <DialogDescription>

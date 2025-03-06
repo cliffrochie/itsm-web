@@ -72,9 +72,9 @@ export default function SignInPage() {
 
 
   return (
-    <div className="flex flex-row justify-center h-screen items-center">
-      <div className="bg-gray-100 w-full h-screen custom-lg:h-screen overflow-auto flex justify-center items-center">
-        <Card className="w-[450px] py-10">
+    <div className="flex flex-row justify-center h-screen items-center bg-gray-100">
+      <div className="bg-gray-100 w-full custom-md:h-screen custom-lg:h-screen overflow-auto flex justify-center items-center custom-sm:px-2">
+        <Card className="min-w-[350px] w-[450px] py-10 ">
           <CardHeader>
             <CardTitle className="text-center">
               <div className="flex justify-center align-middle w-auto mb-5">

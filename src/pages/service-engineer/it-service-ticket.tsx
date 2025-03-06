@@ -30,7 +30,7 @@ import { capitalizeFirstLetter } from "@/utils"
 import api from "@/hooks/use-api"
 import { useNavigate, useParams } from "react-router-dom"
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { Circle, LucideIcon } from "lucide-react"
+import { Circle, LucideIcon, Undo2 } from "lucide-react"
 import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
 import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input-service-rendered-dialog"
 import { Slide, toast } from "react-toastify"
@@ -253,21 +253,18 @@ export default function ServiceEngineerITServiceTicket() {
   return (
     <section className="grid custom-md:grid-cols-1 gap-4">
       <div className="text-xl font-semibold m-0 mb-2">
-        <table className="">
-          <tbody>
-            <tr>
-              <td className="font-bold text-2xl" width="150">Ticket no:</td>
-              <td className="font-bold text-2xl ml-4">{params.ticketNo}</td>
-            </tr>
-            <tr>
-              <td className="text-sm text-gray-600">Service Status:</td>
-              <td className="text-sm text-gray-600">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="flex justify-between items-center text-xl font-semibold m-0 mb-6">
+          <div>
+            <div className="font-bold text-xl">{params.ticketNo}</div>
+            <div className="text-sm text-gray-600">Status:&nbsp;&nbsp;{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</div>
+          </div>
+          <Button variant="outline" onClick={() => navigate('/service-engineer') }>
+            <Undo2 />
+            Back
+          </Button>
+        </div>
       </div>
-      <div className="mt-1 mb-1 flex justify-start items-center gap-2">
-        <div className="mr-4">Status:</div>
+      <div className="mt-1 mb-1 flex custom-md:justify-start justify-center justify-between items-center gap-2">
         <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'in progress' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('in progress')
@@ -285,7 +282,7 @@ export default function ServiceEngineerITServiceTicket() {
           setServiceStatusValue('closed')
         }}>Closed</Button>
       </div>   
-      <div className="grid gap-4 custom-xl:grid-cols-[450px,450px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
+      <div className="grid gap-4 custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
         <Card className="w-full h-[500px]">
           <CardHeader>
             <CardTitle>IT Service Details</CardTitle>
@@ -358,7 +355,7 @@ export default function ServiceEngineerITServiceTicket() {
           </CardContent>
         </Card>
 
-        <Card className="custom-lg:w-full w-auto h-[500px]">
+        <Card className="custom-lg:w-full w-auto min-h-[350px h-auto]">
           <CardHeader>
             <CardTitle>Description</CardTitle>
           </CardHeader>
@@ -407,7 +404,7 @@ export default function ServiceEngineerITServiceTicket() {
           </CardContent>
         </Card>
 
-        <Card className="custom-xl:col-span-1 custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
+        <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
           <CardHeader>
             <CardTitle>History</CardTitle>
           </CardHeader>

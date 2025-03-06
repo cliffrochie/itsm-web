@@ -102,8 +102,8 @@ export default function SignUpPage() {
   return (
     <>
       <section className="bg-gray-100">
-        <div className="flex flex-col justify-center h-screen items-center">
-          <Card className="w-[800px] py-10">
+        <div className="flex flex-col justify-center py-10 custom-md:h-screen items-center">
+          <Card className="w-auto py-10">
             <CardHeader>
               <CardTitle className="text-center">
                 <div className="flex justify-center align-middle w-auto mb-5">

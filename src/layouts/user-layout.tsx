@@ -9,12 +9,11 @@ import Logo from '@/assets/logo.svg'
 import { useMediaQuery } from 'react-responsive'
 
 export default function UserLayout() {
-  const { handleLogout } = useAuth()
   const isSmallScreen = useMediaQuery({ maxWidth: 600 })
 
   return (
     <>
-      <nav className="px-8 border-b-[0.5px] border-gray-200 mb-4">
+      <nav className="px-8 border-b-[0.5px] border-gray-200 mb-7 sticky top-0 p-1 bg-white z-10">
         <div className="flex align-middle items-center justify-between mt-1 mb-1 ">
           {/* Logo */}
           <div className="flex items-center gap-4 ">
@@ -25,10 +24,11 @@ export default function UserLayout() {
           {/* Dropdown on the right */}
           <DropdownUser />
         </div>
-        
       </nav>
-      <Outlet /> {/* Render child routes */}
-      <ToastContainer />
+      <section className="grid mx-4 custom-md:grid-cols-1 gap-4 custom-xl:mx-72 custom-lg:mx-60 custom-md:mx-36 custom-sm:mx-20">
+        <Outlet /> {/* Render child routes */}
+        <ToastContainer />
+      </section>
       </>
   )
 }

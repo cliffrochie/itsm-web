@@ -1,25 +1,25 @@
 import api from '@/hooks/use-api'
-import { IUser } from '@/@types/user'
+import { INotification } from '@/@types/notification'
 import { useState, useEffect } from 'react'
 
 
 interface ThisResponse {
-  authUser: IUser | null
+  notifications: INotification | null
   loading: boolean
   error?: object | string | undefined 
 }
 
-export default function useGetAuthUser(): ThisResponse {
-  const [authUser, setAuthUser] = useState<IUser | null>(null)
+export default function useGetNotifications(userId: string): ThisResponse {
+  const [notifications, setNotifications] = useState<INotification | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<object | string | undefined>(undefined)
 
   useEffect(() => {
-    async function getUser() {
+    async function get() {
       try {
         setLoading(true)
-        const response = await api.get('/api/users/current-user')
-        setAuthUser(response.data)
+        const response = await api.get(`/api/notifications?userId=${userId}&noPage=true`)
+        setNotifications(response.data)
       }
       catch(error: any) {
         console.log(error)
@@ -36,8 +36,8 @@ export default function useGetAuthUser(): ThisResponse {
       }
     }
 
-    getUser()
+    get()
   }, [])
 
-  return { authUser, loading, error}
+  return { notifications, loading, error}
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { capitalizeFirstLetter } from "@/utils"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { IServiceTicket } from "@/@types/service-ticket"
@@ -10,6 +10,7 @@ import { priorities } from "@/data/priority"
 import { serviceStatuses } from "@/data/service-status"
 import { IClient } from "@/@types/client"
 import { IUser } from "@/@types/user"
+import { Undo2 } from "lucide-react"
 
 import { 
   Card, 
@@ -22,6 +23,7 @@ import {
 import api from "@/hooks/use-api"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
+import { Button } from "@/components/ui/button"
 
 
 
@@ -44,6 +46,7 @@ export default function ClientTicketView() {
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
 
   const params = useParams()
+  const navigate = useNavigate()
   const queryKey = ['clientTicket']
 
   const dataQuery = useQuery({
@@ -150,146 +153,128 @@ export default function ClientTicketView() {
   }, [serviceTicket])
 
   return (
-    <div className="grid gap-4">
-      <section className="grid mx-4 custom-md:grid-cols-1 gap-4 custom-xl:mx-72 custom-lg:mx-60 custom-md:mx-36 custom-sm:mx-20">
-        <div className="mt-4">
-          <div className="w-full">
-            <div className="text-xl font-semibold m-0 mb-8">
-              <table className="">
-                <tbody>
-                  <tr>
-                    <td className="font-bold text-2xl" width="150">Ticket no:</td>
-                    <td className="font-bold text-2xl ml-4">{params.ticketNo}</td>
-                  </tr>
-                  <tr>
-                    <td className="text-sm text-gray-600">Service Status:</td>
-                    <td className="text-sm text-gray-600">{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</td>
-                  </tr>
-                </tbody>
-              </table>
+    <div className="">
+      <div className="mt-4">
+        <div className="w-full">
+          <div className="flex justify-between items-center text-xl font-semibold m-0 mb-6">
+            <div>
+              <div className="font-bold text-xl">{params.ticketNo}</div>
+              <div className="text-sm text-gray-600">Status:&nbsp;&nbsp;{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</div>
             </div>
-            <div className="grid gap-4 custom-lg:grid-cols-3 custom-md:grid-cols-1 ">
-              <Card className="w-full h-[500px]">
+            <Button variant="outline" onClick={() => navigate('/client') }>
+              <Undo2 />
+              Back
+            </Button>
+          </div>
+          <div className="grid gap-4 custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
+            <div className="flex flex-col gap-4">
+              <Card className="w-full h-auto">
                 <CardHeader>
                   <CardTitle>IT Service Details</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col justify-between h-[420px]">
-                  <div className="grid grid-cols-1">
-                    <div className="flex gap-4 flex-col">
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Date Requested:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <span className="text-sm">{dateRequested}</span>
-                        </div>
+                <CardContent className="flex flex-col justify-between">
+                  <div className="flex gap-4 flex-col">
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Date Requested:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className="text-sm">{dateRequested}</span>
                       </div>
-                      <hr/>
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Type:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <TaskTypeIcon size={16} /> 
-                          <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(serviceTicket.taskType) : ''}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Equipment:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <EquipmentTypeIcon size={16} /> 
-                          <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(serviceTicket.equipmentType) : ''}</span>
-                        </div>
-                      </div>
-                      <hr/>
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Requestor Name:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Requestor Office:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
-                        </div>
-                      </div>
-                      <hr/>
-                      <div className="flex gap-4 justify-between">
-                        <div className="text-sm">Service Engineer:</div>
-                        <div className="font-bold flex justify-between gap-2">
-                          <span className={ serviceEngineerFullName ? "text-sm" : "text-sm text-red-500" }>{ serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned' }</span>
-                        </div>
-                      </div>
-                      <hr/>
                     </div>
-                  </div>
-                  <div className="flex gap-4 justify-between">
-                    <div className="text-sm">Created by:</div>
-                    <div className="font-bold flex justify-between gap-2">
-                      <span className={ createdByFullName ? "text-sm" : "text-sm text-red-500" }>{ createdByFullName ? createdByFullName : 'Unassigned' }</span>
+                    <hr/>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Type:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <TaskTypeIcon size={16} /> 
+                        <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(serviceTicket.taskType) : ''}</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* <Card className="custom-lg:w-full w-auto h-[500px]">
-                <CardHeader>
-                  <CardTitle>Description</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-3 items-stretch h-full ">
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Equipment:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <EquipmentTypeIcon size={16} /> 
+                        <span className="text-sm">{serviceTicket ? capitalizeFirstLetter(serviceTicket.equipmentType) : ''}</span>
+                      </div>
+                    </div>
+                    <hr/>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Requestor Name:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Requestor Office:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
+                      </div>
+                    </div>
+                    <hr/>
                     <div className="grid gap-2">
                       <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
-                      <div className="border p-3 min-h-20 h-auto rounded-md text-sm bg-gray-100">
+                      <div className="border p-3 min-h-12 rounded-md text-sm bg-gray-100">
                         {serviceTicket ? serviceTicket.natureOfWork : ''}
                       </div>
                     </div>
                     <div className="grid gap-2">
                       <span className="text-sm text-gray-500 font-semibold">Findings</span> 
-                      <div className="border p-3 h-20 rounded-md text-sm bg-gray-100">
+                      <div className="border p-3 min-h-12 rounded-md text-sm bg-gray-100">
                         {serviceTicket ? serviceTicket.defectsFound : ''}
                       </div>
                     </div>
                     <div className="grid gap-2">
                       <span className="text-sm text-gray-500 font-semibold">Service Rendered / Action Taken</span>
-                      <div className="border p-3 h-20 rounded-md text-sm bg-gray-100">
+                      <div className="border p-3 min-h-12 rounded-md text-sm bg-gray-100">
                         {serviceTicket ? serviceTicket.serviceRendered : ''}
+                      </div>
+                    </div>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Service Engineer:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className={ serviceEngineerFullName ? "text-sm" : "text-sm text-red-500" }>{ serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned' }</span>
+                      </div>
+                    </div>
+                    <hr/>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Created by:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className={ createdByFullName ? "text-sm" : "text-sm text-red-500" }>{ createdByFullName ? createdByFullName : 'Unassigned' }</span>
                       </div>
                     </div>
                   </div>
                 </CardContent>
-              </Card> */}
-
-
-              <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
-                <CardHeader>
-                  <CardTitle>History</CardTitle>
-                </CardHeader>
-                <CardContent className="h-full overflow-y-auto overflow-x-auto">
-                  <div className="grid grid-cols-1">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-5">Date</TableHead>
-                          <TableHead className="w-20">Time</TableHead>
-                          <TableHead>Details</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {serviceTicketHistoryQuery.data && serviceTicketHistoryQuery.data.map((history) => (
-                          <TableRow key={history._id}>
-                            <TableCell>{history.date}</TableCell>
-                            <TableCell>{history.time}</TableCell>
-                            <TableCell>{history.details}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
               </Card>
-
             </div>
+            <Card className="custom-sm:col-span-1 min-h-[500px] h-auto overflow-hidden">
+              <CardHeader>
+                <CardTitle>History</CardTitle>
+              </CardHeader>
+              <CardContent className="h-full overflow-y-auto overflow-x-auto">
+                <div className="grid grid-cols-1">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-5">Date</TableHead>
+                        <TableHead className="w-20">Time</TableHead>
+                        <TableHead>Details</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {serviceTicketHistoryQuery.data && serviceTicketHistoryQuery.data.map((history) => (
+                        <TableRow key={history._id}>
+                          <TableCell>{history.date}</TableCell>
+                          <TableCell>{history.time}</TableCell>
+                          <TableCell>{history.details}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+
           </div>
         </div>
-      </section>
+      </div>
     </div>
   )
 }
