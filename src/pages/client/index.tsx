@@ -56,8 +56,8 @@ export default function ClientPage() {
 
   return (
     <div className="">
-      <div className="mt-4">
-        <div className="py-4 font-semibold">REQUEST TRACKER</div>
+      <div className="">
+        <div className="pb-4 font-semibold">REQUEST TRACKER</div>
         <div className="flex justify-center w-full">
           <Card className="w-full">
             <CardHeader>

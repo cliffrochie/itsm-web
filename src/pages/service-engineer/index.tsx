@@ -44,7 +44,7 @@ export default function ServiceEngineerPage() {
   return (
     <div className="grid gap-4">
       <section className="grid custom-md:grid-cols-1 gap-4">
-        <div className="mt-4">
+        <div className="">
           <div className="py-4 font-semibold">ASSIGNED  TICKETS</div>
           <div className="flex justify-center w-full">
             <Card className="w-full">
@@ -64,7 +64,7 @@ export default function ServiceEngineerPage() {
                           {data.title}
                         </TableCell>
                         <TableCell className="font-medium p-5 custom-sm:w-60 ">
-                          <Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">{capitalizeFirstLetter(data.priority ? data.priority : 'No')} Priority</Badge>
+                          <Badge variant="outline" className="border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-primary/80">{capitalizeFirstLetter(data.serviceStatus ? data.serviceStatus : '')}</Badge>
                         </TableCell>
                         {/* <TableCell className="font-medium p-5 custom-sm:w-60 hidden custom-md:block ">
                           <Badge className="border-transparent bg-blue-400 text-primary-foreground shadow hover:bg-primary/80">

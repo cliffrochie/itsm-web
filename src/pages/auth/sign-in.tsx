@@ -74,13 +74,13 @@ export default function SignInPage() {
   return (
     <div className="flex flex-row justify-center h-screen items-center bg-gray-100">
       <div className="bg-gray-100 w-full custom-md:h-screen custom-lg:h-screen overflow-auto flex justify-center items-center custom-sm:px-2">
-        <Card className="min-w-[350px] w-[450px] py-10 ">
+        <Card className="max-w-[450px] w-[350px] py-10 ">
           <CardHeader>
             <CardTitle className="text-center">
               <div className="flex justify-center align-middle w-auto mb-5">
                 <img src={Logo} width="100" alt="logo" className="" />
               </div>
-              <div className="text-4xl font-mono font-bold text-gray-600">NIA ITSM</div>
+              <div className="text-3xl font-mono font-bold text-gray-600">NIA ITSM</div>
             </CardTitle>
           </CardHeader>
           <CardContent>

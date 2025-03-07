@@ -16,6 +16,8 @@ export interface IServiceTicket {
   priority: "" | "low" | "medium" | "high"
   remarks?: string
   adminRemarks?: string
+  rating?:  "" | "n" | "s" | "vs" | "d" | "vd"
+  ratingComment?: string
   serviceEngineer: IUser | string | null
   client: IClient | string | null
   createdBy?: IUser | string | null

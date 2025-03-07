@@ -70,10 +70,10 @@ export default function InputServiceRenderDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
-            <Label>Service Rendered</Label>
-            <Input value={serviceRendered} onChange={ (e) => setServiceRendered(e.target.value) } />
-          </div>
+        <div className="grid gap-4 py-3">
+          <Label>Service Rendered</Label>
+          <Input value={serviceRendered} onChange={ (e) => setServiceRendered(e.target.value) } />
+        </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
             updateMutation.mutate(JSON.stringify({

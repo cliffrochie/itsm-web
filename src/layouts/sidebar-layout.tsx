@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer, Slide } from 'react-toastify';
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import DropdownUser  from "@/components/app-dropdown-user";
 import { INavLink } from "@/@types/nav-link";
 import { Button } from "@/components/ui/button";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import NotificationIcon from "@/components/app-notification-icon";
 import {
   DropdownMenu,
@@ -37,6 +37,8 @@ export default function SidebarLayout({
 }) {
   const [notifications, setNotifications] = useState<INotification[] | []>([])
   const { authUser } = useGetAuthUser()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const queryKey = ['notifications', authUser]
 
   const dq = useQuery({
@@ -45,7 +47,7 @@ export default function SidebarLayout({
       let data: INotification[] = []
       let url = ''
       if(authUser) {
-        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt`
+        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`
       }
 
       await api.get(url).then(response => {
@@ -57,12 +59,40 @@ export default function SidebarLayout({
     placeholderData: keepPreviousData
   })
 
+  const updateNotificationMutation = useMutation({
+    mutationKey: ['updateNotificationMutation'],
+    mutationFn: async (data: string) => {
+      await api.put(`/api/notifications/${data}/read`).then(response => {
+        if(response.status === 200) {
+          console.log('read')
+        }
+      })
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    }
+  })
+
   useEffect(() => {
     if(dq.data) {
       console.log(dq.data)
       setNotifications(dq.data)
     }
   }, [dq.data])
+
+  function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
+    if(authUser?.role === 'admin' || authUser?.role === 'superadmin') {
+      navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
+    }
+    else if(authUser?.role === 'staff') {
+      navigate('/service-engineer/'+ ticketNo)
+    }
+    else {
+      navigate('/client/'+ ticketNo)
+    }
+
+    updateNotificationMutation.mutate(notificationId)
+  }
 
 
   return (
@@ -79,17 +109,12 @@ export default function SidebarLayout({
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className=""><NotificationIcon count={notifications.length} /></Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[300px]">
+                <DropdownMenuContent align="end" className="w-[min(90vw,400px)]">
                   <DropdownMenuLabel className="text-md">Notifications</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {/* {notifications.length > 0 && notifications.map((notification) => (
-                    <DropdownMenuItem key={notification.message} className="py-4 text-sm cursor-pointer">
-                      {notification.message}
-                    </DropdownMenuItem>
-                  ))} */}
                   { notifications && notifications.length > 0 ? notifications.map((notification) => (
-                    <DropdownMenuItem key={notification.message} className="py-4 text-sm cursor-pointer">
-                      <Info /><span className="font-semibold">{notification.message}</span>
+                    <DropdownMenuItem key={notification.message} className="py-4 text-sm cursor-pointer" onClick={() => redirectToTicket(notification._id, notification.serviceTicket, notification.ticketNo) }>
+                      <Info /><span className="">{notification.message}</span>
                     </DropdownMenuItem>
                   )): (
                     <DropdownMenuItem className="py-4 text-sm cursor-pointer">
@@ -99,6 +124,7 @@ export default function SidebarLayout({
 
                 </DropdownMenuContent>
               </DropdownMenu>
+
               <DropdownUser />
             </div>
           </div>

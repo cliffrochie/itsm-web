@@ -30,7 +30,7 @@ import { capitalizeFirstLetter } from "@/utils"
 import api from "@/hooks/use-api"
 import { useNavigate, useParams } from "react-router-dom"
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { Circle, LucideIcon, Undo2 } from "lucide-react"
+import { Circle, LucideIcon, Star, Undo2 } from "lucide-react"
 import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
 import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input-service-rendered-dialog"
 import { Slide, toast } from "react-toastify"
@@ -60,7 +60,6 @@ export default function ServiceEngineerITServiceTicket() {
   const navigate = useNavigate()
   const params = useParams()
   const queryClient = useQueryClient()
-  const defaultData = useMemo(() => [], [])
   const queryKey = ['assignedTicket']
 
   const dataQuery = useQuery({
@@ -252,19 +251,53 @@ export default function ServiceEngineerITServiceTicket() {
   
   return (
     <section className="grid custom-md:grid-cols-1 gap-4">
-      <div className="text-xl font-semibold m-0 mb-2">
+      <div className="text-xl font-semibold m-0">
         <div className="flex justify-between items-center text-xl font-semibold m-0 mb-6">
-          <div>
-            <div className="font-bold text-xl">{params.ticketNo}</div>
-            <div className="text-sm text-gray-600">Status:&nbsp;&nbsp;{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</div>
+          <div className="flex custom-xs:flex-col custom-sm:flex-row custom-xs:items-start custom-sm:items-center custom-xs:gap-2 custom-sm:gap-7">
+            <div>
+              <div className="font-bold text-lg">{params.ticketNo}</div>
+              <div className="text-sm text-gray-600">
+                Status:&nbsp;&nbsp;
+                {serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''},&nbsp;&nbsp; 
+                {serviceTicket ? capitalizeFirstLetter(String(serviceTicket.priority)) : 'No'} Priority
+              </div>
+            </div>
+            {serviceTicket?.rating === 'vs' && (
+              <div className="flex">
+                <Star fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+              </div>
+            )}
+            {serviceTicket?.rating === 's' && (
+              <div className="flex">
+                <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  />
+              </div>
+            )}
+            {serviceTicket?.rating === 'n' && (
+              <div className="flex">
+                <Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  />
+              </div>
+            )}
+            {serviceTicket?.rating === 'd' && (
+              <div className="flex">
+                <Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  /><Star size={15}  />
+              </div>
+            )}
+            {serviceTicket?.rating === 'vd' && (
+              <div className="flex">
+                <Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  /><Star size={15}  /><Star size={15}  />
+              </div>
+            )}
           </div>
+
+          
+
           <Button variant="outline" onClick={() => navigate('/service-engineer') }>
             <Undo2 />
             Back
           </Button>
         </div>
       </div>
-      <div className="mt-1 mb-1 flex custom-md:justify-start justify-center justify-between items-center gap-2">
+      <div className="mb-1 flex custom-md:justify-start justify-between items-center gap-2">
         <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'in progress' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('in progress')
@@ -298,10 +331,9 @@ export default function ServiceEngineerITServiceTicket() {
                 </div>
                 <hr/>
                 <div className="flex gap-4 justify-between">
-                  <div className="text-sm">Priority Level:</div>
+                  <div className="text-sm">Title:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    {serviceTicket && serviceTicket.priority && (<PriorityIcon size={16} />)} 
-                    <span className="text-sm">{serviceTicket && serviceTicket.priority ? capitalizeFirstLetter(serviceTicket.priority) : 'None'}</span>
+                    <span className="text-sm">{serviceTicket ? serviceTicket.title : ''}</span>
                   </div>
                 </div>
                 <div className="flex gap-4 justify-between">
@@ -404,7 +436,7 @@ export default function ServiceEngineerITServiceTicket() {
           </CardContent>
         </Card>
 
-        <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
+        <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-auto overflow-hidden">
           <CardHeader>
             <CardTitle>History</CardTitle>
           </CardHeader>

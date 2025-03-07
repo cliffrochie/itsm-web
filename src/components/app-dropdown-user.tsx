@@ -45,9 +45,9 @@ export default function DropdownUser() {
       <DropdownMenuContent align="end" >
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           Profile
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem onClick={() => handleLogoutButton() }>
           Log out
         </DropdownMenuItem>

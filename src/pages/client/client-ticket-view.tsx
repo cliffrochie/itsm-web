@@ -10,8 +10,7 @@ import { priorities } from "@/data/priority"
 import { serviceStatuses } from "@/data/service-status"
 import { IClient } from "@/@types/client"
 import { IUser } from "@/@types/user"
-import { Undo2 } from "lucide-react"
-
+import { Undo2, Star, Ellipsis } from "lucide-react"
 import { 
   Card, 
   CardContent, 
@@ -21,10 +20,11 @@ import {
   CardTitle 
 } from "@/components/ui/card"
 import api from "@/hooks/use-api"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
-
+import RateServiceDialog from "@/features/client/components/dialogs/rate-service-dialog"
+import { Slide, toast } from "react-toastify"
 
 
 
@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button"
 export default function ClientTicketView() {
   const [dateRequested, setDateRequested] = useState('')
   const [inputFindingsDialogOpen, setInputFindingsDialogOpen] = useState(false)
+  const [rateServiceDialog, setRateServiceDialog] = useState(false)
   const [inputServiceRenderedDialogOpen, setInputServiceRenderedDialogOpen] = useState(false)
   const [updateStatusAssignedTicketDialogOpen, setUpdateStatusAssignedTicketDialogOpen] = useState(false)
   const [serviceStatusValue, setServiceStatusValue] = useState('')
@@ -46,10 +47,11 @@ export default function ClientTicketView() {
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
 
   const params = useParams()
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const queryKey = ['clientTicket']
 
-  const dataQuery = useQuery({
+  useQuery({
     queryKey: queryKey,
     queryFn: async () => {
       let url = `/api/service-tickets/?ticketNo=${params.ticketNo}&includes=all`
@@ -78,6 +80,34 @@ export default function ClientTicketView() {
     }
   })
 
+  const rateServiceMutation = useMutation({
+    mutationKey: ['rateServiceMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        rating: parsedData.rating,
+        ratingComment: parsedData.ratingComment
+      } 
+      return await api.patch(`/api/service-tickets/${parsedData.id}/set-rating`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['queryKey', 'serviceTicketHistory', serviceTicket] })
+      toast.success(`Service rated successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
   useEffect(() => {
     if(serviceTicket && serviceTicket.createdAt) {
       const result = new Date(serviceTicket.createdAt)
@@ -101,7 +131,7 @@ export default function ClientTicketView() {
     }
 
     if(serviceTicket?.serviceStatus) {
-      const obj = serviceStatuses.find(s => s.value == serviceTicket?.serviceStatus)
+      const obj = serviceStatuses.find(s => s.value === serviceTicket?.serviceStatus)
       if(obj) {
         setServiceStatusIcon(() => obj.icon)
       }
@@ -150,16 +180,57 @@ export default function ClientTicketView() {
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
 
+    console.log(serviceTicket)
+
   }, [serviceTicket])
 
   return (
     <div className="">
-      <div className="mt-4">
+      <div className="">
         <div className="w-full">
           <div className="flex justify-between items-center text-xl font-semibold m-0 mb-6">
-            <div>
-              <div className="font-bold text-xl">{params.ticketNo}</div>
-              <div className="text-sm text-gray-600">Status:&nbsp;&nbsp;{serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''}</div>
+            <div className="flex custom-xs:flex-col custom-sm:flex-row custom-xs:items-start custom-sm:items-center custom-xs:gap-2 custom-sm:gap-7">
+              <div>
+                <div className="font-bold text-lg">{params.ticketNo}</div>
+                <div className="text-sm text-gray-600">
+                  Status:&nbsp;&nbsp;
+                  {serviceTicket ? capitalizeFirstLetter(String(serviceTicket.serviceStatus)) : ''},&nbsp;&nbsp; 
+                  {serviceTicket ? capitalizeFirstLetter(String(serviceTicket.priority)) : 'No'} Priority
+                </div>
+              </div>
+              <div className="">
+                {serviceTicket?.serviceStatus === 'resolved' && serviceTicket?.rating === '' && (
+                  <Button className="bg-blue-500" onClick={() => setRateServiceDialog(true)}>
+                    <Star fill="#FFF"/> Rate
+                  </Button>
+                )}
+                {serviceTicket?.rating === 'vs' && (
+                  <div className="flex">
+                    <Star fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+                  </div>
+                )}
+                {serviceTicket?.rating === 's' && (
+                  <div className="flex">
+                    <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  />
+                  </div>
+                )}
+                {serviceTicket?.rating === 'n' && (
+                  <div className="flex">
+                    <Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  />
+                  </div>
+                )}
+                {serviceTicket?.rating === 'd' && (
+                  <div className="flex">
+                    <Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  /><Star size={15}  />
+                  </div>
+                )}
+                {serviceTicket?.rating === 'vd' && (
+                  <div className="flex">
+                    <Star size={15}  fill="#000" /><Star size={15}  /><Star size={15}  /><Star size={15}  /><Star size={15}  />
+                  </div>
+                )}
+              </div>
+              
             </div>
             <Button variant="outline" onClick={() => navigate('/client') }>
               <Undo2 />
@@ -175,9 +246,16 @@ export default function ClientTicketView() {
                 <CardContent className="flex flex-col justify-between">
                   <div className="flex gap-4 flex-col">
                     <div className="flex gap-4 justify-between">
-                      <div className="text-sm">Date Requested:</div>
+                      <div className="text-sm">Date & Time Requested:</div>
                       <div className="font-bold flex justify-between gap-2">
                         <span className="text-sm">{dateRequested}</span>
+                      </div>
+                    </div>
+                    <hr/>
+                    <div className="flex gap-4 justify-between">
+                      <div className="text-sm">Title:</div>
+                      <div className="font-bold flex justify-between gap-2">
+                        <span className="text-sm">{serviceTicket ? serviceTicket.title : ''}</span>
                       </div>
                     </div>
                     <hr/>
@@ -271,10 +349,17 @@ export default function ClientTicketView() {
                 </div>
               </CardContent>
             </Card>
-
           </div>
         </div>
       </div>
+      <RateServiceDialog 
+        dialogOpen={rateServiceDialog}
+        setDialogOpen={setRateServiceDialog}
+        id={serviceTicket ? serviceTicket._id : ''}
+        name={serviceTicket ? serviceTicket.ticketNo : ''}
+        serviceEngineerName={serviceEngineerFullName}
+        updateMutation={rateServiceMutation}
+      />
     </div>
   )
 }
