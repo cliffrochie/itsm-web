@@ -200,13 +200,13 @@ export default function ClientTicketView() {
               </div>
               <div className="">
                 {serviceTicket?.serviceStatus === 'resolved' && serviceTicket?.rating === '' && (
-                  <Button className="bg-blue-500" onClick={() => setRateServiceDialog(true)}>
+                  <Button variant="ghost" className="bg-blue-500" onClick={() => setRateServiceDialog(true)}>
                     <Star fill="#FFF"/> Rate
                   </Button>
                 )}
                 {serviceTicket?.rating === 'vs' && (
                   <div className="flex">
-                    <Star fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+                    <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
                   </div>
                 )}
                 {serviceTicket?.rating === 's' && (

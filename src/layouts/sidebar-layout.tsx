@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import useGetAuthUser from "@/features/user/hooks/use-get-current-user";
+import useGetAuthUser from "@/features/user/hooks/use-auth-user";
 import useGetNotifications from "@/hooks/use-get-notification";
 import { INotification } from "@/@types/notification";
 import api from "@/hooks/use-api";

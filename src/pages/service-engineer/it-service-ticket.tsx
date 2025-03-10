@@ -264,7 +264,7 @@ export default function ServiceEngineerITServiceTicket() {
             </div>
             {serviceTicket?.rating === 'vs' && (
               <div className="flex">
-                <Star fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+                <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
               </div>
             )}
             {serviceTicket?.rating === 's' && (
@@ -310,10 +310,6 @@ export default function ServiceEngineerITServiceTicket() {
           setUpdateStatusAssignedTicketDialogOpen(true) 
           setServiceStatusValue('resolved')
         }}>Resolved</Button>
-        <Button variant="outline" type="submit" {...(serviceTicket?.serviceStatus === 'closed' && {disabled: true})} onClick={() => { 
-          setUpdateStatusAssignedTicketDialogOpen(true) 
-          setServiceStatusValue('closed')
-        }}>Closed</Button>
       </div>   
       <div className="grid gap-4 custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
         <Card className="w-full h-[500px]">

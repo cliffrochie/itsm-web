@@ -31,7 +31,8 @@ import api from "@/hooks/use-api"
 import { handleAxiosError } from "@/utils/error-handler"
 import { Slide, toast } from "react-toastify"
 import { capitalizeFirstLetter, formatParagraph } from "@/utils"
-
+import useAuthUser from "@/features/user/hooks/use-auth-user"
+import useGetClientByName from "@/features/client/hooks/use-get-client-by-name"
 
 
 const formSchema = z.object({
@@ -44,13 +45,14 @@ const formSchema = z.object({
 
 
 export default function ClientTicketForm() {
+  const navigate = useNavigate()
+  const { authUser } = useAuthUser()
+  const { client } = useGetClientByName(authUser?.firstName +' '+ authUser?.lastName)
+
   const [errors, setErrors] = useState<any>(null)
-  const [submitTriggered, setSubmitTriggered] = useState(false)
   const [clientSearch, setClientSearch] = useState('')
   const [previousClient, setPreviousClient] = useState('')
-  const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const navigate = useNavigate()
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,13 +68,27 @@ export default function ClientTicketForm() {
 
   useEffect(() => {
     if(clientSearch) {
+      console.log(clientSearch)
       form.setValue('client', clientSearch)
     }
   }, [clientSearch])
+  
+  useEffect(() => {
+    if(authUser) {
+      const fullName = capitalizeFirstLetter(authUser.firstName) +' '+ capitalizeFirstLetter(authUser.lastName) 
+      setPreviousClient(fullName)
+    }
+
+    if(client && client.length > 0) {
+      console.log(client)
+      setClientSearch(client[0]._id)
+    }
+  }, [authUser, client])
+
+
 
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsSubmitted(true)
     console.log(data)
     try {
       const response = await api.post('/api/service-tickets', data)
@@ -226,7 +242,7 @@ export default function ClientTicketForm() {
                     name="client"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Concerning person (client)</FormLabel>
+                        <FormLabel>Concerning person (requestor/client)</FormLabel>
                         <FormControl>
                           <>
                             <ClientComboBox className="" selectItemMsg="----" defaultValue={clientSearch} previousValue={previousClient} onValueChange={(value: string) => {

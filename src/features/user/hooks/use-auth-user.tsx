@@ -9,7 +9,7 @@ interface ThisResponse {
   error?: object | string | undefined 
 }
 
-export default function useGetAuthUser(): ThisResponse {
+export default function useAuthUser(): ThisResponse {
   const [authUser, setAuthUser] = useState<IUser | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<object | string | undefined>(undefined)

@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react"
+import { useState, useEffect, SetStateAction, Dispatch, MouseEvent, ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -31,6 +31,7 @@ import { Slide, toast } from "react-toastify"
 import { AxiosResponse } from "axios"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
+import { ClipboardSignature, Star } from "lucide-react"
 
 
 
@@ -53,12 +54,67 @@ export default function RateServiceDialog({
   serviceEngineerName,
   updateMutation
 }: IRateServiceDialog) {
+  const [ratingFive, setRatingFive] = useState(false)
+  const [ratingFour, setRatingFour] = useState(false)
+  const [ratingThree, setRatingThree] = useState(false)
+  const [ratingTwo, setRatingTwo] = useState(false)
+  const [ratingOne, setRatingOne] = useState(false)
   const [rating, setRating] = useState('n')
   const [ratingComment, setRatingComment] = useState('')
 
   useEffect(() => {
+    console.log(rating)
+  }, [rating])
 
-  }, [dialogOpen])
+  function starClicked(id: string) {
+    switch(id) {
+      case 'vs':
+        setRatingFive(true)
+        setRatingFour(true)
+        setRatingThree(true)
+        setRatingTwo(true)
+        setRatingOne(true)
+        setRating('vs')
+        break
+
+      case 's':
+        setRatingFive(false)
+        setRatingFour(true)
+        setRatingThree(true)
+        setRatingTwo(true)
+        setRatingOne(true)
+        setRating('s')
+        break
+
+      case 'n':
+        setRatingFive(false)
+        setRatingFour(false)
+        setRatingThree(true)
+        setRatingTwo(true)
+        setRatingOne(true)
+        setRating('n')
+        break
+
+      case 'd':
+        setRatingFive(false)
+        setRatingFour(false)
+        setRatingThree(false)
+        setRatingTwo(true)
+        setRatingOne(true)
+        setRating('d')
+        break
+
+      case 'vd':
+        setRatingFive(false)
+        setRatingFour(false)
+        setRatingThree(false)
+        setRatingTwo(false)
+        setRatingOne(true)
+        setRating('vd')
+        break
+    }
+  }
+  
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -74,29 +130,24 @@ export default function RateServiceDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
-          <div className="text-sm text-gray-700">Please rate the service or support provided by the assigned service engineer.</div>
-          <RadioGroup defaultValue="n" className="flex flex-col gap-2" value={rating} onValueChange={setRating}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem className="mt-1" value="vs" id="vs" />
-              <Label htmlFor="vs" className="text-[13px] cursor-pointer">Very satisfied</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem className="mt-1" value="s" id="s" />
-              <Label htmlFor="s" className="text-[13px] cursor-pointer">Satisfied</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem className="mt-1" value="n" id="n" />
-              <Label htmlFor="n" className="text-[13px] cursor-pointer">Neutral</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem className="mt-1" value="d" id="d" />
-              <Label htmlFor="d" className="text-[13px] cursor-pointer">Dissatisfied</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem className="mt-1" value="vd" id="vd" />
-              <Label htmlFor="vd" className="text-[13px] cursor-pointer">Very dissatisfied</Label>
-            </div>
-          </RadioGroup>
+          <div className="text-sm custom-sm:text-left custom-xs:text-center text-gray-700">Please rate the service or support provided by the assigned service engineer.</div>
+          <div className="py-2 flex justify-center">
+            <Button variant="ghost" onClick={() => starClicked('vd') }>
+              <Star style={{ width: "40px", height: "40px"}} id="vd" fill={ratingOne ? '#000': '#FFF'} />
+            </Button>
+            <Button variant="ghost" onClick={() => starClicked('d') }>
+              <Star style={{ width: "40px", height: "40px"}} id="d" fill={ratingTwo ? '#000': '#FFF'} />
+            </Button>
+            <Button variant="ghost" onClick={() => starClicked('n') }>
+              <Star style={{ width: "40px", height: "40px"}} id="n" fill={ratingThree ? '#000': '#FFF'} />
+            </Button>
+            <Button variant="ghost" onClick={() => starClicked('s') }>
+              <Star style={{ width: "40px", height: "40px"}} id="s" fill={ratingFour ? '#000': '#FFF'} />
+            </Button>
+            <Button variant="ghost" onClick={() => starClicked('vs') }>
+              <Star style={{ width: "40px", height: "40px"}} id="vs" fill={ratingFive ? '#000': '#FFF'} />
+            </Button>
+          </div>
           <Textarea defaultValue={ratingComment} onChange={(e) => setRatingComment(e.target.value)} />
         </div>
         <DialogFooter>

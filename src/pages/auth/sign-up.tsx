@@ -27,6 +27,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { IUser } from '@/@types/user'
 import { withMask } from 'use-mask-input'
+import { capitalizeFirstLetter } from '@/utils'
 
 
 const formSchema = z.object({

@@ -1,5 +1,5 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/app-combobox"
 // import { IDesignation } from '@/@types/designation'
@@ -35,6 +35,7 @@ export default function ClientComboBox({
       let data: {value: string, label: string}[] = []
 
       let clientUrl = `/api/clients/?noPage=true&fullName=${search}`
+
       const clientResponse = await api.get<IClient[]>(clientUrl)
 
       clientResponse.data.map(client => {

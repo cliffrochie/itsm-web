@@ -9,7 +9,7 @@ import Logo from '@/assets/logo.svg'
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useState } from 'react';
 import { INotification } from '@/@types/notification';
-import useGetAuthUser from '@/features/user/hooks/use-get-current-user';
+import useGetAuthUser from '@/features/user/hooks/use-auth-user';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/hooks/use-api';
 import NotificationIcon from '@/components/app-notification-icon';
