@@ -52,7 +52,7 @@ export default function ITServiceTicketView() {
   
 
   const dataQuery = useQuery({
-    queryKey: ['serviceTicketView'],
+    queryKey: ['serviceTicketView', params.serviceTicketId],
     queryFn: async () => {
       let data: IServiceTicket = {
         _id: '',
@@ -376,7 +376,7 @@ export default function ITServiceTicketView() {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm">Service Engineer:</span>
-                <span  className={ officeName ? "text-sm" : "text-sm text-red-500 font-bold" }>{serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned'}</span>
+                <span className={ serviceEngineerFullName ? "text-sm" : "text-sm text-red-500 font-bold" }>{serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned'}</span>
               </div>
             </div>
           </CardContent>

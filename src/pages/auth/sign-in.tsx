@@ -28,6 +28,7 @@ export default function SignInPage() {
   const navigate = useNavigate()
   const { user, loading, handleLogin } = useAuth()
   const [errors, setErrors] = useState<any>(null)
+  const [invalidCredentials, setInvalidCredentials] = useState(false)
   const [submitIsLoading, setSubmitIsLoading] = useState<any>(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,9 +58,12 @@ export default function SignInPage() {
           console.log('last condition for navigation')
         }
       }
-      
+      else {
+        setInvalidCredentials(true)
+      }
     }
     catch(e) {
+      setInvalidCredentials(true)
       const err = await handleAxiosError(e)
       console.log(err)
       let obj: any = {}
@@ -74,7 +78,7 @@ export default function SignInPage() {
   return (
     <div className="flex flex-row justify-center h-screen items-center bg-gray-100">
       <div className="bg-gray-100 w-full custom-md:h-screen custom-lg:h-screen overflow-auto flex justify-center items-center custom-sm:px-2">
-        <Card className="max-w-[450px] w-[350px] py-10 ">
+        <Card className="custom-md:w-[500px] custom-xs:w-[450px] py-10 ">
           <CardHeader>
             <CardTitle className="text-center">
               <div className="flex justify-center align-middle w-auto mb-5">
@@ -84,6 +88,9 @@ export default function SignInPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {invalidCredentials && (<div className="bg-red-50 grid gap-1 border border-none rounded-md text-sm p-3 my-2">
+              <div className="text-red-600">Invalid credentials, please verify them and retry.</div>
+            </div>)}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid w-full items-center gap-4">

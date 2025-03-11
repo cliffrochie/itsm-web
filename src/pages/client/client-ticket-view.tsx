@@ -67,7 +67,7 @@ export default function ClientTicketView() {
   })
 
   const serviceTicketHistoryQuery = useQuery({
-    queryKey: ['serviceTicketHistory', serviceTicket],
+    queryKey: ['serviceTicketHistory', serviceTicket, params.ticketNo],
     queryFn: async () => {
       let result: IServiceTicketHistory[] = []
       if(serviceTicket) {

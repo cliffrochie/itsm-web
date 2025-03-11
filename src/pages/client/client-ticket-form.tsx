@@ -32,7 +32,7 @@ import { handleAxiosError } from "@/utils/error-handler"
 import { Slide, toast } from "react-toastify"
 import { capitalizeFirstLetter, formatParagraph } from "@/utils"
 import useAuthUser from "@/features/user/hooks/use-auth-user"
-import useGetClientByName from "@/features/client/hooks/use-get-client-by-name"
+
 
 
 const formSchema = z.object({
@@ -47,7 +47,6 @@ const formSchema = z.object({
 export default function ClientTicketForm() {
   const navigate = useNavigate()
   const { authUser } = useAuthUser()
-  const { client } = useGetClientByName(authUser?.firstName +' '+ authUser?.lastName)
 
   const [errors, setErrors] = useState<any>(null)
   const [clientSearch, setClientSearch] = useState('')
@@ -75,15 +74,19 @@ export default function ClientTicketForm() {
   
   useEffect(() => {
     if(authUser) {
+      async function get() {
+        await api.get('/api/users/client-details').then(response => {
+          setClientSearch(response.data._id)
+        })
+      }
+      get()
+
       const fullName = capitalizeFirstLetter(authUser.firstName) +' '+ capitalizeFirstLetter(authUser.lastName) 
       setPreviousClient(fullName)
+      
+      console.log(clientSearch)
     }
-
-    if(client && client.length > 0) {
-      console.log(client)
-      setClientSearch(client[0]._id)
-    }
-  }, [authUser, client])
+  }, [authUser])
 
 
 

@@ -29,7 +29,7 @@ const ITServiceTicketView = lazy(() => import('@/pages/admin/it-service-tickets/
 const StaffLayout = lazy(() => import('@/layouts/staff-layout'))
 const ServiceEngineerPage = lazy(() => import('@/pages/service-engineer'))
 const ServiceEngineerITServiceTicket = lazy(() => import('@/pages/service-engineer/it-service-ticket'))
-
+const UserProfile = lazy(() => import('@/pages/user-profile'))
 
 
 async function adminPrivilegeLoader() {
@@ -80,6 +80,21 @@ async function userPrivilegeLoader() {
   }
   catch(error) {
     throw redirect('/unauthorized')
+  }
+}
+
+async function shouldAuthenticatedLoader() {
+  try {
+    const response = await api.get('/api/users/current-user', { withCredentials: true })
+    if(response.status === 200) {
+      return
+    }
+    else {
+      throw redirect('/unauthorized')
+    }
+  }
+  catch(error) {
+    // console.log(isAxiosError(error))
   }
 }
 
@@ -147,6 +162,15 @@ const router = createBrowserRouter([
         ),
         loader: userPrivilegeLoader
       },
+      {
+        path: '/client/user-profile',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <UserProfile />
+          </Suspense>
+        ),
+        loader: shouldAuthenticatedLoader
+      },
     ]
   },
   
@@ -194,6 +218,15 @@ const router = createBrowserRouter([
         ),
         loader: staffPrivilegeLoader,
       },
+      {
+        path: '/service-engineer/user-profile',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <UserProfile />
+          </Suspense>
+        ),
+        loader: shouldAuthenticatedLoader
+      },
     ]
   },
   { 
@@ -212,6 +245,15 @@ const router = createBrowserRouter([
           </Suspense>
         ),
         loader: adminPrivilegeLoader,
+      },
+      {
+        path: '/admin/user-profile',
+        element: (
+          <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+            <UserProfile />
+          </Suspense>
+        ),
+        loader: shouldAuthenticatedLoader
       },
       {
         path: '/admin/it-service-tickets',

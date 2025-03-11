@@ -60,7 +60,7 @@ export default function ServiceEngineerITServiceTicket() {
   const navigate = useNavigate()
   const params = useParams()
   const queryClient = useQueryClient()
-  const queryKey = ['assignedTicket']
+  const queryKey = ['assignedTicket', params.ticketNo]
 
   const dataQuery = useQuery({
     queryKey: queryKey,
@@ -288,8 +288,6 @@ export default function ServiceEngineerITServiceTicket() {
               </div>
             )}
           </div>
-
-          
 
           <Button variant="outline" onClick={() => navigate('/service-engineer') }>
             <Undo2 />

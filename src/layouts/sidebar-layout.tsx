@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate, useNavigate, redirect, useParams } from 'react-router-dom';
 import { ToastContainer, Slide } from 'react-toastify';
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -39,6 +39,7 @@ export default function SidebarLayout({
   const { authUser } = useGetAuthUser()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const params = useParams()
   const queryKey = ['notifications', authUser]
 
   const dq = useQuery({
@@ -73,6 +74,20 @@ export default function SidebarLayout({
     }
   })
 
+  function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
+    if(authUser?.role === 'admin' || authUser?.role === 'superadmin') {
+      navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view', { replace: true })
+    }
+    else if(authUser?.role === 'staff') {
+      navigate('/service-engineer/'+ ticketNo, { replace: true })
+    }
+    else {
+      navigate('/client/'+ ticketNo, { replace: true })
+    }
+
+    updateNotificationMutation.mutate(notificationId)
+  }
+
   useEffect(() => {
     if(dq.data) {
       console.log(dq.data)
@@ -80,19 +95,6 @@ export default function SidebarLayout({
     }
   }, [dq.data])
 
-  function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
-    if(authUser?.role === 'admin' || authUser?.role === 'superadmin') {
-      navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
-    }
-    else if(authUser?.role === 'staff') {
-      navigate('/service-engineer/'+ ticketNo)
-    }
-    else {
-      navigate('/client/'+ ticketNo)
-    }
-
-    updateNotificationMutation.mutate(notificationId)
-  }
 
 
   return (
