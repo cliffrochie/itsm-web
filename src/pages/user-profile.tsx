@@ -21,7 +21,7 @@ import { z } from "zod"
 
 import { IUser } from '@/@types/user'
 import api from '@/hooks/use-api'
-import useAuthUser from "@/features/user/hooks/use-auth-user"
+import { Slide, toast } from "react-toastify"
 
 
 
@@ -31,11 +31,11 @@ import useAuthUser from "@/features/user/hooks/use-auth-user"
 
 
 export default function ProfilePage() {
-  const [currentTab, setCurrentTab] = useState('user-information')
+  const [currentTab, setCurrentTab] = useState('change-password')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('')
-  const [errors, setErrors] = useState<any>({})
+  const [errors, setErrors] = useState<any>({sample: 'errors'})
 
   const { user, handleLogin } = useAuth()
 
@@ -43,41 +43,75 @@ export default function ProfilePage() {
     setCurrentTab(tab)
   }
 
+  
   async function checkUserPassword(currentPassword: string) {
     try {
+
       const username = user ? user.username : 'guest'
+
       console.log('username: ', username)
-      console.log('password: ', currentPassword)
+      console.log('password: ', )
 
       const response = await handleLogin(username, currentPassword)
-      return response.status === 200
+      const result = response.status === 200 ? true : false
+      return result
     }
     catch(error) {
-      console.log(error)
+      return false
     }
   }
+
 
   async function onSubmitChangePassword(currentPassword: string, newPassword: string, newPasswordConfirm: string) {
     try {
       const correctCurrentPassword = await checkUserPassword(currentPassword)
       const newPasswordsMatched = newPassword === newPasswordConfirm
+      let errorMessages = {
+        newPassword: '',
+        currentPassword: '',
+      }
+
+      console.log(correctCurrentPassword)
+
 
       if(!correctCurrentPassword) {
-        setErrors({ currentPassword: 'Invalid password' })
+        errorMessages = { ...errorMessages, currentPassword: 'Invalid password' }
       }
       else {
-        const data = errors
-        setErrors(delete data.currentPassword)
+        errorMessages.currentPassword = ''
       }
-      
-      if(!newPasswordsMatched) {
-        setErrors({ newPassword: 'Your passwords did not match.' })
+      if(newPassword && newPasswordConfirm && !newPasswordsMatched) {
+        errorMessages = { ...errorMessages, newPassword: 'Your passwords did not match.' }
+      }
+      else if((newPassword && !newPasswordConfirm) || (!newPassword && newPasswordConfirm)) {
+        errorMessages = { ...errorMessages, newPassword: 'Your passwords did not match.' }
       }
       else {
-        const data = errors
-        setErrors(delete data.newPassword)
+        errorMessages.newPassword = ''
       }
 
+      console.log(errorMessages)
+      setErrors(errorMessages)
+
+      if(errorMessages.newPassword === '' && errorMessages.currentPassword === '') {
+        const response = await api.patch(`/api/users/${user?._id}/change-password`, { password: newPassword })
+        if(response.status === 200) {
+          toast.success(`Password is updated successfully.`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Slide,
+            className: 'text-sm',
+          });
+
+          setCurrentTab('user-information')
+        }
+      }
     }
     catch(error) {
       console.log(error)
@@ -128,16 +162,16 @@ export default function ProfilePage() {
                 <CardContent>
                   <div className="grid gap-4 my-5 custom-xs:w-full custom-sm:w-96">
                     <div className="grid gap-2">
-                      <Label>Current Password</Label>
+                      <Label className={ errors.currentPassword ? 'text-red-500' : ''}>Current Password</Label>
                       <Input name="currentPassword" className="" type="password" onChange={(e) => setCurrentPassword(e.target.value)} />
                       {errors.currentPassword && (<span className="text-sm text-red-500">{errors.currentPassword}</span>)}
                     </div>
                     <div className="grid gap-2">
-                      <Label>New Password</Label>
+                      <Label className={ errors.newPassword ? 'text-red-500' : ''}>New Password</Label>
                       <Input name="newPassword" className="" type="password" onChange={(e) => setNewPassword(e.target.value)} />
                     </div>
                     <div className="grid gap-2">
-                      <Label>New Password Confirmation</Label>
+                      <Label className={ errors.newPassword ? 'text-red-500' : ''}>New Password Confirmation</Label>
                       <Input name="newPasswordConfirmation" className="" type="password" onChange={(e) => setNewPasswordConfirmation(e.target.value)} />
                       {errors.newPassword && (<span className="text-sm text-red-500">{errors.newPassword}</span>)}
                     </div>

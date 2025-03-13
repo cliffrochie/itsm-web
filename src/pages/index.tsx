@@ -1,4 +1,4 @@
-import { FormEvent, useState} from 'react'
+import { FormEvent, useEffect, useState} from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import api from '@/hooks/use-api'
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,24 @@ import Logo from '@/assets/logo.svg'
 
 
 export default function HomePage() {
+  const { user } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if(user) {
+      switch(user.role) {
+        case 'user':
+          navigate('/client')
+          break
+        case 'staff':
+          navigate('/service-engineer')
+          break
+        case 'admin':
+          navigate('/admin')
+          break
+      } 
+    }
+  }, [user])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-gray-100">
