@@ -124,10 +124,9 @@ export default function AdminPage() {
     }))
   }
   
-  // console.log(totalServiceStatuses)
-  // console.log(totalTaskTypes)
-  // console.log(totalEquipmentTypes)
-  // console.log(totalUserRoles)
+  function handleBarClick(data: any, index: number) {
+    console.log(data)
+  }
   
 
 
@@ -179,7 +178,7 @@ export default function AdminPage() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="name" width={100} interval={0} />
                 <Tooltip />
-                <Bar dataKey="total" fill="#8bb2f0" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="total" fill="#8bb2f0" radius={[0, 0, 0, 0]} onClick={handleBarClick}/>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -209,7 +208,7 @@ export default function AdminPage() {
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="name" width={150} interval={0} />
                 <Tooltip />
-                <Bar dataKey="total" fill="#deb7ab" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="total" fill="#deb7ab" radius={[0, 0, 0, 0]} onClick={() => console.log('heehee') } />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

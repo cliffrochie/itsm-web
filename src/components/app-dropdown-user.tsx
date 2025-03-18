@@ -35,6 +35,24 @@ export default function DropdownUser() {
     }
   }
 
+  async function handleProfileButton() {
+    try {
+      
+      if(user && user.role === 'admin') {
+        navigate('/admin/user-profile')
+      }
+      else if(user && user.role === 'staff') {
+        navigate('/service-engineer/user-profile')
+      }
+      else if(user && user.role === 'user') {
+        navigate('/client/user-profile')
+      }
+    }
+    catch(error) {
+      console.error(error)
+    }
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
@@ -45,9 +63,9 @@ export default function DropdownUser() {
       <DropdownMenuContent align="end" >
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleProfileButton() }>
           Profile
-        </DropdownMenuItem> */}
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleLogoutButton() }>
           Log out
         </DropdownMenuItem>

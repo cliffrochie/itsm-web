@@ -25,6 +25,7 @@ import {
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
 import { priorities } from "@/data/priority"
+import { serviceStatuses } from "@/data/service-status"
 
 interface ServiceTicketDataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -81,7 +82,7 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        { accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && accessorKey !== 'createdAt' && (
+        { accessorKey !== 'serviceStatus' && accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && accessorKey !== 'createdAt' && (
           <Input
             placeholder={'Filter '+ title.toLowerCase() +'..' }
             className="h-6 text-nowrap p-1"
@@ -126,6 +127,26 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
               {equipmentTypes.map((equipmentType) => (
                 <SelectItem key={equipmentType.value} value={equipmentType.value}>
                   <span className="text-red-700">{equipmentType.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        {accessorKey === 'serviceStatus' && (
+          <Select onValueChange={(value) => {
+            table.getColumn(accessorKey)?.setFilterValue(value)
+          }}>
+            <SelectTrigger className="h-6 p-1">
+              <SelectValue placeholder="All service statuses" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectItem value=" ">
+                <span className="">All service status</span>
+              </SelectItem>
+              {serviceStatuses.map((serviceStatuse) => (
+                <SelectItem key={serviceStatuse.value} value={serviceStatuse.value}>
+                  <span className="">{serviceStatuse.label}</span>
                 </SelectItem>
               ))}
             </SelectContent>

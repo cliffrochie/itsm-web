@@ -92,24 +92,24 @@ export function UserDataTableColumnHeader<TData, TValue>({
         )}
 
         {accessorKey === 'role' && (
-        <Select onValueChange={(value) => {
-          table.getColumn(accessorKey)?.setFilterValue(value)
-        }}>
-          <SelectTrigger className="h-6 p-1">
-            <SelectValue placeholder="All roles" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value=" ">
-              <span className="">All roles</span>
-            </SelectItem>
-            {roles.map((role) => (
-              <SelectItem key={role.value} value={role.value}>
-                <span className="">{role.label}</span>
+          <Select onValueChange={(value) => {
+            table.getColumn(accessorKey)?.setFilterValue(value)
+          }}>
+            <SelectTrigger className="h-6 p-1">
+              <SelectValue placeholder="All roles" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value=" ">
+                <span className="">All roles</span>
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+              {roles.map((role) => (
+                <SelectItem key={role.value} value={role.value}>
+                  <span className="">{role.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
     </div>
   )

@@ -78,6 +78,15 @@ export default function UserLayout() {
       updateNotificationMutation.mutate(notificationId)
     }
 
+    function navigateToHome() {
+      if(authUser?.role === 'staff') {
+        navigate('/service-engineer')
+      }
+      else if(authUser?.role === 'user') {
+        navigate('/client')
+      }
+    }
+
   return (
     <>
       <nav className="px-8 border-b-[0.5px] border-gray-200 mb-7 sticky top-0 p-1 bg-white z-10">
@@ -85,7 +94,7 @@ export default function UserLayout() {
           {/* Logo */}
           <div className="flex items-center gap-4">
             <img src={Logo} width="45" alt="logo" className="" />
-            <p className="text-lg font-semibold">{isSmallScreen ? 'ITSM' : 'IT Service Management System'}</p>
+            <div className="text-lg font-semibold cursor-pointer hover:text-gray-400" onClick={() => navigateToHome() }>{isSmallScreen ? 'ITSM' : 'IT Service Management System'}</div>
           </div>
           {/* Dropdown on the right */}
           <div className="flex gap-1 justify-end items-center w-auto">

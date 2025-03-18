@@ -386,13 +386,13 @@ export default function ITServiceTicketView() {
           <CardHeader>
             <CardTitle>History</CardTitle>
           </CardHeader>
-          <CardContent className="h-full overflow-y-auto overflow-x-auto">
+          <CardContent className="h-[400px] overflow-y-auto overflow-x-auto">
             <div className="grid grid-cols-1">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
-                    <TableHead>Time</TableHead>
+                    <TableHead className="w-[80px]">Time</TableHead>
                     <TableHead>Details</TableHead>
                   </TableRow>
                 </TableHeader>

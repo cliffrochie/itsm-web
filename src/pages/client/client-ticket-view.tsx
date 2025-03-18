@@ -92,7 +92,7 @@ export default function ClientTicketView() {
       return await api.patch(`/api/service-tickets/${parsedData.id}/set-rating`, body)
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['queryKey', 'serviceTicketHistory', serviceTicket] })
+      queryClient.invalidateQueries({ queryKey: queryKey })
       toast.success(`Service rated successfully.`, {
         position: "top-right",
         autoClose: 5000,
@@ -199,8 +199,8 @@ export default function ClientTicketView() {
                 </div>
               </div>
               <div className="">
-                {serviceTicket?.serviceStatus === 'resolved' && serviceTicket?.rating === '' && (
-                  <Button variant="ghost" className="bg-blue-500" onClick={() => setRateServiceDialog(true)}>
+                {(serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.rating === '' && (
+                  <Button variant="ghost" className="bg-blue-500 text-white" onClick={() => setRateServiceDialog(true)}>
                     <Star fill="#FFF"/> Rate
                   </Button>
                 )}
@@ -326,7 +326,7 @@ export default function ClientTicketView() {
               <CardHeader>
                 <CardTitle>History</CardTitle>
               </CardHeader>
-              <CardContent className="h-full overflow-y-auto overflow-x-auto">
+              <CardContent className="h-[420px] overflow-y-auto overflow-x-auto">
                 <div className="grid grid-cols-1">
                   <Table>
                     <TableHeader>

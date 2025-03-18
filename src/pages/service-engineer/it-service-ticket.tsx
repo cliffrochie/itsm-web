@@ -430,11 +430,11 @@ export default function ServiceEngineerITServiceTicket() {
           </CardContent>
         </Card>
 
-        <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-auto overflow-hidden">
+        <Card className="custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
           <CardHeader>
             <CardTitle>History</CardTitle>
           </CardHeader>
-          <CardContent className="h-full overflow-y-auto overflow-x-auto">
+          <CardContent className="h-[420px] overflow-y-auto overflow-x-auto">
             <div className="grid grid-cols-1">
               <Table>
                 <TableHeader>
