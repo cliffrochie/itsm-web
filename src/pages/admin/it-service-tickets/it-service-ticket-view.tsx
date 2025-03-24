@@ -6,7 +6,7 @@ import { IServiceTicket } from '@/@types/service-ticket'
 import api from '@/hooks/use-api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { LucideIcon, Circle } from 'lucide-react'
+import { LucideIcon, Circle, Star } from 'lucide-react'
 import { priorities } from '@/data/priority'
 import { serviceStatuses } from '@/data/service-status'
 import { taskTypes } from '@/data/task-types'
@@ -256,7 +256,34 @@ export default function ITServiceTicketView() {
 
   return (
     <section>
-      <h3 className="text-xl font-semibold">Ticket No: &nbsp;&nbsp;<span className="font-mono font-normal">{dataQuery.data?.ticketNo}</span></h3>
+      <div className="flex items-center gap-4">
+        <h3 className="text-xl font-semibold">Ticket No: &nbsp;<span className="font-mono font-normal">{dataQuery.data?.ticketNo}</span></h3>
+        { dataQuery.data?.rating && dataQuery.data?.rating === 'vs'  && (
+          <div className="flex">
+            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+          </div>
+        )}
+        { dataQuery.data?.rating && dataQuery.data?.rating === 's'  && (
+          <div className="flex">
+            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15} />
+          </div>
+        )}
+        { dataQuery.data?.rating && dataQuery.data?.rating === 'n'  && (
+          <div className="flex">
+            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15} /><Star size={15}  />
+          </div>
+        )}
+        { dataQuery.data?.rating && dataQuery.data?.rating === 'd'  && (
+          <div className="flex">
+            <Star size={15} fill="#000" /><Star size={15} /><Star size={15}  /><Star size={15}  /><Star size={15}   />
+          </div>
+        )}
+        { dataQuery.data?.rating && dataQuery.data?.rating === 'vd'  && (
+          <div className="flex">
+            <Star size={15} fill="#000" /><Star size={15} /><Star size={15} /><Star size={15} /><Star size={15} />
+          </div>
+        )}
+      </div>
       <div className="mt-5 mb-5 flex justify-start items-center gap-4">
         <div>Actions:</div>
         <Button variant="outline" type="submit" onClick={() => {

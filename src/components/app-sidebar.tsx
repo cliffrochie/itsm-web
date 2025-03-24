@@ -3,8 +3,8 @@ import { LayoutDashboard, ListOrdered, UserRound, SquareUserRound, Settings, Bri
 import { NavLink, useLocation } from 'react-router-dom'
 import { INavLink } from '@/@types/nav-link'
 import { isNumeric } from '@/utils'
-import ReactImg from '@/assets/react.svg'
-import MainLogo from '@/assets/logo-title.svg'
+import ReactImg from '@/assets/images/react.svg'
+import MainLogo from '@/assets/images/logo-title.svg'
 
 import { 
   Sidebar, 

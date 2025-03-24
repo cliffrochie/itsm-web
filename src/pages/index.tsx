@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LogIn } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import Logo from '@/assets/logo.svg'
+import Logo from '@/assets/images/logo.svg'
 
 
 export default function HomePage() {

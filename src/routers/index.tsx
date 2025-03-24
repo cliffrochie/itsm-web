@@ -30,7 +30,7 @@ const StaffLayout = lazy(() => import('@/layouts/staff-layout'))
 const ServiceEngineerPage = lazy(() => import('@/pages/service-engineer'))
 const ServiceEngineerITServiceTicket = lazy(() => import('@/pages/service-engineer/it-service-ticket'))
 const UserProfile = lazy(() => import('@/pages/user-profile'))
-
+const Invoice = lazy(() => import('@/pages/test/invoice'))
 
 async function adminPrivilegeLoader() {
   try {
@@ -120,6 +120,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
         <HomePage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/test',
+    element: (
+      <Suspense fallback={<div className="flex justify-center items-center h-screen max-h-screen w-full"><span>Loading...</span></div>}>
+        <Invoice />
       </Suspense>
     ),
   },

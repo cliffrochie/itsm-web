@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Info, Menu } from "lucide-react";
 import { useAuth } from '@/contexts/auth-context';
 import DropdownUser from '@/components/app-dropdown-user';
-import Logo from '@/assets/logo.svg'
+import Logo from '@/assets/images/logo.svg'
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useState } from 'react';
 import { INotification } from '@/@types/notification';
