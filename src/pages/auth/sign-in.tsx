@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form"
 import { useNavigate, Link } from "react-router-dom"
 import { z } from "zod"
 import { Loader2 } from 'lucide-react'
-import Logo from '@/assets/logo.svg'
+import Logo from '@/assets/images/logo.svg'
 
 
 const formSchema = z.object({

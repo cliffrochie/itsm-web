@@ -5,8 +5,14 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: '#262626',
     fontFamily: 'Helvetica',
-    fontSize: '12px',
+    fontSize: '10px',
     padding: '30px 50px',
+  },
+  line: {
+    marginVertical: 1,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#919191',
+    borderBottomStyle: 'solid',
   },
   header: {
     flexDirection: 'row',
@@ -27,5 +33,14 @@ export const styles = StyleSheet.create({
   },
   billTo: {
     marginBottom: '5px',
+  },
+  fontCambria: {
+    fontFamily: 'Cambria'
+  },
+  fontCambriaBold: {
+    fontFamily: 'Cambria-Bold'
+  },
+  fontCambriaItalic: {
+    fontFamily: 'Cambria-Italic'
   }
 });
