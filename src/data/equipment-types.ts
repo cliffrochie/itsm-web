@@ -5,6 +5,7 @@ import {
   Network,
   AppWindow, 
   Dot, 
+  FileScan
 } from "lucide-react"
 
 export const equipmentTypes = [
@@ -17,6 +18,11 @@ export const equipmentTypes = [
     value: "printer",
     label: "Printer",
     icon: Printer
+  },
+  {
+    value: "scanner",
+    label: "Scanner",
+    icon: FileScan,
   },
   {
     value: "mobile device",

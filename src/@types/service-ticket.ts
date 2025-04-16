@@ -8,7 +8,7 @@ export interface IServiceTicket {
   title: string
   natureOfWork: string
   serialNo?: string
-  equipmentType: "" | "computer" | "software application" | "printer" | "phone" | "network" | "others"
+  equipmentType: "" | "computer" | "software application" | "printer" | "scanner" | "phone" | "network" | "others"
   equipmentTypeOthers?: string
   defectsFound?: string
   serviceRendered?: string

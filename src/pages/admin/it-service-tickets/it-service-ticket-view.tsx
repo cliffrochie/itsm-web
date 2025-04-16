@@ -26,6 +26,8 @@ import { IServiceTicketHistory } from '@/@types/service-ticket-history'
 import UpdateStatusDialog from '@/features/admin/components/dialogs/it-service-tickets/update-status-dialog'
 import AssignServiceEngineerDialog from '@/features/admin/components/dialogs/it-service-tickets/assign-service-engineer-dialog'
 import EscalateServiceDialog from '@/features/admin/components/dialogs/it-service-tickets/escalate-service-dialog'
+import CloseTicketConfirmationDialog from '@/features/admin/components/dialogs/it-service-tickets/close-ticket-confirmation-dialog'
+import ITSMFormDialog from '@/features/admin/components/dialogs/it-service-tickets/itsm-form-dialog'
 import { Slide, toast } from 'react-toastify'
 
 
@@ -49,6 +51,8 @@ export default function ITServiceTicketView() {
   const [updateServiceStatusDialogOpen, setUpdateServiceStatusDialogOpen] = useState(false)
   const [assignServiceEngineerDialogOpen, setAssignServiceEngineerDialogOpen] = useState(false)
   const [escalateServiceDialogOpen, setEscalateServiceDialogOpen] = useState(false)
+  const [closeTicketDialogOpen, setCloseTicketDialogOpen] = useState(false)
+  const [ITSMFormDialogOpen, setITSMFormDialogOpen] = useState(false)
   
 
   const dataQuery = useQuery({
@@ -175,6 +179,31 @@ export default function ITServiceTicketView() {
     }
   })
 
+  const closeTicketDialogMutation = useMutation({
+    mutationKey: ['closeTicketDialogMutation'],
+    mutationFn: async(data: string) => {
+      console.log('close ticket')
+      const parsedData = JSON.parse(data)
+      return await api.patch(`/api/service-tickets/${parsedData.id}/close-ticket`, {})
+    },
+    onSuccess: async () => {
+      console.log('successfully closed')
+      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      toast.success(`IT Service is closed successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
+
   
 
   useEffect(() => {
@@ -286,10 +315,12 @@ export default function ITServiceTicketView() {
       </div>
       <div className="mt-5 mb-5 flex justify-start items-center gap-4">
         <div>Actions:</div>
-        <Button variant="outline" type="submit" onClick={() => {
+        {dataQuery.data && dataQuery.data.serviceStatus !== 'resolved' && dataQuery.data.serviceStatus !== 'closed' && (<Button variant="outline" type="submit" onClick={() => {
           setUpdateServiceStatusDialogOpen(true)
-        }}>Update Service Status</Button>
-
+        }}>Update Service Status</Button>)}
+        {dataQuery.data && dataQuery.data.serviceStatus === 'resolved' && (<Button variant="outline" type="submit" onClick={() => {
+          setCloseTicketDialogOpen(true)
+        }}>Close Ticket</Button>)}
         {dataQuery.data && dataQuery.data.serviceEngineer === null && (
           <Button variant="outline" type="submit" onClick={() => {
             setAssignServiceEngineerDialogOpen(true)
@@ -297,7 +328,14 @@ export default function ITServiceTicketView() {
             Assign Service Engineer
           </Button>
         )}
-        {dataQuery.data && dataQuery.data.serviceEngineer !== null && (
+        {dataQuery.data && dataQuery.data.serviceStatus === 'closed' && dataQuery.data.rating !== null && (
+          <Button variant="outline" type="submit" onClick={() => {
+            setITSMFormDialogOpen(true)
+          }}>
+            Open IT Service Ticket Form
+          </Button>
+        )}
+        {dataQuery.data && dataQuery.data.serviceEngineer !== null && dataQuery.data.serviceStatus !== 'resolved' && dataQuery.data.serviceStatus !== 'closed' && (
           <Button variant="outline" type="submit" onClick={() => {
             setEscalateServiceDialogOpen(true)
           }}>
@@ -461,6 +499,20 @@ export default function ITServiceTicketView() {
           currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ''}
           excludeUser={serviceEngineerId}
           updateMutation={escalateServiceDialogMutation}
+        />
+        <CloseTicketConfirmationDialog
+          dialogOpen={closeTicketDialogOpen}
+          setDialogOpen={setCloseTicketDialogOpen}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          updateMutation={closeTicketDialogMutation}
+        />
+        <ITSMFormDialog
+          dialogOpen={ITSMFormDialogOpen}
+          setDialogOpen={setITSMFormDialogOpen}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          data={dataQuery.data ? dataQuery.data : {}}
         />
       </div>
     </section>
