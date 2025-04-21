@@ -170,7 +170,6 @@ export default function AdminUsersPage() {
         </div>
         <UserDataTable table={table} totalColumns={columns.length} />
         <DataTablePagination table={table} />
-
       </div>
     </section>
   )

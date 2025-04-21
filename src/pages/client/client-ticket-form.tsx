@@ -81,7 +81,9 @@ export default function ClientTicketForm() {
       }
       get()
 
-      const fullName = capitalizeFirstLetter(authUser.firstName) +' '+ capitalizeFirstLetter(authUser.lastName) 
+      let fullName = authUser.firstName
+      fullName += authUser.middleName ? ' '+ authUser.middleName.charAt(0) +'. ' : ''
+      fullName += authUser.lastName
       setPreviousClient(fullName)
       
       console.log(clientSearch)

@@ -13,21 +13,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 
 
 
 interface UserDataTableProps<T> {
   table: TanstackTable<T>
   totalColumns: number
+  className?: string
 }
 
 export function UserDataTable<T>({
   table,
-  totalColumns
+  totalColumns,
+  className
  }: UserDataTableProps<T>) {
 
   return (
-    <div className="rounded-md border mb-3 mt-4">
+    <div className={cn("rounded-md border mb-3 mt-4", className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -63,7 +66,7 @@ export function UserDataTable<T>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={totalColumns} className="h-24 w-full text-center ">
+              <TableCell colSpan={totalColumns} className="h-24 text-center ">
                 No results.
               </TableCell>
             </TableRow>

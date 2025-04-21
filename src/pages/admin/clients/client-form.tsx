@@ -219,7 +219,7 @@ export default function AdminClientForm() {
                   <FormItem>
                     <FormLabel className={ errors?.firstName ? 'text-red-500' : ''}>First Name</FormLabel>
                     <FormControl>
-                      <Input {...field} className="h-7" />
+                      <Input {...field} value={field.value.toUpperCase()} className="h-7" />
                     </FormControl>
                     <FormMessage>{ errors?.firstName }</FormMessage>
                   </FormItem>
@@ -232,7 +232,7 @@ export default function AdminClientForm() {
                   <FormItem>
                     <FormLabel className={ errors?.middleName ? 'text-red-500' : ''}>Middle Name</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="h-7" />
+                      <Input {...field} value={field.value?.toUpperCase() || ""} className="h-7" />
                     </FormControl>
                     <FormMessage>{ errors?.middleName }</FormMessage>
                   </FormItem>
@@ -245,7 +245,7 @@ export default function AdminClientForm() {
                   <FormItem>
                     <FormLabel className={ errors?.lastName ? 'text-red-500' : ''}>Last Name</FormLabel>
                     <FormControl>
-                      <Input {...field} className="h-7" />
+                      <Input {...field} value={field.value.toUpperCase()} className="h-7" />
                     </FormControl>
                     <FormMessage>{ errors?.lastName }</FormMessage>
                   </FormItem>
@@ -256,9 +256,9 @@ export default function AdminClientForm() {
                 name="extensionName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={ errors?.extensionName ? 'text-red-500' : ''}>Extension Name</FormLabel>
+                    <FormLabel className={ errors?.extensionName ? 'text-red-500' : ''}>Ext. Name</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="h-7" />
+                      <Input {...field} value={field.value.toUpperCase() || ""} className="h-7" />
                     </FormControl>
                     <FormMessage>{ errors?.extensionName }</FormMessage>
                   </FormItem>

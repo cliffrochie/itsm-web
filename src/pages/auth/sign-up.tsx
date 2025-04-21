@@ -164,7 +164,7 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
                           <FormControl>
-                            <Input {...field} className="h-7" />
+                            <Input {...field} value={field.value.toUpperCase()} className="h-7" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -177,7 +177,7 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Middle Name</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="h-7" />
+                            <Input {...field} value={field.value?.toUpperCase() || ""} className="h-7" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -190,7 +190,7 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
                           <FormControl>
-                            <Input {...field} className="h-7" />
+                            <Input {...field} value={field.value.toUpperCase()} className="h-7" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -203,7 +203,7 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Extension</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="h-7" />
+                            <Input {...field} value={field.value?.toUpperCase() || ""} className="h-7" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

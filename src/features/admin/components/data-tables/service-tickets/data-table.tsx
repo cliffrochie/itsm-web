@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils"
 
 interface ServiceTicketDataTableProps<T> {
   table: TanstackTable<T>
-  totalColumns: number,
+  totalColumns: number
   className?: string
 }
 

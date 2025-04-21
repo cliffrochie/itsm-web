@@ -37,7 +37,7 @@ import { Slide, toast } from "react-toastify"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
 import UpdateStatusAssignedTicketDialog from "@/features/service-engineer/components/dialogs/confirm-update-status-dialog"
-
+import ITSMFormDialog from '@/features/admin/components/dialogs/it-service-tickets/itsm-form-dialog'
 
 
 
@@ -45,6 +45,7 @@ export default function ServiceEngineerITServiceTicket() {
   const [dateRequested, setDateRequested] = useState('')
   const [inputFindingsDialogOpen, setInputFindingsDialogOpen] = useState(false)
   const [inputServiceRenderedDialogOpen, setInputServiceRenderedDialogOpen] = useState(false)
+  const [ITSMFormDialogOpen, setITSMFormDialogOpen] = useState(false)
   const [updateStatusAssignedTicketDialogOpen, setUpdateStatusAssignedTicketDialogOpen] = useState(false)
   const [serviceStatusValue, setServiceStatusValue] = useState('')
   const [serviceTicket, setServiceTicket] = useState<IServiceTicket | undefined>(undefined)
@@ -296,18 +297,30 @@ export default function ServiceEngineerITServiceTicket() {
         </div>
       </div>
       <div className="mb-1 flex custom-md:justify-start justify-between items-center gap-2">
-        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'in progress' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
-          setUpdateStatusAssignedTicketDialogOpen(true) 
-          setServiceStatusValue('in progress')
-        }}>In-progress</Button>
-        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'on hold' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
-          setUpdateStatusAssignedTicketDialogOpen(true) 
-          setServiceStatusValue('on hold')
-        }}>On-hold</Button>
-        <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
-          setUpdateStatusAssignedTicketDialogOpen(true) 
-          setServiceStatusValue('resolved')
-        }}>Resolved</Button>
+        {!serviceTicket?.rating && (
+          <>
+            <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'in progress' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
+              setUpdateStatusAssignedTicketDialogOpen(true) 
+              setServiceStatusValue('in progress')
+            }}>In-progress</Button>
+            <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'on hold' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
+              setUpdateStatusAssignedTicketDialogOpen(true) 
+              setServiceStatusValue('on hold')
+            }}>On-hold</Button>
+            <Button variant="outline" type="submit" {...((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && {disabled: true})} onClick={() => { 
+              setUpdateStatusAssignedTicketDialogOpen(true) 
+              setServiceStatusValue('resolved')
+            }}>Resolved</Button>
+          </>
+        )}
+        
+        {serviceTicket && serviceTicket.rating !== null && (
+          <Button variant="outline" type="submit" onClick={() => {
+            setITSMFormDialogOpen(true)
+          }}>
+            Open IT Service Ticket Form
+          </Button>
+        )}
       </div>   
       <div className="grid gap-4 custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
         <Card className="w-full h-[500px]">
@@ -484,6 +497,13 @@ export default function ServiceEngineerITServiceTicket() {
         currentValue={serviceTicket? serviceTicket.serviceStatus : ''}
         name={serviceTicket ? serviceTicket.ticketNo : ''}
         updateMutation={updateStatusAssignedTicketDialogMutation}
+      />
+      <ITSMFormDialog
+        dialogOpen={ITSMFormDialogOpen}
+        setDialogOpen={setITSMFormDialogOpen}
+        id={serviceTicket && serviceTicket._id ? serviceTicket._id : ''}
+        name={serviceTicket ? serviceTicket.ticketNo : ''}
+        data={serviceTicket ? serviceTicket : {}}
       />
     </section>
   )

@@ -54,8 +54,8 @@ Font.register({
 
 export default function ITSMForm({data}: { data: any }) {
 
-  const title = 'Can\'t print to the printer'
-  const description = 'It says the printer end of its life service, blinking red LED.'
+  const title = data.title
+  const description = data.natureOfWork
   const timestamp = new Date(data.createdAt)
   const dateCreated = new Intl.DateTimeFormat('en-US', {
     month: 'long',
@@ -115,7 +115,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Designation:</Text>
-              <Text style={{...styles.fontCambria, }}>Sr. Computer Technician</Text>
+              <Text style={{...styles.fontCambria, }}>{data.client.designation.title}</Text>
             </View>
           </View>
         </View>
@@ -131,7 +131,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Division/Department:</Text>
-              <Text style={{...styles.fontCambria, }}>RM's Office</Text>
+              <Text style={{...styles.fontCambria, }}>{data.client.office.alias}</Text>
             </View>
           </View>
         </View>
@@ -164,13 +164,13 @@ export default function ITSMForm({data}: { data: any }) {
           <View style={{width: '250px'}}>
             <View style={{flexDirection: 'row' }}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Serial No.:</Text>
-              <Text style={styles.fontCambria}>DCEGTV295000034</Text>
+              <Text style={styles.fontCambria}>{data.serialNo}</Text>
             </View>
           </View>
           <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Equipment Type:</Text>
-              <Text style={{...styles.fontCambria, }}>Computer</Text>
+              <Text style={{...styles.fontCambria, }}>{capitalizeFirstLetter(data.equipmentType)}</Text>
             </View>
           </View>
         </View>
@@ -184,7 +184,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View style={{width: 'auto',}}>
             <View style={{flexDirection: 'row' }}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Defects found on Inspection:</Text>
-              <Text style={styles.fontCambria}>Ink waste pad counter reached its threshold.</Text>
+              <Text style={styles.fontCambria}>{data.defectsFound}</Text>
             </View>
           </View>
         </View>
@@ -194,7 +194,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View style={{width: 'auto'}}>
             <View style={{flexDirection: 'row' }}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Service Rendered:</Text>
-              <Text style={styles.fontCambria}>Reset ink waste pad counter.</Text>
+              <Text style={styles.fontCambria}>{data.serviceRendered}</Text>
             </View>
           </View>
         </View>
@@ -204,7 +204,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View style={{width: 'auto'}}>
             <View style={{flexDirection: 'row' }}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Service Engineer's Remarks:</Text>
-              <Text style={styles.fontCambria}></Text>
+              <Text style={styles.fontCambria}>{data.remarks}</Text>
             </View>
           </View>
         </View>
@@ -222,13 +222,19 @@ export default function ITSMForm({data}: { data: any }) {
 
         <View style={{flexDirection: 'row', alignItems: 'center', gap: '3px'}}>
           <Text style={styles.fontCambria}>Performance Rating:</Text>
-          <Image src={TwoStar} style={{width: '80px'}} />
+          { data.rating === 'vs' && (<Image src={FiveStar} style={{width: '80px'}} />) }
+          { data.rating === 's' && (<Image src={FourStar} style={{width: '80px'}} />) }
+          { data.rating === 'n' && (<Image src={ThreeStar} style={{width: '80px'}} />) }
+          { data.rating === 'd' && (<Image src={TwoStar} style={{width: '80px'}} />) }
+          { data.rating === 'vd' && (<Image src={OneStar} style={{width: '80px'}} />) }
+          { data.rating === null && (<Image src={NoStar} style={{width: '80px'}} />) }
+          { data.rating === '' && (<Image src={NoStar} style={{width: '80px'}} />) }
         </View>
         <View style={{...styles.line, marginBottom: '4px'}}></View>
 
         <View style={{flexDirection: 'row'}}>
           <Text style={{...styles.fontCambria, marginRight: '8px'}}>Feedback:</Text>
-          <Text style={{...styles.fontCambria}}>Solved the problem quickly.</Text>
+          <Text style={{...styles.fontCambria}}>{data.ratingComment}</Text>
         </View>
         <View style={{...styles.line, marginBottom: '4px'}}></View>
 

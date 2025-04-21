@@ -29,6 +29,7 @@ import EscalateServiceDialog from '@/features/admin/components/dialogs/it-servic
 import CloseTicketConfirmationDialog from '@/features/admin/components/dialogs/it-service-tickets/close-ticket-confirmation-dialog'
 import ITSMFormDialog from '@/features/admin/components/dialogs/it-service-tickets/itsm-form-dialog'
 import { Slide, toast } from 'react-toastify'
+import { IOffice } from '@/@types/office'
 
 
 
@@ -251,15 +252,18 @@ export default function ITServiceTicketView() {
 
     if(dataQuery.data?.client) {
       const obj = dataQuery.data.client as IClient
+      const officeObj = obj.office ? obj.office as IOffice : ''
       setClientFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)} 
         ${obj.extensionName ? String(capitalizeFirstLetter(obj.extensionName)) : ''}`)
 
-      api.get(`/api/offices/${obj.office}`)
-        .then(response => {
-          setOfficeName(response.data.name)
-        })
+      if(officeObj) {
+        api.get(`/api/offices/${officeObj._id}`)
+          .then(response => {
+            setOfficeName(response.data.alias)
+          })
+      }
     }
 
     if(dataQuery.data?.serviceEngineer) {
@@ -278,7 +282,7 @@ export default function ITServiceTicketView() {
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
 
-    console.log(dataQuery.data)
+    // console.log(dataQuery.data)
 
   }, [dataQuery.data])
 
@@ -344,7 +348,7 @@ export default function ITServiceTicketView() {
         )}
       </div>
       <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
-        <Card className="w-full h-[480px]">
+        <Card className="w-full h-[500px]">
           <CardHeader>
             <CardTitle>IT Service Details</CardTitle>
           </CardHeader>
@@ -415,7 +419,7 @@ export default function ITServiceTicketView() {
           </CardContent>
         </Card>
 
-        <Card className="custom-lg:w-full w-auto h-[480px]">
+        <Card className="custom-lg:w-full w-auto h-[500px]">
           <CardHeader>
             <CardTitle>Description</CardTitle>
           </CardHeader>
@@ -447,7 +451,7 @@ export default function ITServiceTicketView() {
           </CardContent>
         </Card>
 
-        <Card className="custom-xl:col-span-1 custom-lg:col-span-2 custom-sm:col-span-1 h-[480px] overflow-hidden">
+        <Card className="custom-xl:col-span-1 custom-lg:col-span-2 custom-sm:col-span-1 h-[500px] overflow-hidden">
           <CardHeader>
             <CardTitle>History</CardTitle>
           </CardHeader>
