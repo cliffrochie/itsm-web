@@ -76,14 +76,16 @@ export default function ClientTicketForm() {
     if(authUser) {
       async function get() {
         await api.get('/api/users/client-details').then(response => {
+          console.log(response)
           setClientSearch(response.data._id)
         })
       }
       get()
 
       let fullName = authUser.firstName
-      fullName += authUser.middleName ? ' '+ authUser.middleName.charAt(0) +'. ' : ''
+      fullName += authUser.middleName ? ' '+ authUser.middleName.charAt(0) +'. ' : ' '
       fullName += authUser.lastName
+      console.log(fullName)
       setPreviousClient(fullName)
       
       console.log(clientSearch)

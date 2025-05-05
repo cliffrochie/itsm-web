@@ -54,8 +54,10 @@ Font.register({
 
 export default function ITSMForm({data}: { data: any }) {
 
-  const title = data.title
-  const description = data.natureOfWork
+  const problemTitle = data.title ? data.title : ''
+  const problemDescription = data.natureOfWork ? data.netureOfWork : ''
+  const clientDesignation = data.client ? data.client.designation ? data.client.designation.title ? data.client.designation.title  : '' : '' : ''
+  const clientOffice = data.client ? data.client.office ? data.client.office.alias ? data.client.office.alias : '' : '' : ''
   const timestamp = new Date(data.createdAt)
   const dateCreated = new Intl.DateTimeFormat('en-US', {
     month: 'long',
@@ -115,7 +117,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Designation:</Text>
-              <Text style={{...styles.fontCambria, }}>{data.client.designation.title}</Text>
+              <Text style={{...styles.fontCambria, }}>{clientDesignation}</Text>
             </View>
           </View>
         </View>
@@ -131,7 +133,7 @@ export default function ITSMForm({data}: { data: any }) {
           <View>
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Division/Department:</Text>
-              <Text style={{...styles.fontCambria, }}>{data.client.office.alias}</Text>
+              <Text style={{...styles.fontCambria, }}>{clientOffice}</Text>
             </View>
           </View>
         </View>
@@ -143,13 +145,13 @@ export default function ITSMForm({data}: { data: any }) {
         </View>
 
         <View>
-          <Text style={{...styles.fontCambria}}>Task/Problem reported:&nbsp;&nbsp;&nbsp;{title}</Text>
+          <Text style={{...styles.fontCambria}}>Task/Problem reported:&nbsp;&nbsp;&nbsp;{problemTitle || ''}</Text>
         </View>
         <View style={{...styles.line, marginBottom: '4px',}}>
           {/* <Text style={{...styles.fontCambria}}>Hello World</Text> */}
         </View>
         <View style={{...styles.line, marginBottom: '20px',}}>
-          <Text style={{...styles.fontCambria}}>- {description}</Text>
+          <Text style={{...styles.fontCambria}}>- {problemDescription}</Text>
         </View>
 
         <View style={{...styles.line, borderBottomWidth: 1, marginBottom: '4px'}}>
@@ -328,8 +330,8 @@ export default function ITSMForm({data}: { data: any }) {
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Acknowledgement</Text>
               <View style={{marginTop: '5px',}}>
                 <View style={{flexDirection: 'column', width: '250px',}}>
-                  <View style={{flexDirection: 'row', width: 'auto'}}>
-                    <Text style={{...styles.fontCambria, marginRight: '8px'}}>Signature:</Text>
+                  <View style={{flexDirection: 'row', width: 'auto',}}>
+                    <Text style={{...styles.fontCambria, marginRight: '8px',}}>Signature:</Text>
                     <View style={{flexDirection: 'row', width: '186px', justifyContent: 'center',}}>
                       <Text style={{...styles.fontCambria,}}>
                         {capitalizeFirstLetter(data.client.firstName)} 

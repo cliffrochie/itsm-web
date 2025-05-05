@@ -18,7 +18,7 @@ import Logo from '@/assets/images/logo.svg'
 
 const formSchema = z.object({
   username: z.string().nonempty({ message: 'Username is required'}),
-  password: z.string().nonempty({ message: 'Username is required'}),
+  password: z.string().nonempty({ message: 'Password is required'}),
 })
 
 
@@ -119,7 +119,7 @@ export default function SignInPage() {
                           <FormControl>
                             <Input {...field} type="password" />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage>{ errors?.password }</FormMessage>
                         </FormItem>
                       )}
                     />

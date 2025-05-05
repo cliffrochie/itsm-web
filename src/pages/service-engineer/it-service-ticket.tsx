@@ -314,7 +314,7 @@ export default function ServiceEngineerITServiceTicket() {
           </>
         )}
         
-        {serviceTicket && serviceTicket.rating !== null && (
+        {serviceTicket && serviceTicket.rating && (
           <Button variant="outline" type="submit" onClick={() => {
             setITSMFormDialogOpen(true)
           }}>

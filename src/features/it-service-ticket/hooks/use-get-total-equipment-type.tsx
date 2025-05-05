@@ -22,6 +22,7 @@ interface ThisResponse {
 const queryParams = [
   'totalComputer',
   'totalPrinter',
+  'totalScanner',
   'totalMobileDevice',
   'totalNetworkRelated',
   'totalSoftwareApplication',

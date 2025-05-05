@@ -199,11 +199,7 @@ export default function ClientTicketView() {
                 </div>
               </div>
               <div className="">
-                {(serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.rating === '' && (
-                  <Button variant="ghost" className="bg-blue-500 text-white" onClick={() => setRateServiceDialog(true)}>
-                    <Star fill="#FFF"/> Rate
-                  </Button>
-                )}
+                
                 {serviceTicket?.rating === 'vs' && (
                   <div className="flex">
                     <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
@@ -232,10 +228,17 @@ export default function ClientTicketView() {
               </div>
               
             </div>
-            <Button variant="outline" onClick={() => navigate('/client') }>
-              <Undo2 />
-              Back
-            </Button>
+            <div className="flex gap-4">
+              {(serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.rating === '' && (
+                <Button variant="ghost" className="bg-blue-500 text-white" onClick={() => setRateServiceDialog(true)}>
+                  <Star fill="#FFF"/> Rate
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => navigate('/client') }>
+                <Undo2 />
+                Back
+              </Button>
+            </div>
           </div>
           <div className="grid gap-4 custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
             <div className="flex flex-col gap-4">

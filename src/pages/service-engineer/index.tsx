@@ -84,7 +84,7 @@ export default function ServiceEngineerPage() {
                         </TableRow>
                       ))
                       : (<TableRow>
-                        <TableCell className="font-medium p-5">No assigned service tickets</TableCell>
+                        <TableCell className="p-5">No assigned service tickets</TableCell>
                         </TableRow>)
                       }
                     </TableBody>
@@ -122,7 +122,7 @@ export default function ServiceEngineerPage() {
                         </TableRow>
                       ))
                       : (<TableRow>
-                        <TableCell className="font-medium p-5">No assigned service tickets</TableCell>
+                        <TableCell className="p-5">No closed service tickets yet</TableCell>
                         </TableRow>)
                       }
                     </TableBody>
