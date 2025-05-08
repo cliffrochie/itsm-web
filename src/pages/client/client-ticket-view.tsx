@@ -6,21 +6,17 @@ import { IServiceTicket } from "@/@types/service-ticket"
 import { Circle, LucideIcon } from "lucide-react"
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
-import { priorities } from "@/data/priority"
-import { serviceStatuses } from "@/data/service-status"
 import { IClient } from "@/@types/client"
 import { IUser } from "@/@types/user"
-import { Undo2, Star, Ellipsis } from "lucide-react"
+import { Undo2, Star } from "lucide-react"
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
-  CardFooter, 
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card"
 import api from "@/hooks/use-api"
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
 import RateServiceDialog from "@/features/client/components/dialogs/rate-service-dialog"
@@ -31,18 +27,12 @@ import { Slide, toast } from "react-toastify"
 
 export default function ClientTicketView() {
   const [dateRequested, setDateRequested] = useState('')
-  const [inputFindingsDialogOpen, setInputFindingsDialogOpen] = useState(false)
   const [rateServiceDialog, setRateServiceDialog] = useState(false)
-  const [inputServiceRenderedDialogOpen, setInputServiceRenderedDialogOpen] = useState(false)
-  const [updateStatusAssignedTicketDialogOpen, setUpdateStatusAssignedTicketDialogOpen] = useState(false)
-  const [serviceStatusValue, setServiceStatusValue] = useState('')
   const [serviceTicket, setServiceTicket] = useState<IServiceTicket | undefined>(undefined)
   const [serviceEngineerFullName, setServiceEngineerFullName] = useState('')
   const [clientFullName, setClientFullName] = useState('')
   const [createdByFullName, setCreatedByFullName] = useState('')
   const [officeName, setOfficeName] = useState('')
-  const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
-  const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
   const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
 
@@ -123,19 +113,7 @@ export default function ClientTicketView() {
       setDateRequested(formattedDate)
     }
 
-    if(serviceTicket && serviceTicket.priority) {
-      const obj = priorities.find(p => p.value === serviceTicket?.priority)
-      if(obj) {
-        setPriorityIcon(() => obj.icon)
-      }
-    }
-
-    if(serviceTicket?.serviceStatus) {
-      const obj = serviceStatuses.find(s => s.value === serviceTicket?.serviceStatus)
-      if(obj) {
-        setServiceStatusIcon(() => obj.icon)
-      }
-    }
+    
 
     if(serviceTicket?.taskType) {
       const obj = taskTypes.find(t => t.value === serviceTicket.taskType)

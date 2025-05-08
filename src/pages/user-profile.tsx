@@ -1,25 +1,9 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
-import { useNavigate } from "react-router-dom"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { cn } from "@/lib/utils"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-
-import { IUser } from '@/@types/user'
 import api from '@/hooks/use-api'
 import { Slide, toast } from "react-toastify"
 

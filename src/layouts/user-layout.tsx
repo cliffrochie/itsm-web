@@ -2,8 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Info, Menu } from "lucide-react";
-import { useAuth } from '@/contexts/auth-context';
+import { Info } from "lucide-react";
 import DropdownUser from '@/components/app-dropdown-user';
 import Logo from '@/assets/images/logo.svg'
 import { useMediaQuery } from 'react-responsive'

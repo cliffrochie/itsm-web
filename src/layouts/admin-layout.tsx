@@ -1,6 +1,4 @@
-import { Outlet } from 'react-router-dom';
 import SidebarLayout from "@/layouts/sidebar-layout"
-import { ToastContainer, Slide } from 'react-toastify';
 import { useState } from 'react';
 import { INavLink } from '@/@types/nav-link';
 import { LayoutDashboard, ListOrdered, UserRound, SquareUserRound, BriefcaseBusiness, House } from "lucide-react"

@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useParams } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { date, z } from "zod"
-import { format } from "date-fns"
+import { z } from "zod"
 
 import api from '@/hooks/use-api'
 import { handleAxiosError } from '@/utils/error-handler'
-import { changeDateFormatMMDDYYYY } from '@/utils'
 
 import { useQuery } from '@tanstack/react-query'
 
@@ -17,10 +15,8 @@ import { toast, Slide } from 'react-toastify';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { Calendar } from '@/components/ui/calendar'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { capitalizeFirstLetter } from '@/utils'
 
 import {
@@ -37,10 +33,6 @@ import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
 import ClientComboBox from '@/features/admin/components/comboboxes/client-combobox'
 
 import { IServiceTicket } from '@/@types/service-ticket'
-import { cn } from '@/lib/utils'
-import { CalendarIcon, Link } from 'lucide-react'
-import { generateTicket, getDateFormatYYYYMMDD, timeRegex } from '@/utils'
-import { withMask } from 'use-mask-input'
 import { taskTypes } from '@/data/task-types'
 import { equipmentTypes } from '@/data/equipment-types'
 import { serviceStatuses } from '@/data/service-status'
@@ -73,14 +65,11 @@ export default function AdminITServiceTicketForm() {
   const navigate = useNavigate()
   const params = useParams()
   const currentPath = location.pathname.split('/')
-  const [dateString, setDateString] = useState(getDateFormatYYYYMMDD())
-  const [timeString, setTimeString] = useState('')
   const [searchUser, setSearchUser] = useState('')
   const [previousUser, setPreviousUser] = useState('')
   const [searchClient, setSearchClient] = useState('')
   const [previousClient, setPreviousClient] = useState('')
-  const [period, setPeriod] = useState('')
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [errors] = useState<{ [key: string]: string }>({})
 
   let isUpdate = false
 
@@ -125,14 +114,6 @@ export default function AdminITServiceTicketForm() {
   }) 
 
 
-  function removeError(key: string) {
-    setErrors((prevErrors) => {
-      const { [key]: _, ...updatedErrors } = prevErrors
-      return updatedErrors
-    })
-  }
-
- 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -277,9 +258,7 @@ export default function AdminITServiceTicketForm() {
   }
 
 
-  function formatParagraphText(e: React.ChangeEvent<HTMLInputElement>) {
-    form.setValue('title', formatParagraph(e.target.value))
-  }
+
 
   return (
     <section>
@@ -476,7 +455,7 @@ export default function AdminITServiceTicketForm() {
               <FormField  
                 control={form.control}
                 name="client"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel className={ errors?.client ? 'text-red-500' : ''}>Client</FormLabel>
                     <FormControl>
@@ -491,7 +470,7 @@ export default function AdminITServiceTicketForm() {
               <FormField  
                 control={form.control}
                 name="serviceEngineer"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel className={ errors?.serviceEngineer ? 'text-red-500' : ''}>Service Engineer</FormLabel>
                     <FormControl>

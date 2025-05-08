@@ -1,9 +1,7 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -11,25 +9,21 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { IServiceTicket } from "@/@types/service-ticket"
-import { IClient, isClientInterface } from "@/@types/client"
-import { isUserInterface, IUser } from '@/@types/user'
+import { IClient } from "@/@types/client"
+import { IUser } from '@/@types/user'
 import { taskTypes } from "@/data/task-types"
 import { equipmentTypes } from "@/data/equipment-types"
-import { priorities } from "@/data/priority"
-import { serviceStatuses } from "@/data/service-status"
 import { capitalizeFirstLetter } from "@/utils"
 
 import api from "@/hooks/use-api"
 import { useNavigate, useParams } from "react-router-dom"
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Circle, LucideIcon, Star, Undo2 } from "lucide-react"
 import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
 import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input-service-rendered-dialog"
@@ -53,8 +47,6 @@ export default function ServiceEngineerITServiceTicket() {
   const [clientFullName, setClientFullName] = useState('')
   const [createdByFullName, setCreatedByFullName] = useState('')
   const [officeName, setOfficeName] = useState('')
-  const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
-  const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
   const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
 
@@ -63,7 +55,7 @@ export default function ServiceEngineerITServiceTicket() {
   const queryClient = useQueryClient()
   const queryKey = ['assignedTicket', params.ticketNo]
 
-  const dataQuery = useQuery({
+  useQuery({
     queryKey: queryKey,
     queryFn: async () => {
       let url = `/api/service-tickets/?ticketNo=${params.ticketNo}&includes=all`
@@ -107,20 +99,6 @@ export default function ServiceEngineerITServiceTicket() {
           hour12: true // Set to false for 24-hour format
       });
       setDateRequested(formattedDate)
-    }
-
-    if(serviceTicket && serviceTicket.priority) {
-      const obj = priorities.find(p => p.value === serviceTicket?.priority)
-      if(obj) {
-        setPriorityIcon(() => obj.icon)
-      }
-    }
-
-    if(serviceTicket?.serviceStatus) {
-      const obj = serviceStatuses.find(s => s.value == serviceTicket?.serviceStatus)
-      if(obj) {
-        setServiceStatusIcon(() => obj.icon)
-      }
     }
 
     if(serviceTicket?.taskType) {

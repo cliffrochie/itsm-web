@@ -1,7 +1,6 @@
-import React, { Suspense, lazy } from "react";
-import { createBrowserRouter, redirect, useLocation } from 'react-router-dom'
+import { Suspense, lazy } from "react";
+import { createBrowserRouter, redirect } from 'react-router-dom'
 import api from '@/hooks/use-api'
-import { AxiosError, isAxiosError } from "axios";
 import UserLayout from "@/layouts/user-layout";
 
 const AdminLayout = lazy(() => import('@/layouts/admin-layout'))
@@ -26,7 +25,6 @@ const SignUpPage = lazy(() => import('@/pages/auth/sign-up'))
 const Error404Page = lazy(() => import('@/pages/error/404'))
 const Error403Page = lazy(() => import('@/pages/error/403'))
 const ITServiceTicketView = lazy(() => import('@/pages/admin/it-service-tickets/it-service-ticket-view'))
-const StaffLayout = lazy(() => import('@/layouts/staff-layout'))
 const ServiceEngineerPage = lazy(() => import('@/pages/service-engineer'))
 const ServiceEngineerITServiceTicket = lazy(() => import('@/pages/service-engineer/it-service-ticket'))
 const UserProfile = lazy(() => import('@/pages/user-profile'))

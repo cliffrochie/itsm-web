@@ -1,8 +1,9 @@
 {
-  "name": "itsm-web-v2",
+  "name": "itsm-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "/",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
@@ -13,7 +14,6 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.9.1",
-    "@propra/react-pdf-table": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.2",

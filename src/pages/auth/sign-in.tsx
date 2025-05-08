@@ -3,16 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/contexts/auth-context"
-import api from "@/hooks/use-api"
-import { handleAxiosError } from "@/utils/error-handler"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Label } from "@radix-ui/react-dropdown-menu"
-import { LogIn } from "lucide-react"
-import { FormEvent, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate, Link } from "react-router-dom"
 import { z } from "zod"
-import { Loader2 } from 'lucide-react'
 import Logo from '@/assets/images/logo.svg'
 
 
@@ -26,10 +21,9 @@ const formSchema = z.object({
 
 export default function SignInPage() {
   const navigate = useNavigate()
-  const { user, loading, handleLogin } = useAuth()
-  const [errors, setErrors] = useState<any>(null)
+  const { handleLogin } = useAuth()
+  const [errors] = useState<any>(null)
   const [invalidCredentials, setInvalidCredentials] = useState(false)
-  const [submitIsLoading, setSubmitIsLoading] = useState<any>(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,12 +57,13 @@ export default function SignInPage() {
       }
     }
     catch(e) {
-      setInvalidCredentials(true)
-      const err = await handleAxiosError(e)
-      console.log(err)
-      let obj: any = {}
-      obj[err.key] = err.message
-      setErrors(obj)
+      console.log(e)
+      // setInvalidCredentials(true)
+      // const err = await handleAxiosError(e)
+      // console.log(err)
+      // let obj: any = {}
+      // obj[err.key] = err.message
+      // setErrors(obj)
     }
   }
 

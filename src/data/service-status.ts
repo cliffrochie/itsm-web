@@ -8,7 +8,6 @@ import {
   RefreshCw, 
   Check,
   Lock,
-  Circle
 } from "lucide-react"
 
 export const serviceStatuses = [

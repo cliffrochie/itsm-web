@@ -13,9 +13,6 @@ import { ServiceTicketDataTable } from "@/features/admin/components/data-tables/
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 import { isClientInterface } from "@/@types/client"
 import { isUserInterface } from '@/@types/user'
-import { taskTypes } from "@/data/task-types"
-import { equipmentTypes } from "@/data/equipment-types"
-import { priorities } from "@/data/priority"
 import { serviceStatuses } from "@/data/service-status"
 import { capitalizeFirstLetter } from "@/utils"
 
@@ -69,7 +66,7 @@ export default function AdminITServiceTicketsPage() {
     placeholderData: keepPreviousData
   })
 
-  const deleteMutation = useMutation({
+  useMutation({
     mutationKey: serviceTicketQueryKey,
     mutationFn: async (id: string) => {
       return await api.delete(`/api/service-tickets/${id}`)

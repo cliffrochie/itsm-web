@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react"
+import { SetStateAction, Dispatch } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,32 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { serviceStatuses } from '@/data/service-status'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { capitalizeFirstLetter } from "@/utils"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slide, toast } from "react-toastify"
-import { AxiosResponse } from "axios"
-import { Badge } from "lucide-react"
-import { useNavigate } from "react-router-dom"
 import { formatDate } from "@/utils"
-import { IServiceTicket } from "@/@types/service-ticket"
-import { IUser } from "@/@types/user"
 
 
 interface IProps {
@@ -49,7 +27,6 @@ interface IProps {
 export default function UserListDialog({
   dialogOpen, 
   setDialogOpen,
-  id,
   title,
   name,
   data

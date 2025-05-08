@@ -1,5 +1,4 @@
-import { createContext, useState, useEffect, ReactNode, useContext, Suspense } from "react";
-import Cookies from "js-cookie";
+import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import { IUser } from "@/@types/user";
 import { login, logout } from "@/services/auth-service";  // Ensure correct path
 import api from "@/hooks/use-api";

@@ -3,7 +3,6 @@ import { styles } from "./styles";
 import NIALogo from '@/assets/images/2020-nia-logo.png'
 import BagongPilipinasLogo from '@/assets/images/bagong-pilipinas.png'
 import OPLogo from '@/assets/images/office-of-the-president.png'
-import * as PDFTable from "@propra/react-pdf-table"
 import TrajanProBold from '@/assets/fonts/TrajanPro-Bold.otf'
 import TrajanPro from '@/assets/fonts/TrajanPro.otf'
 import Cambria from '@/assets/fonts/Cambria.ttf'

@@ -49,8 +49,6 @@ export default function AdminClientForm() {
   const [previousDesignation, setPreviousDesignation] = useState('')
   const [previousOffice, setPreviousOffice] = useState('')
   const [errors, setErrors] = useState<any>(null)
-  const [submitTriggered, setSubmitTriggered] = useState(false)
-  const [hasOfficeSelected, setHasOfficeSelected] = useState(false)
   const currentPath = location.pathname.split('/')
 
   let isUpdate = false

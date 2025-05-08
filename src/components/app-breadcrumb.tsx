@@ -1,6 +1,5 @@
 import React from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
-import { IBreadcrumbLink } from '@/@types/breadcrumb-link'
+import { useLocation } from 'react-router-dom'
 import { capitalizeFirstLetterKebab } from '@/utils'
 
 import {

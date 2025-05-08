@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
 import { useParams } from "react-router"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { IServiceTicket } from '@/@types/service-ticket'
@@ -34,8 +33,6 @@ import { IOffice } from '@/@types/office'
 
 
 export default function ITServiceTicketView() {
-  const location = useLocation()
-  const navigate = useNavigate()
   const params = useParams()
   const queryClient = useQueryClient()
 

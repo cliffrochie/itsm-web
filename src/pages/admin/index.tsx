@@ -1,7 +1,5 @@
 import { useState } from "react"
-import { Navigate } from "react-router-dom"
-import { useAuth } from "@/contexts/auth-context"
-import { Ticket, Tickets, TicketCheck, Users } from "lucide-react"
+import { Ticket, Users } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Card,
@@ -129,10 +127,6 @@ export default function AdminPage() {
     }))
   }
 
-  const [serviceStatusClicked, setServiceStatusClicked] = useState([])
-  const [taskTypeClicked, setTaskTypeClicked] = useState([])
-  const [equipmentTypeClicked, setEquipmentTypeClicked] = useState([])
-  const [userRoleClicked, setUserRoleClicked] = useState([])
 
   const [dataListDialog, setDataListDialog] = useState(false)
   const [userListDialog, setUserListDialog] = useState(false)

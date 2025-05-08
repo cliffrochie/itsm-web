@@ -5,9 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom"
-import getSearchedServiceTickets from "@/features/client/hooks/get-searched-service-tickets";
-import getRequestedServiceTicket from "@/features/client/hooks/get-requested-service-tickets";
+import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
 import { IServiceTicket } from "@/@types/service-ticket";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -21,7 +19,6 @@ export default function ClientPage() {
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([])
 
   const navigate = useNavigate()
-  const params = useParams()
   const clientKey = ['clientRequestTracker', search]
 
   const dataQuery = useQuery({

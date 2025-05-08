@@ -1,5 +1,5 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Outlet, Navigate, useNavigate, redirect, useParams } from 'react-router-dom';
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer, Slide } from 'react-toastify';
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
@@ -12,16 +12,13 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import NotificationIcon from "@/components/app-notification-icon";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import useGetAuthUser from "@/features/user/hooks/use-auth-user";
-import useGetNotifications from "@/hooks/use-get-notification";
 import { INotification } from "@/@types/notification";
 import api from "@/hooks/use-api";
 import { Info } from "lucide-react";
@@ -39,7 +36,6 @@ export default function SidebarLayout({
   const { authUser } = useGetAuthUser()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const params = useParams()
   const queryKey = ['notifications', authUser]
 
   const dq = useQuery({

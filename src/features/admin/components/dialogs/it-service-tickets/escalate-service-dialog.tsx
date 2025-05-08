@@ -9,25 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { serviceStatuses } from '@/data/service-status'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { UseMutationResult } from '@tanstack/react-query'
 import { capitalizeFirstLetter } from "@/utils"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slide, toast } from "react-toastify"
 import { AxiosResponse } from "axios"
 import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
 import { Textarea } from "@/components/ui/textarea"
@@ -58,7 +43,7 @@ export default function EscalateServiceDialog({
 }: IUpdateStatusDialogProps) {
   const [selectedPriority, setSelectedPriority] = useState('')
   const [searchUser, setSearchUser] = useState('')
-  const [previousUser, setPreviousUser] = useState('')
+  const [previousUser] = useState('')
   const [newAdminRemarks, setNewAdminRemarks] = useState('')
 
   useEffect(() => {

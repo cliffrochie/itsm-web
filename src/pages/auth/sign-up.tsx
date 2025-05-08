@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Link, useParams } from "react-router"
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Link } from "react-router"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -9,13 +9,10 @@ import { z } from "zod"
 import api from '@/hooks/use-api'
 import { handleAxiosError } from '@/utils/error-handler'
 
-import { useQuery } from '@tanstack/react-query'
 
 import { toast, Slide } from 'react-toastify';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Form,
   FormControl,
@@ -25,9 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { IUser } from '@/@types/user'
 import { withMask } from 'use-mask-input'
-import { capitalizeFirstLetter } from '@/utils'
 
 
 const formSchema = z.object({

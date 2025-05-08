@@ -2,15 +2,9 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/contexts/auth-context";
@@ -20,7 +14,7 @@ import { capitalizeFirstLetter } from "@/utils";
 
 export default function DropdownUser() {
   const navigate = useNavigate()
-  const { user, loading, handleLogout } = useAuth()
+  const { user, handleLogout } = useAuth()
 
   async function handleLogoutButton() {
     try {

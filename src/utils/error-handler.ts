@@ -1,5 +1,4 @@
-import axios, { AxiosError } from 'axios'
-import { toast, Slide } from 'react-toastify';
+import axios from 'axios'
 
 
 export function handleAxiosError(error: unknown): any {

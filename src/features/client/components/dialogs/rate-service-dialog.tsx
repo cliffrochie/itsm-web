@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction, Dispatch, MouseEvent, ChangeEvent } from "react"
+import { useState, useEffect, SetStateAction, Dispatch, } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,29 +9,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { serviceStatuses } from '@/data/service-status'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { capitalizeFirstLetter } from "@/utils"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slide, toast } from "react-toastify"
+import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from "axios"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
-import { ClipboardSignature, Star } from "lucide-react"
+import { Star } from "lucide-react"
 
 
 
@@ -50,7 +31,6 @@ export default function RateServiceDialog({
   dialogOpen,
   setDialogOpen,
   id,
-  name,
   serviceEngineerName,
   updateMutation
 }: IRateServiceDialog) {

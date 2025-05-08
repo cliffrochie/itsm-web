@@ -10,11 +10,9 @@ import {
   Card, 
   CardContent, 
   CardDescription, 
-  CardFooter, 
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card"
-import { Label } from "@radix-ui/react-dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
@@ -30,7 +28,7 @@ import { useNavigate } from "react-router-dom"
 import api from "@/hooks/use-api"
 import { handleAxiosError } from "@/utils/error-handler"
 import { Slide, toast } from "react-toastify"
-import { capitalizeFirstLetter, formatParagraph } from "@/utils"
+import { formatParagraph } from "@/utils"
 import useAuthUser from "@/features/user/hooks/use-auth-user"
 
 
