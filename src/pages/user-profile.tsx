@@ -129,9 +129,9 @@ export default function ProfilePage() {
           <div id="user-information" className={currentTab === 'user-information' ? '' : 'hidden'}>
             <Card>
               <CardHeader>
-                <CardTitle>User Information</CardTitle>
+                <CardTitle>User Information!!</CardTitle>
                 <CardDescription>
-                  Please provide an information that corresponds to the issue/concern you are currently facing, an IT Personnel will be with you shortly.
+                  Work in progress.
                 </CardDescription>
               </CardHeader>
             </Card>
