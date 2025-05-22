@@ -30,7 +30,9 @@ import { handleAxiosError } from "@/utils/error-handler"
 import { Slide, toast } from "react-toastify"
 import { formatParagraph } from "@/utils"
 import useAuthUser from "@/features/user/hooks/use-auth-user"
-
+import { Plus } from "lucide-react"
+import AddClientDialog from "@/features/client/components/dialogs/add-client-dialog"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 
 const formSchema = z.object({
@@ -45,11 +47,12 @@ const formSchema = z.object({
 export default function ClientTicketForm() {
   const navigate = useNavigate()
   const { authUser } = useAuthUser()
+  const queryClient = useQueryClient()
 
   const [errors, setErrors] = useState<any>(null)
   const [clientSearch, setClientSearch] = useState('')
   const [previousClient, setPreviousClient] = useState('')
-
+  const [addClientDialogOpen, setAddClientDialogOpen] = useState(false)
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -91,6 +94,37 @@ export default function ClientTicketForm() {
   }, [authUser])
 
 
+  const addClientMutation = useMutation({
+    mutationKey: ['rateServiceMutation'],
+    mutationFn: async(data: string) => {
+      console.log(data)
+      const parsedData = JSON.parse(data)
+      const body = {
+        firstName: parsedData.firstName,
+        middleName: parsedData.middleName,
+        lastName: parsedData.lastName,
+        extensionName: parsedData.extensionName,
+        designation: parsedData.designation,
+        office: parsedData.office
+      } 
+      return await api.post(`/api/clients`, body)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: [clientSearch, 'clientComboBox'] })
+      toast.success(`Client added successfully.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Slide,
+        className: 'text-sm',
+      });
+    }
+  })
 
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -248,21 +282,32 @@ export default function ClientTicketForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Concerning person (requestor/client)</FormLabel>
-                        <FormControl>
-                          <>
-                            <ClientComboBox className="" selectItemMsg="----" defaultValue={clientSearch} previousValue={previousClient} onValueChange={(value: string) => {
-                              setClientSearch(value)
-                            }} />
-                            <Input {...field} className="hidden"  />
-                          </>
-                        </FormControl>
+                        <div className="relative custom-md:w-1/2 custom-sm:w-full">
+                          <FormControl>
+                            <>
+                              <ClientComboBox className="" selectItemMsg="----" defaultValue={clientSearch} previousValue={previousClient} onValueChange={(value: string) => {
+                                setClientSearch(value)
+                              }} />
+                              <Input {...field} className="hidden"  />
+                            </>
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="absolute right-1 top-1 h-[calc(100%-0.5rem)] px-4 bg-white text-gray-500"
+                            onClick={() => setAddClientDialogOpen(true) }
+                          >
+                            <Plus />
+                          </Button>
+                        </div>
                         <FormMessage>{ errors?.client }</FormMessage>
                       </FormItem>
                     )}
                   />
                   <div className="flex gap-2 mt-2">
                     <Button type="submit" className="bg-blue-500" form="ticketForm">Submit</Button>
-                    <Button variant="outline" onClick={() => {
+                    <Button type="button" variant="outline" onClick={(e) => {
+                      e.preventDefault()
                       navigate('/client')
                     }}>Cancel</Button>
                   </div>
@@ -272,6 +317,13 @@ export default function ClientTicketForm() {
           </Card>
         </div>
       </div>
+
+      <AddClientDialog 
+        dialogOpen={addClientDialogOpen}
+        setDialogOpen={setAddClientDialogOpen}
+        name="Add new client to the list"
+        updateMutation={addClientMutation}
+      />
     </div>
   )
 }

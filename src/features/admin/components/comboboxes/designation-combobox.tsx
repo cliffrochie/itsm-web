@@ -26,7 +26,7 @@ export default function DesignationComboBox({
     queryKey: [search, "designationComboBox"],
     queryFn: async () => {
       
-      let url = `/api/designations/?noPage=true&title=${search}`
+      let url = `/api/designations/?noPage=true&sort=title&title=${search}`
       const response = await api.get<IDesignation[]>(url)
 
       let data: {value: string, label: string}[] = []
