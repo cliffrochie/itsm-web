@@ -110,7 +110,7 @@ export default function ClientTicketForm() {
       return await api.post(`/api/clients`, body)
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: [clientSearch, 'clientComboBox'] })
+      queryClient.invalidateQueries({ queryKey: ['', 'clientComboBox'] })
       toast.success(`Client added successfully.`, {
         position: "top-right",
         autoClose: 5000,

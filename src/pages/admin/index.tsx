@@ -140,7 +140,8 @@ export default function AdminPage() {
     try {
       switch(data.name) {
         case 'Opened':
-          const openedTickets = await api.get(`/api/service-tickets/?serviceStatus=opened&noPage=true`)
+          const openedTickets = await api.get(`/api/service-tickets/?serviceStatus=open&noPage=true`)
+          console.log(openedTickets)
           setDialogTitle('Opened Tickets')
           setSelectedId(openedTickets.data._id)
           setSelectedName(openedTickets.data.ticketNo)

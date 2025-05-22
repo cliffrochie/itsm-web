@@ -14,6 +14,7 @@ import { DataTablePagination } from "@/components/data-tables/data-table-paginat
 import { isClientInterface } from "@/@types/client"
 import { isUserInterface } from '@/@types/user'
 import { serviceStatuses } from "@/data/service-status"
+import { priorities } from "@/data/priority"
 import { capitalizeFirstLetter } from "@/utils"
 
 
@@ -111,6 +112,25 @@ export default function AdminITServiceTicketsPage() {
           )
         },
       },
+      {
+        accessorKey: "priority",
+        header: ({ column }) => (
+          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="priority" title="Service Status" />
+        ),
+        cell: ({ row }) => {
+          const priority = priorities.find((priority) => priority.value === row.getValue('priority'))
+          if(!priority) { return null }
+          return (
+            <div className="flex items-center">
+              {priority.icon && (
+                <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{priority.label}</span>
+            </div>
+          )
+        },
+      },
+      
       {
         accessorKey: "client",
         header: ({ column }) => (

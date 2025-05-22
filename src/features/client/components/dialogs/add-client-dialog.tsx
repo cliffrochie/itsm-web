@@ -41,10 +41,6 @@ export default function AddClientDialog({
   const [middleName, setMiddleName] = useState('')
   const [lastName, setLastName] = useState('')
   const [extensionName, setExtensionName] = useState('')
-  const [email, setEmail] = useState('')
-  const [contactNo, setContactNo] = useState('')
-  const [designation, setDesignation] = useState('')
-  const [office, setOffice] = useState('')
   const [searchDesignation, setSearchDesignation] = useState('') 
   const [searchOffice, setSearchOffice] = useState('') 
 
@@ -129,8 +125,8 @@ export default function AddClientDialog({
                 middleName,
                 lastName,
                 extensionName,
-                designation,
-                office 
+                designation: searchDesignation,
+                office: searchOffice 
               }))
               setDialogOpen(false)
             }

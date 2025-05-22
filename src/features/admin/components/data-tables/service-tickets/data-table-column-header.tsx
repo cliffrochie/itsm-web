@@ -146,7 +146,7 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
               </SelectItem>
               {serviceStatuses.map((serviceStatuse) => (
                 <SelectItem key={serviceStatuse.value} value={serviceStatuse.value}>
-                  <span className="">{serviceStatuse.label}</span>
+                  <span className="text-red-700">{serviceStatuse.label}</span>
                 </SelectItem>
               ))}
             </SelectContent>
