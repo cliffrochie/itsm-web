@@ -3,7 +3,9 @@ import { UserRoundPlus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { 
   useQuery, 
-  keepPreviousData 
+  keepPreviousData, 
+  useMutation,
+  useQueryClient
 } from '@tanstack/react-query'
 import {
   ColumnDef,
@@ -22,6 +24,7 @@ import { UserDataTable } from '@/features/admin/components/data-tables/users/dat
 import { UserDataTableColumnHeader } from '@/features/admin/components/data-tables/users/data-table-column-header'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
+import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
 
 import { roles } from '@/data/user-roles'
 import { IUser } from '@/@types/user'
@@ -35,9 +38,12 @@ export default function AdminUsersPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const userQueryKey = ['users', pagination, sorting, columnFilters]
 
   const dataQuery = useQuery({
-    queryKey: ['users', pagination, sorting, columnFilters],
+    queryKey: userQueryKey,
     queryFn: async () => {
       let sortValue = ''      
       let data = { rows: [], pageCount: 0, rowCount: 0 }
@@ -70,6 +76,16 @@ export default function AdminUsersPage() {
       return data
     },
     placeholderData: keepPreviousData
+  })
+
+  const deleteMutation = useMutation({
+    mutationKey: userQueryKey,
+    mutationFn: async (id: string) => {
+      return await api.delete(`/api/offices/${id}`)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: userQueryKey })
+    }
   })
 
   const defaultData = useMemo(() => [], [])
@@ -123,6 +139,17 @@ export default function AdminUsersPage() {
         },
         sortingFn: 'alphanumeric',
       },
+      {
+        id: "actions",
+        cell: ({ row }) => <div className="flex justify-end">
+          <DataTableRowActions 
+            id={row.original._id} 
+            name={row.original.username} 
+            updatePath={`/admin/users/${row.original._id}/update`} 
+            deleteMutation={deleteMutation} 
+          />
+        </div>
+      }
     ], []
   )
 

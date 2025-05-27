@@ -16,9 +16,4 @@ export const roles = [
     label: "Admin",
     icon: UserRoundPen
   },
-  {
-    value: "superadmin",
-    label: "Super Admin",
-    icon: UserRoundPen
-  },
 ]

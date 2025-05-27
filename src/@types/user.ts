@@ -9,7 +9,7 @@ export interface IUser {
   lastName: string
   extensionName?: string
   contactNo?: string
-  role: "user" | "staff" | "admin" | "superadmin"
+  role: "user" | "staff" | "admin"
   isActive: boolean
   createdAt?: Date
   updatedAt?: Date
