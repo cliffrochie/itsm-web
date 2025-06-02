@@ -270,7 +270,7 @@ export default function ClientTicketView() {
                     <hr/>
                     <div className="grid gap-2">
                       <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
-                      <div className="border p-3 min-h-12 rounded-md text-sm bg-gray-100">
+                      <div className="border p-3 rounded-md text-sm bg-gray-100 max-h-24 overflow-auto overflow-x-hidden">
                         {serviceTicket ? serviceTicket.natureOfWork : ''}
                       </div>
                     </div>
