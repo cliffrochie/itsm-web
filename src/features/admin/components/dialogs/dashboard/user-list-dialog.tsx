@@ -45,9 +45,9 @@ export default function UserListDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
+          <div className="grid gap-4 py-3 max-h-[500px] overflow-auto overflow-x-hidden">
             <div className="font-semibold text-gray-500">List of users:</div>
-            <Table>
+            <Table className="">
               <TableBody className="border rounded-md">
                 {data.length > 0 ? data.map((user) => (
                   <TableRow key={user._id}  className="cursor-pointer">

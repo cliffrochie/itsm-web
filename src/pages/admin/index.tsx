@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Ticket, Users } from "lucide-react"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import {
   Card,
   CardContent,
@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/card"
 
 import useGetTotalServiceStatus from "@/features/it-service-ticket/hooks/use-get-total-service-status"
-import useGetTotalTaskType from "@/features/it-service-ticket/hooks/use-get-total-task-type";
-import useGetTotalEquipmentType from "@/features/it-service-ticket/hooks/use-get-total-equipment-type";
-import useGetTotalUserRole from "@/features/user/hooks/use-get-total-user-role";
+import useGetTotalTaskType from "@/features/it-service-ticket/hooks/use-get-total-task-type"
+import useGetTotalEquipmentType from "@/features/it-service-ticket/hooks/use-get-total-equipment-type"
+import useGetTotalUserRole from "@/features/user/hooks/use-get-total-user-role"
 import api from "@/hooks/use-api";
-import DataListDialog from "@/features/admin/components/dialogs/dashboard/data-list-dialog";
+import DataListDialog from "@/features/admin/components/dialogs/dashboard/data-list-dialog"
 import UserListDialog from "@/features/admin/components/dialogs/dashboard/user-list-dialog"
 
 
@@ -140,49 +140,49 @@ export default function AdminPage() {
     try {
       switch(data.name) {
         case 'Opened':
-          const openedTickets = await api.get(`/api/service-tickets/?serviceStatus=open&noPage=true`)
+          const openedTickets = await api.get(`/api/service-tickets/?serviceStatus=open&sort=-createdBy`)
           console.log(openedTickets)
           setDialogTitle('Opened Tickets')
-          setSelectedId(openedTickets.data._id)
-          setSelectedName(openedTickets.data.ticketNo)
-          setSelectedData(openedTickets.data)
-          console.log(openedTickets.data._id)
+          setSelectedId(openedTickets.data.results._id)
+          setSelectedName(openedTickets.data.results.ticketNo)
+          setSelectedData(openedTickets.data.results)
+          console.log(openedTickets.data.results._id)
           break
         case 'Assigned':
-          const assignedTickets = await api.get(`/api/service-tickets/?serviceStatus=assigned&noPage=true`)
+          const assignedTickets = await api.get(`/api/service-tickets/?serviceStatus=assigned&sort=-createdBy`)
           setDialogTitle('Assigned Tickets')
-          setSelectedId(assignedTickets.data._id)
-          setSelectedName(assignedTickets.data.ticketNo)
-          setSelectedData(assignedTickets.data)
+          setSelectedId(assignedTickets.data.results._id)
+          setSelectedName(assignedTickets.data.results.ticketNo)
+          setSelectedData(assignedTickets.data.results)
           console.log(assignedTickets)
           break
         case 'In-Progress':
-          const inProgressTickets = await api.get(`/api/service-tickets/?serviceStatus=in progress&noPage=true`)
+          const inProgressTickets = await api.get(`/api/service-tickets/?serviceStatus=in progress&sort=-createdBy`)
           setDataListDialog(true)
           setDialogTitle('In-Progress Tickets')
-          setSelectedId(inProgressTickets.data._id)
-          setSelectedName(inProgressTickets.data.ticketNo)
-          setSelectedData(inProgressTickets.data)
+          setSelectedId(inProgressTickets.data.results._id)
+          setSelectedName(inProgressTickets.data.results.ticketNo)
+          setSelectedData(inProgressTickets.data.results)
           console.log(inProgressTickets)
           break
         case 'On-Hold':
-          const onHoldTickets = await api.get(`/api/service-tickets/?serviceStatus=on hold&noPage=true`)
+          const onHoldTickets = await api.get(`/api/service-tickets/?serviceStatus=on hold&sort=-createdBy`)
           setDialogTitle('On-Hold Tickets')
-          setSelectedId(onHoldTickets.data._id)
-          setSelectedName(onHoldTickets.data.ticketNo)
-          setSelectedData(onHoldTickets.data)
+          setSelectedId(onHoldTickets.data.results._id)
+          setSelectedName(onHoldTickets.data.results.ticketNo)
+          setSelectedData(onHoldTickets.data.results)
           console.log(onHoldTickets)
           break
         case 'Escalated':
-          const escalatedTickets = await api.get(`/api/service-tickets/?serviceStatus=escalated&noPage=true`)
+          const escalatedTickets = await api.get(`/api/service-tickets/?serviceStatus=escalated&sort=-createdBy`)
           setDialogTitle('Escalated Tickets')
-          setSelectedId(escalatedTickets.data._id)
-          setSelectedName(escalatedTickets.data.ticketNo)
-          setSelectedData(escalatedTickets.data)
+          setSelectedId(escalatedTickets.data.results._id)
+          setSelectedName(escalatedTickets.data.results.ticketNo)
+          setSelectedData(escalatedTickets.data.results)
           console.log(escalatedTickets)
           break
         case 'Canceled':
-          const canceledTickets = await api.get(`/api/service-tickets/?serviceStatus=canceled&noPage=true`)
+          const canceledTickets = await api.get(`/api/service-tickets/?serviceStatus=canceled&sort=-createdBy`)
           setDialogTitle('Canceled Tickets')
           setSelectedId(canceledTickets.data._id)
           setSelectedName(canceledTickets.data.ticketNo)
@@ -190,27 +190,27 @@ export default function AdminPage() {
           console.log(canceledTickets)
           break
         case 'Re-Opened':
-          const reOpenedTickets = await api.get(`/api/service-tickets/?serviceStatus=reopened&noPage=true`)
+          const reOpenedTickets = await api.get(`/api/service-tickets/?serviceStatus=reopened&sort=-createdBy`)
           setDialogTitle('Re-Opened Tickets')
-          setSelectedId(reOpenedTickets.data._id)
-          setSelectedName(reOpenedTickets.data.ticketNo)
-          setSelectedData(reOpenedTickets.data)
+          setSelectedId(reOpenedTickets.data.results._id)
+          setSelectedName(reOpenedTickets.data.results.ticketNo)
+          setSelectedData(reOpenedTickets.data.results)
           console.log(reOpenedTickets)
           break
         case 'Resolved':
-          const resolvedTickets = await api.get(`/api/service-tickets/?serviceStatus=resolved&noPage=true`)
+          const resolvedTickets = await api.get(`/api/service-tickets/?serviceStatus=resolved&sort=-createdBy`)
           setDialogTitle('Resolved Tickets')
-          setSelectedId(resolvedTickets.data._id)
-          setSelectedName(resolvedTickets.data.ticketNo)
-          setSelectedData(resolvedTickets.data)
+          setSelectedId(resolvedTickets.data.results._id)
+          setSelectedName(resolvedTickets.data.results.ticketNo)
+          setSelectedData(resolvedTickets.data.results)
           console.log(resolvedTickets)
           break
         case 'Closed':
-          const closedTickets = await api.get(`/api/service-tickets/?serviceStatus=closed&noPage=true`)
+          const closedTickets = await api.get(`/api/service-tickets/?serviceStatus=closed&sort=-createdBy`)
           setDialogTitle('Closed Tickets')
-          setSelectedId(closedTickets.data._id)
-          setSelectedName(closedTickets.data.ticketNo)
-          setSelectedData(closedTickets.data)
+          setSelectedId(closedTickets.data.results._id)
+          setSelectedName(closedTickets.data.results.ticketNo)
+          setSelectedData(closedTickets.data.results)
           console.log(closedTickets)
           break
         default:

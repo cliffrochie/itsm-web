@@ -46,10 +46,10 @@ export default function DataListDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
+          <div className="grid gap-4 py-3 max-h-[500px] overflow-auto overflow-x-hidden">
             <div className="font-semibold text-gray-500">List of data:</div>
             <Table>
-              <TableBody className="border rounded-md">
+              <TableBody className="border rounded-md max-h-24 overflow-auto overflow-x-hidden">
                 {data.length > 0 ? data.map((ticket) => (
                   <TableRow key={ticket._id}  className="cursor-pointer" onClick={() => navigate(`/admin/it-service-tickets/${ticket._id}/view`) }>
                     <TableCell className="font-medium">{ticket.ticketNo}</TableCell>

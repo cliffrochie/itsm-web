@@ -424,7 +424,7 @@ export default function ITServiceTicketView() {
             <div className="grid gap-2 items-stretch h-full ">
               <div className="grid gap-2">
                 <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
-                <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
+                <div className="border p-3 max-h-24 rounded-md text-sm overflow-auto overflow-x-hidden">
                   {dataQuery.data ? dataQuery.data.natureOfWork : ''}
                 </div>
               </div>
