@@ -2,13 +2,13 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
+import { Info, Trash } from "lucide-react";
 import DropdownUser from '@/components/app-dropdown-user';
 import Logo from '@/assets/images/logo.svg'
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useState } from 'react';
 import { INotification } from '@/@types/notification';
-import useGetAuthUser from '@/features/user/hooks/use-auth-user';
+import useGetAuthUser from '@//hooks/user--use-auth-user';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/hooks/use-api';
 import NotificationIcon from '@/components/app-notification-icon';
@@ -55,6 +55,20 @@ export default function UserLayout() {
         queryClient.invalidateQueries({ queryKey: queryKey })
       }
     })
+
+    const clearNotificationMutation = useMutation({
+      mutationKey: ['clearNotificationMutation'],
+      mutationFn: async (data: string) => {
+        await api.put(`/api/notifications/clear-user-notifications/${data}`).then(response => {
+          if(response.status === 200) {
+            console.log('clear all notifications')
+          }
+        })
+      },
+      onSuccess: async () => {
+        queryClient.invalidateQueries({ queryKey: queryKey })
+      }
+    })
   
     useEffect(() => {
       if(dq.data) {
@@ -64,7 +78,7 @@ export default function UserLayout() {
     }, [dq.data])
   
     function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
-      if(authUser?.role === 'admin' || authUser?.role === 'superadmin') {
+      if(authUser?.role === 'admin') {
         navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
       }
       else if(authUser?.role === 'staff') {
@@ -84,6 +98,10 @@ export default function UserLayout() {
       else if(authUser?.role === 'user') {
         navigate('/client')
       }
+    }
+
+    function clearAllNotifications(userId: string) {
+      clearNotificationMutation.mutate(userId)
     }
 
   return (
@@ -113,7 +131,15 @@ export default function UserLayout() {
                     No notifications as of now.
                   </DropdownMenuItem>
                 )}
-
+                { notifications && notifications.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="py-4 text-sm cursor-pointer bg-gray-100" onClick={() => clearAllNotifications(authUser ? authUser._id : '') }>
+                      <Trash /><span className="font-medium">Clear all notifications.</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                
               </DropdownMenuContent>
             </DropdownMenu>
 

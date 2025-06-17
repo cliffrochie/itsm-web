@@ -11,6 +11,7 @@ import { IServiceTicket } from "@/@types/service-ticket";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import api from "@/hooks/use-api";
 import { formatDate } from "@/utils";
+import { useAuth } from "@/contexts/auth-context";
 
 
 
@@ -18,8 +19,11 @@ export default function ClientPage() {
   const [search, setSearch] = useState('')
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([])
 
+  const auth = useAuth()
   const navigate = useNavigate()
   const clientKey = ['clientRequestTracker', search]
+
+  console.log(auth.user)
 
   const dataQuery = useQuery({
     queryKey: clientKey,
@@ -82,7 +86,7 @@ export default function ClientPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium p-5 custom-md:w-48">
-                        <span className="text-gray-500 hidden custom-md:block">{ ticket.createdAt ? formatDate(ticket.createdAt) : undefined }</span>
+                        <span className="text-gray-500 hidden custom-md:block text-right">{ ticket.createdAt ? formatDate(ticket.createdAt) : undefined }</span>
                       </TableCell>
                     </TableRow>
                   ))

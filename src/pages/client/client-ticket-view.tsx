@@ -19,7 +19,7 @@ import api from "@/hooks/use-api"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
-import RateServiceDialog from "@/features/client/components/dialogs/rate-service-dialog"
+import RateServiceDialog from "@/components/dialogs/client--rate-service-dialog"
 import { Slide, toast } from "react-toastify"
 
 

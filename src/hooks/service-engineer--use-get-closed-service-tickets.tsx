@@ -7,18 +7,18 @@ import { handleAxiosError } from '@/utils/error-handler'
 
 
 interface ThisResponse {
-  requestedTickets?: IServiceTicket[]
+  closedTickets?: IServiceTicket[]
   loading: boolean
   error?: object | string | undefined 
 }
 
 
-export default function getRequestedServiceTicket(): ThisResponse {
-  const [requestedTickets, setAssignedTickets] = useState<IServiceTicket[] | []>([])
+export default function useGetClosedServiceTickets(): ThisResponse {
+  const [closedTickets, setClosedTickets] = useState<IServiceTicket[] | []>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<object | string | undefined>(undefined)
 
-  let url = '/api/service-tickets/requested'
+  let url = '/api/service-tickets/assigned-closed'
 
   useEffect(() => {
     async function get() {
@@ -26,7 +26,7 @@ export default function getRequestedServiceTicket(): ThisResponse {
         setLoading(true)
         const response = await api.get(url)
         if(response.status === 200) {
-          setAssignedTickets(response.data)
+          setClosedTickets(response.data)
         }
       }
       catch(error) {
@@ -40,5 +40,5 @@ export default function getRequestedServiceTicket(): ThisResponse {
     get()
   }, [])
 
-  return { requestedTickets, loading, error }
+  return { closedTickets, loading, error }
 }

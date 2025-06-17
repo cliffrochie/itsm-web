@@ -144,7 +144,7 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} ref={withMask('99999999999')} type="contactNo" className="h-7" />
+                            <Input {...field} value={field.value || ""} ref={withMask('9999 999 9999')} type="contactNo" className="h-7" />
                           </FormControl>
                           <FormMessage>{ errors?.contactNo }</FormMessage>
                         </FormItem>

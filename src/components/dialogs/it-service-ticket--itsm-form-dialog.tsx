@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import ITSMForm from "@/features/admin/pdf/itsm-form"
+import ITSMForm from "@/components/pdf-forms/itsm-form"
 
 interface IUpdateStatusDialogProps {
   dialogOpen: boolean

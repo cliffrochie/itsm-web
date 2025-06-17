@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 
 const api = axios.create({ 
-  baseURL: env('SERVER_URL') || 'http://192.168.2.254:5500',
+  baseURL: env('SERVER_URL') || 'http://localhost:5500',
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 })

@@ -10,13 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import useGetTotalServiceStatus from "@/features/it-service-ticket/hooks/use-get-total-service-status"
-import useGetTotalTaskType from "@/features/it-service-ticket/hooks/use-get-total-task-type"
-import useGetTotalEquipmentType from "@/features/it-service-ticket/hooks/use-get-total-equipment-type"
-import useGetTotalUserRole from "@/features/user/hooks/use-get-total-user-role"
+import useGetTotalServiceStatus from "@/hooks/it-service-ticket--use-get-total-service-status"
+import useGetTotalTaskType from "@/hooks/it-service-ticket--use-get-total-task-type"
+import useGetTotalEquipmentType from "@/hooks/it-service-ticket--use-get-total-equipment-type"
+import useGetTotalUserRole from "@/hooks/user--use-get-total-user-role"
 import api from "@/hooks/use-api";
-import DataListDialog from "@/features/admin/components/dialogs/dashboard/data-list-dialog"
-import UserListDialog from "@/features/admin/components/dialogs/dashboard/user-list-dialog"
+import DataListDialog from "@/components/dialogs/dashboard--data-list-dialog"
+import UserListDialog from "@/components/dialogs/dashboard--user-list-dialog"
 
 
 interface TotalServiceStatus {
@@ -134,7 +134,18 @@ export default function AdminPage() {
   const [selectedName, setSelectedName] = useState('')
   const [dialogTitle, setDialogTitle] = useState('')
   const [selectedData, setSelectedData] = useState<any[]>([])
+  const [totalClient, setTotalClient] = useState(0)
 
+  async function getTotalClients() {
+    try { 
+      const result = await api.get('/api/clients')
+      setTotalClient(result.data.total)
+    }
+    catch(error: any) {
+      console.log(error)
+    }
+  }
+  getTotalClients()
   
   async function handleServiceStatusPopulationClick(data: any) {
     try {
@@ -421,7 +432,7 @@ export default function AdminPage() {
             <Users className="text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">21</div>
+            <div className="text-3xl font-bold">{totalClient || 0 }</div>
           </CardContent>
         </Card>
       </div>

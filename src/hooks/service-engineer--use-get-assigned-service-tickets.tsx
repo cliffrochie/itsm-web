@@ -7,22 +7,19 @@ import { handleAxiosError } from '@/utils/error-handler'
 
 
 interface ThisResponse {
-  searchedTickets?: IServiceTicket[]
+  assignedTickets?: IServiceTicket[]
   loading: boolean
   error?: object | string | undefined 
 }
 
 
-export default function getSearchedServiceTickets(ticketNo: string): ThisResponse {
-  const [searchedTickets, setAssignedTickets] = useState<IServiceTicket[] | []>([])
+export default function useGetAssignedServiceTickets(): ThisResponse {
+  const [assignedTickets, setAssignedTickets] = useState<IServiceTicket[] | []>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<object | string | undefined>(undefined)
 
-  let url = '/api/service-tickets/search-ticket-no/'
-  if(ticketNo) {
-    url += `?v=${ticketNo}`
-  }
-  
+  let url = '/api/service-tickets/assigned'
+
   useEffect(() => {
     async function get() {
       try {
@@ -43,5 +40,5 @@ export default function getSearchedServiceTickets(ticketNo: string): ThisRespons
     get()
   }, [])
 
-  return { searchedTickets, loading, error }
+  return { assignedTickets, loading, error }
 }

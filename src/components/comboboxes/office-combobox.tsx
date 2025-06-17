@@ -1,26 +1,22 @@
 
 import { useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
-import { AppComboBox } from "@/components/app-combobox"
+import { AppComboBox } from "@/components/comboboxes/app-combobox"
 // import { IDesignation } from '@/@types/designation'
-import { IUser } from '@/@types/user';
+import { IOffice } from '@/@types/office';
 import api from '@/hooks/use-api'
 import { cn } from "@/lib/utils";
 
-
-
-export default function UserComboBox({
+export default function OfficeComboBox({
   defaultValue,
   previousValue,
   onValueChange,
   className,
-  excludeUser,
 }: {
-  defaultValue?: string
+  defaultValue?: string;
   previousValue?: string;
-  onValueChange: (value: string) => void
-  className?: string
-  excludeUser?: string
+  onValueChange: (value: string) => void;
+  className?: string;
 }) {
   
   const [value, setValue] = useState(defaultValue);
@@ -28,21 +24,18 @@ export default function UserComboBox({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: [search, "userComboBox"],
+    queryKey: [search, "officeComboBox"],
     queryFn: async () => {
       let data: {value: string, label: string}[] = []
 
-      let userUrl = `/api/users/?noPage=true&personnel=true&fullName=${search}`
-      if(excludeUser) {
-        userUrl += `&exclude=${excludeUser}`
-      }
-      const userResponse = await api.get<IUser[]>(userUrl)
+      let aliasUrl = `/api/offices/?noPage=true&alias=${search}`
+      const aliasResponse = await api.get<IOffice[]>(aliasUrl)
 
-      userResponse.data.map(user => {
-        if(user.firstName) {
+      aliasResponse.data.map(office => {
+        if(office.alias) {
           data.push({
-            value: user._id,
-            label: user.firstName +' '+ (user.middleName ? user.middleName[0] +'. ' : '') + user.lastName + (user.extensionName ? user.extensionName : '')
+            value: office._id,
+            label: office.alias
           })
         }
       })
@@ -63,9 +56,9 @@ export default function UserComboBox({
         onValueChange(value);
       }}
       onSearchChange={setSearch}
-      searchPlaceholder="Search service engineer..."
-      noResultsMsg="No service engineer found"
-      selectItemMsg={previousValue || "Select a service engineer"}
+      searchPlaceholder="Search office..."
+      noResultsMsg="No offices found"
+      selectItemMsg={previousValue || "Select an office"}
     />
   )
 }

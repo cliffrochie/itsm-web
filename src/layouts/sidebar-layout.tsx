@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import useGetAuthUser from "@/features/user/hooks/use-auth-user";
+import useGetAuthUser from "@/hooks/user--use-auth-user";
 import { INotification } from "@/@types/notification";
 import api from "@/hooks/use-api";
 import { Info } from "lucide-react";
@@ -71,7 +71,7 @@ export default function SidebarLayout({
   })
 
   function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
-    if(authUser?.role === 'admin' || authUser?.role === 'superadmin') {
+    if(authUser?.role === 'admin') {
       navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view', { replace: true })
     }
     else if(authUser?.role === 'staff') {
@@ -114,12 +114,12 @@ export default function SidebarLayout({
                     <DropdownMenuItem key={notification.message} className="py-4 text-sm cursor-pointer" onClick={() => redirectToTicket(notification._id, notification.serviceTicket, notification.ticketNo) }>
                       <Info /><span className="">{notification.message}</span>
                     </DropdownMenuItem>
-                  )): (
+                  ))
+                  : (
                     <DropdownMenuItem className="py-4 text-sm cursor-pointer">
                       No notifications as of now.
                     </DropdownMenuItem>
                   )}
-
                 </DropdownMenuContent>
               </DropdownMenu>
 

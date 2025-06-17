@@ -12,7 +12,7 @@ import {
 import { UseMutationResult } from '@tanstack/react-query'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AxiosResponse } from "axios"
-import UserComboBox from '@/features/admin/components/comboboxes/user-combobox'
+import UserComboBox from '@/components/comboboxes/user-combobox'
 import { Textarea } from "@/components/ui/textarea"
 
 

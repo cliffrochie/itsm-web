@@ -21,8 +21,8 @@ import { Button } from "@/components/ui/button"
 
 import api from '@/hooks/use-api'
 
-import { DesignationDataTable } from '@/features/admin/components/data-tables/designations/data-table'
-import { DataTableColumnHeader } from '@/features/admin/components/data-tables/designations/data-table-column-header'
+import { DesignationDataTable } from '@/components/data-tables/designation--data-table'
+import { DataTableColumnHeader } from '@/components/data-tables/designation--data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'

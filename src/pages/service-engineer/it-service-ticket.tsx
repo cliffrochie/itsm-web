@@ -25,13 +25,13 @@ import api from "@/hooks/use-api"
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { Circle, LucideIcon, Star, Undo2 } from "lucide-react"
-import InputFindingsDialog from "@/features/it-service-ticket/dialogs/input-findings-dialog"
-import InputServiceRenderDialog from "@/features/it-service-ticket/dialogs/input-service-rendered-dialog"
+import InputFindingsDialog from "@/components/dialogs/it-service-ticket--input-findings-dialog"
+import InputServiceRenderDialog from "@/components/dialogs/it-service-ticket--input-service-rendered-dialog"
 import { Slide, toast } from "react-toastify"
 import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
-import UpdateStatusAssignedTicketDialog from "@/features/service-engineer/components/dialogs/confirm-update-status-dialog"
-import ITSMFormDialog from '@/features/admin/components/dialogs/it-service-tickets/itsm-form-dialog'
+import UpdateStatusAssignedTicketDialog from "@/components/dialogs/service-engineer--confirm-update-status-dialog"
+import ITSMFormDialog from '@/components/dialogs/it-service-ticket--itsm-form-dialog'
 
 
 

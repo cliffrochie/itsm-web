@@ -10,8 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import DesignationComboBox from '@/features/admin/components/comboboxes/designation-combobox'
-import OfficeComboBox from '@/features/admin/components/comboboxes/office-combobox'
+import DesignationComboBox from '@/components/comboboxes/designation-combobox'
+import OfficeComboBox from '@/components/comboboxes/office-combobox'
 
 import { UseMutationResult } from '@tanstack/react-query'
 import { AxiosResponse } from "axios"
@@ -113,9 +113,7 @@ export default function AddClientDialog({
         </div>
         <DialogFooter>
           <Button type="submit" className="bg-blue-500" onClick={() => {
-            
-            
-            
+             
             const result = validate()
             console.log(result)
 

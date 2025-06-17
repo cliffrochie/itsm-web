@@ -18,7 +18,7 @@ import {
   UseMutationResult
 } from '@tanstack/react-query'
 
-import AppDialogDeleteConfirmation from '@/components/app-dialog-delete-confirmation'
+import AppDialogDeleteConfirmation from '@/components/dialogs/app-dialog-delete-confirmation'
 
 
 

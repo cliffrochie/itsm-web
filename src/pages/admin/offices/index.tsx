@@ -22,8 +22,8 @@ import { Button } from "@/components/ui/button"
 
 import api from '@/hooks/use-api'
 
-import { OfficeDataTable } from '@/features/admin/components/data-tables/offices/data-table'
-import { OfficeDataTableColumnHeader } from '@/features/admin/components/data-tables/offices/data-table-column-header'
+import { OfficeDataTable } from '@/components/data-tables/office--data-table'
+import { OfficeDataTableColumnHeader } from '@/components/data-tables/office--data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'

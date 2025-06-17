@@ -1,7 +1,7 @@
 
 import { useState } from 'react'
 import { useQuery } from "@tanstack/react-query";
-import { AppComboBox } from "@/components/app-combobox"
+import { AppComboBox } from "@/components/comboboxes/app-combobox"
 // import { IDesignation } from '@/@types/designation'
 import { IClient } from '@/@types/client';
 import api from '@/hooks/use-api'

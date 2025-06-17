@@ -22,8 +22,8 @@ import { Button } from "@/components/ui/button"
 
 import api from '@/hooks/use-api'
 
-import { ClientDataTable } from '@/features/admin/components/data-tables/clients/data-table' 
-import { DataTableColumnHeader } from '@/features/admin/components/data-tables/clients/data-table-column-header'
+import { ClientDataTable } from '@/components/data-tables/client--data-table' 
+import { DataTableColumnHeader } from '@/components/data-tables/client--data-table-column-header'
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'

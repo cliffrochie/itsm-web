@@ -5,15 +5,15 @@ import { formatDate } from '@/utils';
 
 import { capitalizeFirstLetter } from "@/utils"
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import getAssignedServiceTickets from "@/features/service-engineer/hooks/get-assigned-service-tickets"
-import getClosedServiceTickets from '@/features/service-engineer/hooks/get-closed-service-tickets'
+import useGetAssignedServiceTickets from "@/hooks/service-engineer--use-get-assigned-service-tickets"
+import useGetClosedServiceTickets from '@/hooks/service-engineer--use-get-closed-service-tickets'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 export default function ServiceEngineerPage() {
   const navigate = useNavigate()
-  const { assignedTickets } = getAssignedServiceTickets()
-  const { closedTickets } = getClosedServiceTickets()
+  const { assignedTickets } = useGetAssignedServiceTickets()
+  const { closedTickets } = useGetClosedServiceTickets()
 
 
   return (

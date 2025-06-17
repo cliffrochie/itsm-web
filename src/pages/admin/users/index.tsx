@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button"
 
 import api from '@/hooks/use-api'
 
-import { UserDataTable } from '@/features/admin/components/data-tables/users/data-table'
-import { UserDataTableColumnHeader } from '@/features/admin/components/data-tables/users/data-table-column-header'
+import { UserDataTable } from '@/components/data-tables/user--data-table'
+import { UserDataTableColumnHeader } from '@/components/data-tables/user--data-table-column-header'
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
 import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'

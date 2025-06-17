@@ -22,11 +22,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { IServiceTicketHistory } from '@/@types/service-ticket-history'
-import UpdateStatusDialog from '@/features/admin/components/dialogs/it-service-tickets/update-status-dialog'
-import AssignServiceEngineerDialog from '@/features/admin/components/dialogs/it-service-tickets/assign-service-engineer-dialog'
-import EscalateServiceDialog from '@/features/admin/components/dialogs/it-service-tickets/escalate-service-dialog'
-import CloseTicketConfirmationDialog from '@/features/admin/components/dialogs/it-service-tickets/close-ticket-confirmation-dialog'
-import ITSMFormDialog from '@/features/admin/components/dialogs/it-service-tickets/itsm-form-dialog'
+import UpdateStatusDialog from '@/components/dialogs/it-service-ticket--update-status-dialog'
+import AssignServiceEngineerDialog from '@/components/dialogs/it-service-ticket--assign-service-engineer-dialog'
+import EscalateServiceDialog from '@/components/dialogs/it-service-ticket--escalate-service-dialog'
+import CloseTicketConfirmationDialog from '@/components/dialogs/it-service-ticket--close-ticket-confirmation-dialog'
+import ITSMFormDialog from '@/components/dialogs/it-service-ticket--itsm-form-dialog'
 import { Slide, toast } from 'react-toastify'
 import { IOffice } from '@/@types/office'
 
