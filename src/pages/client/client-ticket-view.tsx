@@ -22,8 +22,6 @@ import { Button } from "@/components/ui/button"
 import RateServiceDialog from "@/components/dialogs/client--rate-service-dialog"
 import { Slide, toast } from "react-toastify"
 import useGetAuthUser from '@//hooks/user--use-auth-user';
-import useGetClientByName from "@/hooks/client--use-get-client-by-name"
-
 
 
 export default function ClientTicketView() {
