@@ -42,9 +42,6 @@ export default function RateServiceDialog({
   const [rating, setRating] = useState('n')
   const [ratingComment, setRatingComment] = useState('')
 
-  useEffect(() => {
-    console.log(rating)
-  }, [rating])
 
   function starClicked(id: string) {
     switch(id) {

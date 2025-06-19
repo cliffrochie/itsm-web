@@ -87,7 +87,7 @@ export default function AssignServiceEngineerDialog({
               id,
               name: name,
               serviceEngineer: searchUser,
-              priority: selectedPriority,
+              priority: selectedPriority === '' ? 'low' : selectedPriority,
               adminRemarks: adminRemarks,
             }))
             setDialogOpen(false)

@@ -19,90 +19,90 @@ export default function UserLayout() {
   const isSmallScreen = useMediaQuery({ maxWidth: 600 })
 
   const [notifications, setNotifications] = useState<INotification[] | []>([])
-    const { authUser } = useGetAuthUser()
-    const queryClient = useQueryClient()
-    const navigate = useNavigate()
-    const queryKey = ['notifications', authUser]
-  
-    const dq = useQuery({
-      queryKey,
-      queryFn: async () => {
-        let data: INotification[] = []
-        let url = ''
-        if(authUser) {
-          url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`
+  const { authUser } = useGetAuthUser()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const queryKey = ['notifications', authUser]
+
+
+  const dq = useQuery({
+    queryKey,
+    queryFn: async () => {
+      let data: INotification[] = []
+      let url = ''
+      if(authUser) {
+        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`
+      }
+
+      await api.get(url).then(response => {
+        data = response.data
+      })
+
+      return data
+    },
+    placeholderData: keepPreviousData
+  })
+
+  const updateNotificationMutation = useMutation({
+    mutationKey: ['updateNotificationMutation'],
+    mutationFn: async (data: string) => {
+      await api.put(`/api/notifications/${data}/read`).then(response => {
+        if(response.status === 200) {
+          console.log('read')
         }
-  
-        await api.get(url).then(response => {
-          data = response.data
-        })
-  
-        return data
-      },
-      placeholderData: keepPreviousData
-    })
-  
-    const updateNotificationMutation = useMutation({
-      mutationKey: ['updateNotificationMutation'],
-      mutationFn: async (data: string) => {
-        await api.put(`/api/notifications/${data}/read`).then(response => {
-          if(response.status === 200) {
-            console.log('read')
-          }
-        })
-      },
-      onSuccess: async () => {
-        queryClient.invalidateQueries({ queryKey: queryKey })
-      }
-    })
+      })
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    }
+  })
 
-    const clearNotificationMutation = useMutation({
-      mutationKey: ['clearNotificationMutation'],
-      mutationFn: async (data: string) => {
-        await api.put(`/api/notifications/clear-user-notifications/${data}`).then(response => {
-          if(response.status === 200) {
-            console.log('clear all notifications')
-          }
-        })
-      },
-      onSuccess: async () => {
-        queryClient.invalidateQueries({ queryKey: queryKey })
-      }
-    })
-  
-    useEffect(() => {
-      if(dq.data) {
-        console.log(dq.data)
-        setNotifications(dq.data)
-      }
-    }, [dq.data])
-  
-    function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
-      if(authUser?.role === 'admin') {
-        navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
-      }
-      else if(authUser?.role === 'staff') {
-        navigate('/service-engineer/'+ ticketNo)
-      }
-      else {
-        navigate('/client/'+ ticketNo)
-      }
-  
-      updateNotificationMutation.mutate(notificationId)
+  const clearNotificationMutation = useMutation({
+    mutationKey: ['clearNotificationMutation'],
+    mutationFn: async (data: string) => {
+      await api.put(`/api/notifications/clear-user-notifications/${data}`).then(response => {
+        if(response.status === 200) {
+          console.log('clear all notifications')
+        }
+      })
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    }
+  })
+
+  useEffect(() => {
+    if(dq.data) {
+      setNotifications(dq.data)
+    }
+  }, [dq.data])
+
+  function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
+    if(authUser?.role === 'admin') {
+      navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
+    }
+    else if(authUser?.role === 'staff') {
+      navigate('/service-engineer/'+ ticketNo)
+    }
+    else {
+      navigate('/client/'+ ticketNo)
     }
 
-    function navigateToHome() {
-      if(authUser?.role === 'staff') {
-        navigate('/service-engineer')
-      }
-      else if(authUser?.role === 'user') {
-        navigate('/client')
-      }
-    }
+    updateNotificationMutation.mutate(notificationId)
+  }
 
-    function clearAllNotifications(userId: string) {
-      clearNotificationMutation.mutate(userId)
+  function navigateToHome() {
+    if(authUser?.role === 'staff') {
+      navigate('/service-engineer')
     }
+    else if(authUser?.role === 'user') {
+      navigate('/client')
+    }
+  }
+
+  function clearAllNotifications(userId: string) {
+    clearNotificationMutation.mutate(userId)
+  }
 
   return (
     <>

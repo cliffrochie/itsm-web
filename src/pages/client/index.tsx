@@ -11,7 +11,7 @@ import { IServiceTicket } from "@/@types/service-ticket";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import api from "@/hooks/use-api";
 import { formatDate } from "@/utils";
-import { useAuth } from "@/contexts/auth-context";
+import useAuthUser from "@/hooks/user--use-auth-user";
 
 
 
@@ -19,11 +19,9 @@ export default function ClientPage() {
   const [search, setSearch] = useState('')
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([])
 
-  const auth = useAuth()
+  const { authUser } = useAuthUser()
   const navigate = useNavigate()
   const clientKey = ['clientRequestTracker', search]
-
-  console.log(auth.user)
 
   const dataQuery = useQuery({
     queryKey: clientKey,
@@ -31,7 +29,7 @@ export default function ClientPage() {
       let data: any[] = []
       let url = ''
       if(search) {
-        url = `/api/service-tickets/?noPage=true&ticketNo=${search}`
+        url = `/api/service-tickets/?noPage=true&ticketNo=${search}&createdBy=${authUser?._id}`
       }
       else {
         url = `/api/service-tickets/requested`

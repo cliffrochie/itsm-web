@@ -21,7 +21,7 @@ import {
 import useGetAuthUser from "@/hooks/user--use-auth-user";
 import { INotification } from "@/@types/notification";
 import api from "@/hooks/use-api";
-import { Info } from "lucide-react";
+import { Info, Trash } from "lucide-react";
 
 
 
@@ -70,6 +70,20 @@ export default function SidebarLayout({
     }
   })
 
+  const clearNotificationMutation = useMutation({
+    mutationKey: ['clearNotificationMutation'],
+    mutationFn: async (data: string) => {
+      await api.put(`/api/notifications/clear-user-notifications/${data}`).then(response => {
+        if(response.status === 200) {
+          console.log('clear all notifications')
+        }
+      })
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: queryKey })
+    }
+  })
+
   function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
     if(authUser?.role === 'admin') {
       navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view', { replace: true })
@@ -82,6 +96,10 @@ export default function SidebarLayout({
     }
 
     updateNotificationMutation.mutate(notificationId)
+  }
+
+  function clearAllNotifications(userId: string) {
+    clearNotificationMutation.mutate(userId)
   }
 
   useEffect(() => {
@@ -119,6 +137,14 @@ export default function SidebarLayout({
                     <DropdownMenuItem className="py-4 text-sm cursor-pointer">
                       No notifications as of now.
                     </DropdownMenuItem>
+                  )}
+                  { notifications && notifications.length > 0 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="py-4 text-sm cursor-pointer bg-gray-100" onClick={() => clearAllNotifications(authUser ? authUser._id : '') }>
+                        <Trash /><span className="font-medium">Clear all notifications.</span>
+                      </DropdownMenuItem>
+                    </>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

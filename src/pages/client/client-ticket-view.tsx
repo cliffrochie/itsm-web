@@ -21,7 +21,8 @@ import { IServiceTicketHistory } from "@/@types/service-ticket-history"
 import { Button } from "@/components/ui/button"
 import RateServiceDialog from "@/components/dialogs/client--rate-service-dialog"
 import { Slide, toast } from "react-toastify"
-
+import useGetAuthUser from '@//hooks/user--use-auth-user';
+import useGetClientByName from "@/hooks/client--use-get-client-by-name"
 
 
 
@@ -35,7 +36,9 @@ export default function ClientTicketView() {
   const [officeName, setOfficeName] = useState('')
   const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
   const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
+  const [displayRateServiceButton, setDisplayRateServiceButton] = useState(false)
 
+  const { authUser } = useGetAuthUser()
   const params = useParams()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -98,6 +101,7 @@ export default function ClientTicketView() {
     }
   })
 
+
   useEffect(() => {
     if(serviceTicket && serviceTicket.createdAt) {
       const result = new Date(serviceTicket.createdAt)
@@ -112,8 +116,6 @@ export default function ClientTicketView() {
       });
       setDateRequested(formattedDate)
     }
-
-    
 
     if(serviceTicket?.taskType) {
       const obj = taskTypes.find(t => t.value === serviceTicket.taskType)
@@ -135,13 +137,16 @@ export default function ClientTicketView() {
         ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
         ${capitalizeFirstLetter(obj.lastName)} 
         ${obj.extensionName ? String(capitalizeFirstLetter(obj.extensionName)) : ''}`)
-
-      api.get(`/api/offices/${obj.office}`)
-        .then(response => {
-          if(response.status === 200) {
-            setOfficeName(response.data.name)
-          }
-        })
+      
+        if(obj.office) {
+        api.get(`/api/offices/${obj.office}`)
+          .then(response => {
+            if(response.status === 200) {
+              setOfficeName(response.data.name)
+            }
+          })
+      }
+     
     }
 
      if(serviceTicket?.serviceEngineer) {
@@ -158,9 +163,15 @@ export default function ClientTicketView() {
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
 
-    console.log(serviceTicket)
+    if((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.createdBy === authUser?._id) {
+      setDisplayRateServiceButton(true)
+    }
+
+
 
   }, [serviceTicket])
+
+
 
   return (
     <div className="">
@@ -207,7 +218,7 @@ export default function ClientTicketView() {
               
             </div>
             <div className="flex gap-4">
-              {(serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.rating === '' && (
+              {displayRateServiceButton && serviceTicket?.rating === '' && (
                 <Button variant="ghost" className="bg-blue-500 text-white" onClick={() => setRateServiceDialog(true)}>
                   <Star fill="#FFF"/> Rate
                 </Button>
