@@ -161,11 +161,11 @@ export default function ClientTicketView() {
         ${capitalizeFirstLetter(obj.lastName)}`)
     }
 
-    if((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed') && serviceTicket?.createdBy === authUser?._id) {
+    console.log(serviceTicket?.serviceStatus)
+
+    if((serviceTicket?.serviceStatus === 'resolved' || serviceTicket?.serviceStatus === 'closed')) {
       setDisplayRateServiceButton(true)
     }
-
-
 
   }, [serviceTicket])
 

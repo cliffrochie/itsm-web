@@ -292,7 +292,7 @@ export default function ServiceEngineerITServiceTicket() {
           </>
         )}
         
-        {serviceTicket && serviceTicket.rating && (
+        {serviceTicket?.serviceStatus === 'closed' && (
           <Button variant="outline" type="submit" onClick={() => {
             setITSMFormDialogOpen(true)
           }}>
