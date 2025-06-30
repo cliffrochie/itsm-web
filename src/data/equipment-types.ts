@@ -1,23 +1,23 @@
-import { 
+import {
   Computer,
   Printer,
   TabletSmartphone,
   Network,
-  AppWindow, 
-  Dot, 
-  FileScan
-} from "lucide-react"
+  AppWindow,
+  Dot,
+  FileScan,
+} from "lucide-react";
 
 export const equipmentTypes = [
   {
     value: "computer",
     label: "Computer",
-    icon: Computer
+    icon: Computer,
   },
   {
     value: "printer",
     label: "Printer",
-    icon: Printer
+    icon: Printer,
   },
   {
     value: "scanner",
@@ -27,21 +27,21 @@ export const equipmentTypes = [
   {
     value: "mobile device",
     label: "Mobile Device",
-    icon: TabletSmartphone
+    icon: TabletSmartphone,
   },
   {
     value: "network",
     label: "Network Related",
-    icon: Network
+    icon: Network,
   },
   {
     value: "software application",
     label: "Software Application",
-    icon: AppWindow
+    icon: AppWindow,
   },
   {
     value: "others",
     label: "Others",
-    icon: Dot
+    icon: Dot,
   },
-]
+];

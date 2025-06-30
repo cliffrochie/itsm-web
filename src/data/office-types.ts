@@ -1,39 +1,39 @@
-import { Map } from "lucide-react"
+import { Map } from "lucide-react";
 
 export const officeTypes = [
   {
     value: "unit",
     label: "Unit",
-    icon: Map
+    icon: Map,
   },
   {
     value: "section",
     label: "Section",
-    icon: Map
+    icon: Map,
   },
   {
     value: "division",
     label: "Division",
-    icon: Map
+    icon: Map,
   },
   {
     value: "irrigation system",
     label: "Irrigation System",
-    icon: Map
+    icon: Map,
   },
   {
     value: "satellite office",
     label: "Satellite Office",
-    icon: Map
+    icon: Map,
   },
   {
     value: "irrigation management office",
     label: "Irrigation Management Office",
-    icon: Map
+    icon: Map,
   },
   {
     value: "regional office",
     label: "Regional Office",
-    icon: Map
+    icon: Map,
   },
-]
+];

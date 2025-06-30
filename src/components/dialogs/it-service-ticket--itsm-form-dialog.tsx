@@ -1,5 +1,5 @@
-import { SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,24 +8,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import ITSMForm from "@/components/pdf-forms/itsm-form"
+} from "@/components/ui/dialog";
+import ITSMForm from "@/components/pdf-forms/itsm-form";
 
 interface IUpdateStatusDialogProps {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  id: string
-  name: string
-  data: any
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  id: string;
+  name: string;
+  data: any;
 }
 
 export default function ITSMFormDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   name,
   data,
 }: IUpdateStatusDialogProps) {
-  console.log(data)
+  console.log(data);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -40,15 +40,21 @@ export default function ITSMFormDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-6 py-3">
-            <ITSMForm data={data} />
-          </div>
+        <div className="grid gap-6 py-3">
+          <ITSMForm data={data} />
+        </div>
         <DialogFooter>
-          <Button type="submit" className="bg-blue-500" onClick={() => {
-            setDialogOpen(false)
-          }}>Close</Button>
+          <Button
+            type="submit"
+            className="bg-blue-500"
+            onClick={() => {
+              setDialogOpen(false);
+            }}
+          >
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

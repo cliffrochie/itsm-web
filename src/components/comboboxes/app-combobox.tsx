@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
@@ -80,10 +78,7 @@ export function AppComboBox({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        style={popOverStyles}
-        className="p-0"
-      >
+      <PopoverContent style={popOverStyles} className="p-0">
         <Command>
           <CommandInput
             placeholder={searchPlaceholder}
@@ -104,7 +99,7 @@ export function AppComboBox({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === "" ? "opacity-100" : "opacity-0",
+                      value === "" ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {unselectMsg}
@@ -124,7 +119,7 @@ export function AppComboBox({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0",
+                      value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {item.label}

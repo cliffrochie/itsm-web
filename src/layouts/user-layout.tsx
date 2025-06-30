@@ -1,107 +1,119 @@
-import { Outlet, useNavigate } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Outlet, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Info, Trash } from "lucide-react";
-import DropdownUser from '@/components/app-dropdown-user';
-import Logo from '@/assets/images/logo.svg'
-import { useMediaQuery } from 'react-responsive'
-import { useEffect, useState } from 'react';
-import { INotification } from '@/@types/notification';
-import useGetAuthUser from '@//hooks/user--use-auth-user';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '@/hooks/use-api';
-import NotificationIcon from '@/components/app-notification-icon';
-
-
+import DropdownUser from "@/components/app-dropdown-user";
+import Logo from "@/assets/images/logo.svg";
+import { useMediaQuery } from "react-responsive";
+import { useEffect, useState } from "react";
+import { INotification } from "@/@types/notification";
+import useGetAuthUser from "@//hooks/user--use-auth-user";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import api from "@/hooks/use-api";
+import NotificationIcon from "@/components/app-notification-icon";
 
 export default function UserLayout() {
-  const isSmallScreen = useMediaQuery({ maxWidth: 600 })
+  const isSmallScreen = useMediaQuery({ maxWidth: 600 });
 
-  const [notifications, setNotifications] = useState<INotification[] | []>([])
-  const { authUser } = useGetAuthUser()
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-  const queryKey = ['notifications', authUser]
-
+  const [notifications, setNotifications] = useState<INotification[] | []>([]);
+  const { authUser } = useGetAuthUser();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const queryKey = ["notifications", authUser];
 
   const dq = useQuery({
     queryKey,
     queryFn: async () => {
-      let data: INotification[] = []
-      let url = ''
-      if(authUser) {
-        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`
+      let data: INotification[] = [];
+      let url = "";
+      if (authUser) {
+        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`;
       }
 
-      await api.get(url).then(response => {
-        data = response.data
-      })
+      await api.get(url).then((response) => {
+        data = response.data;
+      });
 
-      return data
+      return data;
     },
-    placeholderData: keepPreviousData
-  })
+    placeholderData: keepPreviousData,
+  });
 
   const updateNotificationMutation = useMutation({
-    mutationKey: ['updateNotificationMutation'],
+    mutationKey: ["updateNotificationMutation"],
     mutationFn: async (data: string) => {
-      await api.put(`/api/notifications/${data}/read`).then(response => {
-        if(response.status === 200) {
-          console.log('read')
+      await api.put(`/api/notifications/${data}/read`).then((response) => {
+        if (response.status === 200) {
+          console.log("read");
         }
-      })
+      });
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: queryKey });
+    },
+  });
 
   const clearNotificationMutation = useMutation({
-    mutationKey: ['clearNotificationMutation'],
+    mutationKey: ["clearNotificationMutation"],
     mutationFn: async (data: string) => {
-      await api.put(`/api/notifications/clear-user-notifications/${data}`).then(response => {
-        if(response.status === 200) {
-          console.log('clear all notifications')
-        }
-      })
+      await api
+        .put(`/api/notifications/clear-user-notifications/${data}`)
+        .then((response) => {
+          if (response.status === 200) {
+            console.log("clear all notifications");
+          }
+        });
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: queryKey });
+    },
+  });
 
   useEffect(() => {
-    if(dq.data) {
-      setNotifications(dq.data)
+    if (dq.data) {
+      setNotifications(dq.data);
     }
-  }, [dq.data])
+  }, [dq.data]);
 
-  function redirectToTicket(notificationId: string, serviceTicketId: string, ticketNo: string) {
-    if(authUser?.role === 'admin') {
-      navigate('/admin/it-service-tickets/'+ serviceTicketId +'/view')
-    }
-    else if(authUser?.role === 'staff') {
-      navigate('/service-engineer/'+ ticketNo)
-    }
-    else {
-      navigate('/client/'+ ticketNo)
+  function redirectToTicket(
+    notificationId: string,
+    serviceTicketId: string,
+    ticketNo: string
+  ) {
+    if (authUser?.role === "admin") {
+      navigate("/admin/it-service-tickets/" + serviceTicketId + "/view");
+    } else if (authUser?.role === "staff") {
+      navigate("/service-engineer/" + ticketNo);
+    } else {
+      navigate("/client/" + ticketNo);
     }
 
-    updateNotificationMutation.mutate(notificationId)
+    updateNotificationMutation.mutate(notificationId);
   }
 
   function navigateToHome() {
-    if(authUser?.role === 'staff') {
-      navigate('/service-engineer')
-    }
-    else if(authUser?.role === 'user') {
-      navigate('/client')
+    if (authUser?.role === "staff") {
+      navigate("/service-engineer");
+    } else if (authUser?.role === "user") {
+      navigate("/client");
     }
   }
 
   function clearAllNotifications(userId: string) {
-    clearNotificationMutation.mutate(userId)
+    clearNotificationMutation.mutate(userId);
   }
 
   return (
@@ -111,35 +123,64 @@ export default function UserLayout() {
           {/* Logo */}
           <div className="flex items-center gap-4">
             <img src={Logo} width="45" alt="logo" className="" />
-            <div className="text-lg font-semibold cursor-pointer hover:text-gray-400" onClick={() => navigateToHome() }>{isSmallScreen ? 'ITSM' : 'IT Service Management System'}</div>
+            <div
+              className="text-lg font-semibold cursor-pointer hover:text-gray-400"
+              onClick={() => navigateToHome()}
+            >
+              {isSmallScreen ? "ITSM" : "IT Service Management System"}
+            </div>
           </div>
           {/* Dropdown on the right */}
           <div className="flex gap-1 justify-end items-center w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className=""><NotificationIcon count={notifications.length} /></Button>
+                <Button variant="ghost" className="">
+                  <NotificationIcon count={notifications.length} />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[min(90vw,400px)]">
-                <DropdownMenuLabel className="text-md">Notifications</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-md">
+                  Notifications
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                { notifications && notifications.length > 0 ? notifications.map((notification) => (
-                  <DropdownMenuItem key={notification.message} className="py-4 text-sm cursor-pointer" onClick={() => redirectToTicket(notification._id, notification.serviceTicket, notification.ticketNo) }>
-                    <Info /><span className="">{notification.message}</span>
-                  </DropdownMenuItem>
-                )): (
+                {notifications && notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <DropdownMenuItem
+                      key={notification.message}
+                      className="py-4 text-sm cursor-pointer"
+                      onClick={() =>
+                        redirectToTicket(
+                          notification._id,
+                          notification.serviceTicket,
+                          notification.ticketNo
+                        )
+                      }
+                    >
+                      <Info />
+                      <span className="">{notification.message}</span>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
                   <DropdownMenuItem className="py-4 text-sm cursor-pointer">
                     No notifications as of now.
                   </DropdownMenuItem>
                 )}
-                { notifications && notifications.length > 0 && (
+                {notifications && notifications.length > 0 && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="py-4 text-sm cursor-pointer bg-gray-100" onClick={() => clearAllNotifications(authUser ? authUser._id : '') }>
-                      <Trash /><span className="font-medium">Clear all notifications.</span>
+                    <DropdownMenuItem
+                      className="py-4 text-sm cursor-pointer bg-gray-100"
+                      onClick={() =>
+                        clearAllNotifications(authUser ? authUser._id : "")
+                      }
+                    >
+                      <Trash />
+                      <span className="font-medium">
+                        Clear all notifications.
+                      </span>
                     </DropdownMenuItem>
                   </>
                 )}
-                
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -151,6 +192,6 @@ export default function UserLayout() {
         <Outlet /> {/* Render child routes */}
         <ToastContainer />
       </section>
-      </>
-  )
+    </>
+  );
 }

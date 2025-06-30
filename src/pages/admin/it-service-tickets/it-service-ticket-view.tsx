@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react'
-import { useParams } from "react-router"
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { IServiceTicket } from '@/@types/service-ticket'
-import api from '@/hooks/use-api'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { LucideIcon, Circle, Star } from 'lucide-react'
-import { priorities } from '@/data/priority'
-import { serviceStatuses } from '@/data/service-status'
-import { taskTypes } from '@/data/task-types'
-import { equipmentTypes } from '@/data/equipment-types'
-import { IClient } from '@/@types/client'
-import { capitalizeFirstLetter } from '@/utils'
-import { IUser } from '@/@types/user'
+import { useState, useEffect } from "react";
+import { useParams } from "react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IServiceTicket } from "@/@types/service-ticket";
+import api from "@/hooks/use-api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LucideIcon, Circle, Star } from "lucide-react";
+import { priorities } from "@/data/priority";
+import { serviceStatuses } from "@/data/service-status";
+import { taskTypes } from "@/data/task-types";
+import { equipmentTypes } from "@/data/equipment-types";
+import { IClient } from "@/@types/client";
+import { capitalizeFirstLetter } from "@/utils";
+import { IUser } from "@/@types/user";
 import {
   Table,
   TableBody,
@@ -20,91 +20,100 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { IServiceTicketHistory } from '@/@types/service-ticket-history'
-import UpdateStatusDialog from '@/components/dialogs/it-service-ticket--update-status-dialog'
-import AssignServiceEngineerDialog from '@/components/dialogs/it-service-ticket--assign-service-engineer-dialog'
-import EscalateServiceDialog from '@/components/dialogs/it-service-ticket--escalate-service-dialog'
-import CloseTicketConfirmationDialog from '@/components/dialogs/it-service-ticket--close-ticket-confirmation-dialog'
-import ITSMFormDialog from '@/components/dialogs/it-service-ticket--itsm-form-dialog'
-import { Slide, toast } from 'react-toastify'
-import { IOffice } from '@/@types/office'
-
-
+} from "@/components/ui/table";
+import { IServiceTicketHistory } from "@/@types/service-ticket-history";
+import UpdateStatusDialog from "@/components/dialogs/it-service-ticket--update-status-dialog";
+import AssignServiceEngineerDialog from "@/components/dialogs/it-service-ticket--assign-service-engineer-dialog";
+import EscalateServiceDialog from "@/components/dialogs/it-service-ticket--escalate-service-dialog";
+import CloseTicketConfirmationDialog from "@/components/dialogs/it-service-ticket--close-ticket-confirmation-dialog";
+import ITSMFormDialog from "@/components/dialogs/it-service-ticket--itsm-form-dialog";
+import { Slide, toast } from "react-toastify";
+import { IOffice } from "@/@types/office";
 
 export default function ITServiceTicketView() {
-  const params = useParams()
-  const queryClient = useQueryClient()
+  const params = useParams();
+  const queryClient = useQueryClient();
 
-  const [dateRequested, setDateRequested] = useState('')
-  const [clientFullName, setClientFullName] = useState('')
-  const [createdByFullName, setCreatedByFullName] = useState('')
-  const [serviceEngineerFullName, setServiceEngineerFullName] = useState('')
-  const [serviceEngineerId, setServiceEngineerId] = useState('')
-  const [officeName, setOfficeName] = useState('')
-  const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle)
-  const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(() => Circle)
-  const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle)
-  const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(() => Circle)
-  const [updateServiceStatusDialogOpen, setUpdateServiceStatusDialogOpen] = useState(false)
-  const [assignServiceEngineerDialogOpen, setAssignServiceEngineerDialogOpen] = useState(false)
-  const [escalateServiceDialogOpen, setEscalateServiceDialogOpen] = useState(false)
-  const [closeTicketDialogOpen, setCloseTicketDialogOpen] = useState(false)
-  const [ITSMFormDialogOpen, setITSMFormDialogOpen] = useState(false)
-  
+  const [dateRequested, setDateRequested] = useState("");
+  const [clientFullName, setClientFullName] = useState("");
+  const [createdByFullName, setCreatedByFullName] = useState("");
+  const [serviceEngineerFullName, setServiceEngineerFullName] = useState("");
+  const [serviceEngineerId, setServiceEngineerId] = useState("");
+  const [officeName, setOfficeName] = useState("");
+  const [PriorityIcon, setPriorityIcon] = useState<LucideIcon>(() => Circle);
+  const [ServiceStatusIcon, setServiceStatusIcon] = useState<LucideIcon>(
+    () => Circle
+  );
+  const [TaskTypeIcon, setTaskTypeIcon] = useState<LucideIcon>(() => Circle);
+  const [EquipmentTypeIcon, setEquipmentTypeIcon] = useState<LucideIcon>(
+    () => Circle
+  );
+  const [updateServiceStatusDialogOpen, setUpdateServiceStatusDialogOpen] =
+    useState(false);
+  const [assignServiceEngineerDialogOpen, setAssignServiceEngineerDialogOpen] =
+    useState(false);
+  const [escalateServiceDialogOpen, setEscalateServiceDialogOpen] =
+    useState(false);
+  const [closeTicketDialogOpen, setCloseTicketDialogOpen] = useState(false);
+  const [ITSMFormDialogOpen, setITSMFormDialogOpen] = useState(false);
 
   const dataQuery = useQuery({
-    queryKey: ['serviceTicketView', params.serviceTicketId],
+    queryKey: ["serviceTicketView", params.serviceTicketId],
     queryFn: async () => {
       let data: IServiceTicket = {
-        _id: '',
-        ticketNo: '',
-        taskType: '',
-        title: '',
-        natureOfWork: '',
-        serialNo: '',
-        equipmentType: '',
-        equipmentTypeOthers: '',
-        defectsFound: '',
-        serviceRendered: '',
-        serviceStatus: '',
-        priority: '',
-        remarks: '',
+        _id: "",
+        ticketNo: "",
+        taskType: "",
+        title: "",
+        natureOfWork: "",
+        serialNo: "",
+        equipmentType: "",
+        equipmentTypeOthers: "",
+        defectsFound: "",
+        serviceRendered: "",
+        serviceStatus: "",
+        priority: "",
+        remarks: "",
         serviceEngineer: null,
         client: null,
+      };
+      let url = `/api/service-tickets/${params.serviceTicketId}/?includes=all`;
+      if (params.serviceTicketId) {
+        await api.get(url).then((response) => {
+          data = response.data;
+        });
       }
-      let url = `/api/service-tickets/${params.serviceTicketId}/?includes=all`
-      if(params.serviceTicketId) {
-        await api.get(url).then(response => {
-          data = response.data
-        })
-      }
-      return data
-    }
-  }) 
+      return data;
+    },
+  });
 
   const serviceTicketHistoryQuery = useQuery({
-    queryKey: ['serviceTicketHistory', dataQuery.data],
+    queryKey: ["serviceTicketHistory", dataQuery.data],
     queryFn: async () => {
-      let result: IServiceTicketHistory[] = []
-      if(dataQuery.data) {
-        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${dataQuery.data._id ? dataQuery.data._id : undefined}`
-        await api.get(url).then(response => {
-          result = response.data
-        })
+      let result: IServiceTicketHistory[] = [];
+      if (dataQuery.data) {
+        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${
+          dataQuery.data._id ? dataQuery.data._id : undefined
+        }`;
+        await api.get(url).then((response) => {
+          result = response.data;
+        });
       }
-      return result
-    }
-  })
+      return result;
+    },
+  });
 
   const updateStatusDialogMutation = useMutation({
-    mutationKey: ['updateServiceStatusDialogMutation'],
-    mutationFn: async(data: string) => {
-      const parsedData = JSON.parse(data)
-      return await api.patch(`/api/service-tickets/${parsedData.id}/update-service-status`, {serviceStatus: parsedData.serviceStatus})
+    mutationKey: ["updateServiceStatusDialogMutation"],
+    mutationFn: async (data: string) => {
+      const parsedData = JSON.parse(data);
+      return await api.patch(
+        `/api/service-tickets/${parsedData.id}/update-service-status`,
+        { serviceStatus: parsedData.serviceStatus }
+      );
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
       toast.success(`IT Service status updated successfully.`, {
         position: "top-right",
         autoClose: 5000,
@@ -115,24 +124,27 @@ export default function ITServiceTicketView() {
         progress: undefined,
         theme: "light",
         transition: Slide,
-        className: 'text-sm',
+        className: "text-sm",
       });
-    }
-  })
+    },
+  });
 
   const assignServiceEngineerDialogMutation = useMutation({
-    mutationKey: ['assignServiceEngineerDialogMutation'],
-    mutationFn: async(data: string) => {
-      const parsedData = JSON.parse(data)
+    mutationKey: ["assignServiceEngineerDialogMutation"],
+    mutationFn: async (data: string) => {
+      const parsedData = JSON.parse(data);
       const body = {
         serviceEngineer: parsedData.serviceEngineer,
         priority: parsedData.priority,
-        adminRemarks: parsedData.adminRemarks
-      }
-      return await api.patch(`/api/service-tickets/${parsedData.id}/assign-service-engineer`, body)
+        adminRemarks: parsedData.adminRemarks,
+      };
+      return await api.patch(
+        `/api/service-tickets/${parsedData.id}/assign-service-engineer`,
+        body
+      );
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
       toast.success(`Service Engineer assigned successfully.`, {
         position: "top-right",
         autoClose: 5000,
@@ -143,25 +155,28 @@ export default function ITServiceTicketView() {
         progress: undefined,
         theme: "light",
         transition: Slide,
-        className: 'text-sm',
+        className: "text-sm",
       });
-    }
-  })
+    },
+  });
 
   const escalateServiceDialogMutation = useMutation({
-    mutationKey: ['escalateServiceDialogMutation'],
-    mutationFn: async(data: string) => {
-      console.log(data)
-      const parsedData = JSON.parse(data)
+    mutationKey: ["escalateServiceDialogMutation"],
+    mutationFn: async (data: string) => {
+      console.log(data);
+      const parsedData = JSON.parse(data);
       const body = {
         serviceEngineer: parsedData.serviceEngineer,
         priority: parsedData.priority,
-        adminRemarks: parsedData.adminRemarks
-      } 
-      return await api.patch(`/api/service-tickets/${parsedData.id}/escalate-service`, body)
+        adminRemarks: parsedData.adminRemarks,
+      };
+      return await api.patch(
+        `/api/service-tickets/${parsedData.id}/escalate-service`,
+        body
+      );
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
       toast.success(`IT Service is escalated successfully.`, {
         position: "top-right",
         autoClose: 5000,
@@ -172,21 +187,24 @@ export default function ITServiceTicketView() {
         progress: undefined,
         theme: "light",
         transition: Slide,
-        className: 'text-sm',
+        className: "text-sm",
       });
-    }
-  })
+    },
+  });
 
   const closeTicketDialogMutation = useMutation({
-    mutationKey: ['closeTicketDialogMutation'],
-    mutationFn: async(data: string) => {
-      console.log('close ticket')
-      const parsedData = JSON.parse(data)
-      return await api.patch(`/api/service-tickets/${parsedData.id}/close-ticket`, {})
+    mutationKey: ["closeTicketDialogMutation"],
+    mutationFn: async (data: string) => {
+      console.log("close ticket");
+      const parsedData = JSON.parse(data);
+      return await api.patch(
+        `/api/service-tickets/${parsedData.id}/close-ticket`,
+        {}
+      );
     },
     onSuccess: async () => {
-      console.log('successfully closed')
-      queryClient.invalidateQueries({ queryKey: ['serviceTicketView'] })
+      console.log("successfully closed");
+      queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
       toast.success(`IT Service is closed successfully.`, {
         position: "top-right",
         autoClose: 5000,
@@ -197,152 +215,227 @@ export default function ITServiceTicketView() {
         progress: undefined,
         theme: "light",
         transition: Slide,
-        className: 'text-sm',
+        className: "text-sm",
       });
-    }
-  })
-
-  
+    },
+  });
 
   useEffect(() => {
-    if(dataQuery.data?.createdAt) {
-      const result = new Date(dataQuery.data?.createdAt)
-      const formattedDate = result.toLocaleDateString('en-US', { 
-          timeZone: "Asia/Singapore",
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true // Set to false for 24-hour format
+    if (dataQuery.data?.createdAt) {
+      const result = new Date(dataQuery.data?.createdAt);
+      const formattedDate = result.toLocaleDateString("en-US", {
+        timeZone: "Asia/Singapore",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true, // Set to false for 24-hour format
       });
-      setDateRequested(formattedDate)
+      setDateRequested(formattedDate);
     }
 
-    if(dataQuery.data?.priority) {
-      const obj = priorities.find(p => p.value === dataQuery.data?.priority)
-      if(obj) {
-        setPriorityIcon(() => obj.icon)
+    if (dataQuery.data?.priority) {
+      const obj = priorities.find((p) => p.value === dataQuery.data?.priority);
+      if (obj) {
+        setPriorityIcon(() => obj.icon);
       }
     }
 
-    if(dataQuery.data?.serviceStatus) {
-      const obj = serviceStatuses.find(s => s.value == dataQuery.data?.serviceStatus)
-      if(obj) {
-        setServiceStatusIcon(() => obj.icon)
+    if (dataQuery.data?.serviceStatus) {
+      const obj = serviceStatuses.find(
+        (s) => s.value == dataQuery.data?.serviceStatus
+      );
+      if (obj) {
+        setServiceStatusIcon(() => obj.icon);
       }
     }
 
-    if(dataQuery.data?.taskType) {
-      const obj = taskTypes.find(t => t.value === dataQuery.data.taskType)
-      if(obj) {
-        setTaskTypeIcon(() => obj.icon)
+    if (dataQuery.data?.taskType) {
+      const obj = taskTypes.find((t) => t.value === dataQuery.data.taskType);
+      if (obj) {
+        setTaskTypeIcon(() => obj.icon);
       }
     }
 
-    if(dataQuery.data?.equipmentType) {
-      const obj = equipmentTypes.find(e => e.value === dataQuery.data.equipmentType)
-      if(obj) {
-        setEquipmentTypeIcon(() => obj.icon)
+    if (dataQuery.data?.equipmentType) {
+      const obj = equipmentTypes.find(
+        (e) => e.value === dataQuery.data.equipmentType
+      );
+      if (obj) {
+        setEquipmentTypeIcon(() => obj.icon);
       }
     }
 
-    if(dataQuery.data?.client) {
-      const obj = dataQuery.data.client as IClient
-      const officeObj = obj.office ? obj.office as IOffice : ''
+    if (dataQuery.data?.client) {
+      const obj = dataQuery.data.client as IClient;
+      const officeObj = obj.office ? (obj.office as IOffice) : "";
       setClientFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
+        ${
+          obj.middleName
+            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
+            : ""
+        } 
         ${capitalizeFirstLetter(obj.lastName)} 
-        ${obj.extensionName ? String(capitalizeFirstLetter(obj.extensionName)) : ''}`)
+        ${
+          obj.extensionName
+            ? String(capitalizeFirstLetter(obj.extensionName))
+            : ""
+        }`);
 
-      if(officeObj) {
-        api.get(`/api/offices/${officeObj._id}`)
-          .then(response => {
-            setOfficeName(response.data.alias)
-          })
+      if (officeObj) {
+        api.get(`/api/offices/${officeObj._id}`).then((response) => {
+          setOfficeName(response.data.alias);
+        });
       }
     }
 
-    if(dataQuery.data?.serviceEngineer) {
-      const obj = dataQuery.data.serviceEngineer as IUser
-      setServiceEngineerId(obj._id)
+    if (dataQuery.data?.serviceEngineer) {
+      const obj = dataQuery.data.serviceEngineer as IUser;
+      setServiceEngineerId(obj._id);
       setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
-        ${capitalizeFirstLetter(obj.lastName)}`)
+        ${
+          obj.middleName
+            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
+            : ""
+        } 
+        ${capitalizeFirstLetter(obj.lastName)}`);
     }
 
-    if(dataQuery.data?.createdBy) {
-      const obj = dataQuery.data.createdBy as IUser
-      setServiceEngineerId(obj._id)
+    if (dataQuery.data?.createdBy) {
+      const obj = dataQuery.data.createdBy as IUser;
+      setServiceEngineerId(obj._id);
       setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${obj.middleName ? String(capitalizeFirstLetter(obj.middleName)).charAt(0)+'.' : ''} 
-        ${capitalizeFirstLetter(obj.lastName)}`)
+        ${
+          obj.middleName
+            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
+            : ""
+        } 
+        ${capitalizeFirstLetter(obj.lastName)}`);
     }
 
     // console.log(dataQuery.data)
-
-  }, [dataQuery.data])
-
+  }, [dataQuery.data]);
 
   return (
     <section>
       <div className="flex items-center gap-4">
-        <h3 className="text-xl font-semibold">Ticket No: &nbsp;<span className="font-mono font-normal">{dataQuery.data?.ticketNo}</span></h3>
-        { dataQuery.data?.rating && dataQuery.data?.rating === 'vs'  && (
+        <h3 className="text-xl font-semibold">
+          Ticket No: &nbsp;
+          <span className="font-mono font-normal">
+            {dataQuery.data?.ticketNo}
+          </span>
+        </h3>
+        {dataQuery.data?.rating && dataQuery.data?.rating === "vs" && (
           <div className="flex">
-            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
           </div>
         )}
-        { dataQuery.data?.rating && dataQuery.data?.rating === 's'  && (
+        {dataQuery.data?.rating && dataQuery.data?.rating === "s" && (
           <div className="flex">
-            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15} />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} />
           </div>
         )}
-        { dataQuery.data?.rating && dataQuery.data?.rating === 'n'  && (
+        {dataQuery.data?.rating && dataQuery.data?.rating === "n" && (
           <div className="flex">
-            <Star size={15} fill="#000" /><Star size={15}  fill="#000" /><Star size={15}  fill="#000" /><Star size={15} /><Star size={15}  />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} fill="#000" />
+            <Star size={15} />
+            <Star size={15} />
           </div>
         )}
-        { dataQuery.data?.rating && dataQuery.data?.rating === 'd'  && (
+        {dataQuery.data?.rating && dataQuery.data?.rating === "d" && (
           <div className="flex">
-            <Star size={15} fill="#000" /><Star size={15} /><Star size={15}  /><Star size={15}  /><Star size={15}   />
+            <Star size={15} fill="#000" />
+            <Star size={15} />
+            <Star size={15} />
+            <Star size={15} />
+            <Star size={15} />
           </div>
         )}
-        { dataQuery.data?.rating && dataQuery.data?.rating === 'vd'  && (
+        {dataQuery.data?.rating && dataQuery.data?.rating === "vd" && (
           <div className="flex">
-            <Star size={15} fill="#000" /><Star size={15} /><Star size={15} /><Star size={15} /><Star size={15} />
+            <Star size={15} fill="#000" />
+            <Star size={15} />
+            <Star size={15} />
+            <Star size={15} />
+            <Star size={15} />
           </div>
         )}
       </div>
       <div className="mt-5 mb-5 flex justify-start items-center gap-4">
         <div>Actions:</div>
-        {dataQuery.data && dataQuery.data.serviceStatus !== 'resolved' && dataQuery.data.serviceStatus !== 'closed' && (<Button variant="outline" type="submit" onClick={() => {
-          setUpdateServiceStatusDialogOpen(true)
-        }}>Update Service Status</Button>)}
-        {dataQuery.data && dataQuery.data.serviceStatus === 'resolved' && (<Button variant="outline" type="submit" onClick={() => {
-          setCloseTicketDialogOpen(true)
-        }}>Close Ticket</Button>)}
+        {dataQuery.data &&
+          dataQuery.data.serviceStatus !== "resolved" &&
+          dataQuery.data.serviceStatus !== "closed" && (
+            <Button
+              variant="outline"
+              type="submit"
+              onClick={() => {
+                setUpdateServiceStatusDialogOpen(true);
+              }}
+            >
+              Update Service Status
+            </Button>
+          )}
+        {dataQuery.data && dataQuery.data.serviceStatus === "resolved" && (
+          <Button
+            variant="outline"
+            type="submit"
+            onClick={() => {
+              setCloseTicketDialogOpen(true);
+            }}
+          >
+            Close Ticket
+          </Button>
+        )}
         {dataQuery.data && dataQuery.data.serviceEngineer === null && (
-          <Button variant="outline" type="submit" onClick={() => {
-            setAssignServiceEngineerDialogOpen(true)
-          }}>
+          <Button
+            variant="outline"
+            type="submit"
+            onClick={() => {
+              setAssignServiceEngineerDialogOpen(true);
+            }}
+          >
             Assign Service Engineer
           </Button>
         )}
-        {dataQuery.data && dataQuery.data.serviceStatus === 'closed' && dataQuery.data.rating !== null && (
-          <Button variant="outline" type="submit" onClick={() => {
-            setITSMFormDialogOpen(true)
-          }}>
-            Open IT Service Ticket Form
-          </Button>
-        )}
-        {dataQuery.data && dataQuery.data.serviceEngineer !== null && dataQuery.data.serviceStatus !== 'resolved' && dataQuery.data.serviceStatus !== 'closed' && (
-          <Button variant="outline" type="submit" onClick={() => {
-            setEscalateServiceDialogOpen(true)
-          }}>
-            Escalate Service
-          </Button>
-        )}
+        {dataQuery.data &&
+          dataQuery.data.serviceStatus === "closed" &&
+          dataQuery.data.rating !== null && (
+            <Button
+              variant="outline"
+              type="submit"
+              onClick={() => {
+                setITSMFormDialogOpen(true);
+              }}
+            >
+              Open IT Service Ticket Form
+            </Button>
+          )}
+        {dataQuery.data &&
+          dataQuery.data.serviceEngineer !== null &&
+          dataQuery.data.serviceStatus !== "resolved" &&
+          dataQuery.data.serviceStatus !== "closed" && (
+            <Button
+              variant="outline"
+              type="submit"
+              onClick={() => {
+                setEscalateServiceDialogOpen(true);
+              }}
+            >
+              Escalate Service
+            </Button>
+          )}
       </div>
       <div className="grid gap-4 custom-xl:grid-cols-[400px,400px,auto] custom-lg:grid-cols-2 custom-md:grid-cols-1 ">
         <Card className="w-full h-[500px]">
@@ -358,57 +451,95 @@ export default function ITServiceTicketView() {
                     <span className="text-sm">{dateRequested}</span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Priority Level:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    {dataQuery.data && dataQuery.data.priority && (<PriorityIcon size={16} />)} 
-                    <span className="text-sm">{dataQuery.data && dataQuery.data.priority ? capitalizeFirstLetter(dataQuery.data.priority) : 'None'}</span>
+                    {dataQuery.data && dataQuery.data.priority && (
+                      <PriorityIcon size={16} />
+                    )}
+                    <span className="text-sm">
+                      {dataQuery.data && dataQuery.data.priority
+                        ? capitalizeFirstLetter(dataQuery.data.priority)
+                        : "None"}
+                    </span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Current Service Status:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <ServiceStatusIcon size={16} /> 
-                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(String(dataQuery.data.serviceStatus)) : ''}</span>
+                    <ServiceStatusIcon size={16} />
+                    <span className="text-sm">
+                      {dataQuery.data
+                        ? capitalizeFirstLetter(
+                            String(dataQuery.data.serviceStatus)
+                          )
+                        : ""}
+                    </span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Equipment:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <EquipmentTypeIcon size={16} /> 
-                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.equipmentType) : ''}</span>
+                    <EquipmentTypeIcon size={16} />
+                    <span className="text-sm">
+                      {dataQuery.data
+                        ? capitalizeFirstLetter(dataQuery.data.equipmentType)
+                        : ""}
+                    </span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Type:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <TaskTypeIcon size={16} /> 
-                    <span className="text-sm">{dataQuery.data ? capitalizeFirstLetter(dataQuery.data.taskType) : ''}</span>
+                    <TaskTypeIcon size={16} />
+                    <span className="text-sm">
+                      {dataQuery.data
+                        ? capitalizeFirstLetter(dataQuery.data.taskType)
+                        : ""}
+                    </span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Name:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className={ clientFullName ? "text-sm" : "text-sm text-red-500" }>{ clientFullName ? clientFullName : 'Unassigned' }</span>
+                    <span
+                      className={
+                        clientFullName ? "text-sm" : "text-sm text-red-500"
+                      }
+                    >
+                      {clientFullName ? clientFullName : "Unassigned"}
+                    </span>
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Requestor Office:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className={ officeName ? "text-sm" : "text-sm text-red-500" }>{ officeName ? officeName : 'Unassigned' }</span>
+                    <span
+                      className={
+                        officeName ? "text-sm" : "text-sm text-red-500"
+                      }
+                    >
+                      {officeName ? officeName : "Unassigned"}
+                    </span>
                   </div>
                 </div>
                 <hr />
                 <div className="flex gap-4 justify-between">
                   <div className="text-sm">Created by:</div>
                   <div className="font-bold flex justify-between gap-2">
-                    <span className={ createdByFullName ? "text-sm" : "text-sm text-red-500" }>{ createdByFullName ? createdByFullName : 'Unassigned' }</span>
+                    <span
+                      className={
+                        createdByFullName ? "text-sm" : "text-sm text-red-500"
+                      }
+                    >
+                      {createdByFullName ? createdByFullName : "Unassigned"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -423,26 +554,42 @@ export default function ITServiceTicketView() {
           <CardContent>
             <div className="grid gap-2 items-stretch h-full ">
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Nature of Work / Problem</span>
+                <span className="text-sm text-gray-500 font-semibold">
+                  Nature of Work / Problem
+                </span>
                 <div className="border p-3 rounded-md text-sm max-h-24 overflow-auto overflow-x-hidden">
-                  {dataQuery.data ? dataQuery.data.natureOfWork : ''}
+                  {dataQuery.data ? dataQuery.data.natureOfWork : ""}
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Findings</span>
+                <span className="text-sm text-gray-500 font-semibold">
+                  Findings
+                </span>
                 <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
-                  {dataQuery.data ? dataQuery.data.defectsFound : ''}
+                  {dataQuery.data ? dataQuery.data.defectsFound : ""}
                 </div>
               </div>
               <div className="grid gap-2">
-                <span className="text-sm text-gray-500 font-semibold">Service Rendered</span>
+                <span className="text-sm text-gray-500 font-semibold">
+                  Service Rendered
+                </span>
                 <div className="border p-3 min-h-20 h-auto rounded-md text-sm">
-                  {dataQuery.data ? dataQuery.data.serviceRendered : ''}
+                  {dataQuery.data ? dataQuery.data.serviceRendered : ""}
                 </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm">Service Engineer:</span>
-                <span className={ serviceEngineerFullName ? "text-sm" : "text-sm text-red-500 font-bold" }>{serviceEngineerFullName ? serviceEngineerFullName : 'Unassigned'}</span>
+                <span
+                  className={
+                    serviceEngineerFullName
+                      ? "text-sm"
+                      : "text-sm text-red-500 font-bold"
+                  }
+                >
+                  {serviceEngineerFullName
+                    ? serviceEngineerFullName
+                    : "Unassigned"}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -463,59 +610,62 @@ export default function ITServiceTicketView() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {serviceTicketHistoryQuery.data && serviceTicketHistoryQuery.data.map((history) => (
-                    <TableRow key={history._id}>
-                      <TableCell>{history.date}</TableCell>
-                      <TableCell>{history.time}</TableCell>
-                      <TableCell>{history.details}</TableCell>
-                    </TableRow>
-                  ))}
+                  {serviceTicketHistoryQuery.data &&
+                    serviceTicketHistoryQuery.data.map((history) => (
+                      <TableRow key={history._id}>
+                        <TableCell>{history.date}</TableCell>
+                        <TableCell>{history.time}</TableCell>
+                        <TableCell>{history.details}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
           </CardContent>
         </Card>
-        <UpdateStatusDialog 
-          dialogOpen={updateServiceStatusDialogOpen} 
-          setDialogOpen={setUpdateServiceStatusDialogOpen} 
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
-          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
-          selectedServiceStatus={dataQuery.data ? dataQuery.data.serviceStatus : ''}
+        <UpdateStatusDialog
+          dialogOpen={updateServiceStatusDialogOpen}
+          setDialogOpen={setUpdateServiceStatusDialogOpen}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ""}
+          selectedServiceStatus={
+            dataQuery.data ? dataQuery.data.serviceStatus : ""
+          }
           updateMutation={updateStatusDialogMutation}
         />
-        <AssignServiceEngineerDialog 
+        <AssignServiceEngineerDialog
           dialogOpen={assignServiceEngineerDialogOpen}
           setDialogOpen={setAssignServiceEngineerDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
-          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           updateMutation={assignServiceEngineerDialogMutation}
         />
-        <EscalateServiceDialog 
+        <EscalateServiceDialog
           dialogOpen={escalateServiceDialogOpen}
           setDialogOpen={setEscalateServiceDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''} 
-          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
-          adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks : ''}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ""}
+          adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks : ""}
           currentServiceEngineer={serviceEngineerFullName}
-          currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ''}
+          currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ""}
           excludeUser={serviceEngineerId}
           updateMutation={escalateServiceDialogMutation}
         />
         <CloseTicketConfirmationDialog
           dialogOpen={closeTicketDialogOpen}
           setDialogOpen={setCloseTicketDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''}
-          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           updateMutation={closeTicketDialogMutation}
         />
         <ITSMFormDialog
           dialogOpen={ITSMFormDialogOpen}
           setDialogOpen={setITSMFormDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ''}
-          name={dataQuery.data ? dataQuery.data.ticketNo : ''}
+          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           data={dataQuery.data ? dataQuery.data : {}}
         />
       </div>
     </section>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +8,29 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
-import { useNavigate } from "react-router-dom"
-import { formatDate } from "@/utils"
-
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useNavigate } from "react-router-dom";
+import { formatDate } from "@/utils";
 
 interface IProps {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  id?: string
-  title: string
-  name?: string
-  data: any[]
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  id?: string;
+  title: string;
+  name?: string;
+  data: any[];
 }
 
 export default function DataListDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   title,
   name,
-  data
+  data,
 }: IProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -46,28 +45,49 @@ export default function DataListDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3 max-h-[500px] overflow-auto overflow-x-hidden">
-            <div className="font-semibold text-gray-500">List of data:</div>
-            <Table>
-              <TableBody className="border rounded-md max-h-24 overflow-auto overflow-x-hidden">
-                {data.length > 0 ? data.map((ticket) => (
-                  <TableRow key={ticket._id}  className="cursor-pointer" onClick={() => navigate(`/admin/it-service-tickets/${ticket._id}/view`) }>
-                    <TableCell className="font-medium">{ticket.ticketNo}</TableCell>
+        <div className="grid gap-4 py-3 max-h-[500px] overflow-auto overflow-x-hidden">
+          <div className="font-semibold text-gray-500">List of data:</div>
+          <Table>
+            <TableBody className="border rounded-md max-h-24 overflow-auto overflow-x-hidden">
+              {data.length > 0 ? (
+                data.map((ticket) => (
+                  <TableRow
+                    key={ticket._id}
+                    className="cursor-pointer"
+                    onClick={() =>
+                      navigate(`/admin/it-service-tickets/${ticket._id}/view`)
+                    }
+                  >
+                    <TableCell className="font-medium">
+                      {ticket.ticketNo}
+                    </TableCell>
                     <TableCell className="font-medium p-5 custom-md:w-48 text-right">
-                      <span className="text-gray-500">{ ticket.createdAt ? formatDate(ticket.createdAt) : undefined }</span>
+                      <span className="text-gray-500">
+                        {ticket.createdAt
+                          ? formatDate(ticket.createdAt)
+                          : undefined}
+                      </span>
                     </TableCell>
                   </TableRow>
-                )) : (<TableRow>
+                ))
+              ) : (
+                <TableRow>
                   <TableCell className="p-5">No tickets yet</TableCell>
-                  </TableRow>)
-                }
-              </TableBody>
-            </Table>
-          </div>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
         <DialogFooter>
-          <Button variant="outline" className="w-24 bg-blue-500 text-white" onClick={() => setDialogOpen(false)}>Close</Button>
+          <Button
+            variant="outline"
+            className="w-24 bg-blue-500 text-white"
+            onClick={() => setDialogOpen(false)}
+          >
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

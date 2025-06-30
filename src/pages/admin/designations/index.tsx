@@ -1,12 +1,12 @@
-import { useState, useMemo } from 'react'
-import { Briefcase } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { 
-  useQuery, 
-  keepPreviousData, 
+import { useState, useMemo } from "react";
+import { Briefcase } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  useQuery,
+  keepPreviousData,
   useQueryClient,
-  useMutation
-} from '@tanstack/react-query'
+  useMutation,
+} from "@tanstack/react-query";
 
 import {
   ColumnDef,
@@ -16,104 +16,116 @@ import {
   VisibilityState,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 
-import api from '@/hooks/use-api'
+import api from "@/hooks/use-api";
 
-import { DesignationDataTable } from '@/components/data-tables/designation--data-table'
-import { DataTableColumnHeader } from '@/components/data-tables/designation--data-table-column-header'
+import { DesignationDataTable } from "@/components/data-tables/designation--data-table";
+import { DataTableColumnHeader } from "@/components/data-tables/designation--data-table-column-header";
 
-import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
-import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
+import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
+import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
+import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 
-import { IDesignation } from '@/@types/designation'
-
+import { IDesignation } from "@/@types/designation";
 
 export default function AdminDesignationsPage() {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10})
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const defaultData = useMemo(() => [], [])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const designationQueryKey = ['designations', pagination, sorting, columnFilters]
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const defaultData = useMemo(() => [], []);
+
+  const designationQueryKey = [
+    "designations",
+    pagination,
+    sorting,
+    columnFilters,
+  ];
 
   const dataQuery = useQuery({
     queryKey: designationQueryKey,
     queryFn: async () => {
-      let sortValue = ''      
-      let data = { rows: [], pageCount: 0, rowCount: 0 }
+      let sortValue = "";
+      let data = { rows: [], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/designations/`
-      url += `?page=${pagination.pageIndex+1}`
-      url += `&limit=${pagination.pageSize}`
+      let url = `/api/designations/`;
+      url += `?page=${pagination.pageIndex + 1}`;
+      url += `&limit=${pagination.pageSize}`;
 
-      if(sorting.length > 0) {
-        sorting.forEach(sort => {
-          sortValue = sort.desc ? '-'+ sort.id : sort.id
-          url += `&sort=${sortValue}`
-        })
+      if (sorting.length > 0) {
+        sorting.forEach((sort) => {
+          sortValue = sort.desc ? "-" + sort.id : sort.id;
+          url += `&sort=${sortValue}`;
+        });
       }
-      
-      if(columnFilters.length > 0) {
-        columnFilters.forEach(filter => {
-          if(filter.value && filter.value !== ' ') {
-            url += `&${filter.id}=${filter.value}`
+
+      if (columnFilters.length > 0) {
+        columnFilters.forEach((filter) => {
+          if (filter.value && filter.value !== " ") {
+            url += `&${filter.id}=${filter.value}`;
           }
-        })
-      } 
+        });
+      }
 
-      await api.get(url).then(response => {
-        data.rows = response.data?.results  
-        data.pageCount = response.data?.totalPages
-        data.rowCount = response.data?.total
-      })
+      await api.get(url).then((response) => {
+        data.rows = response.data?.results;
+        data.pageCount = response.data?.totalPages;
+        data.rowCount = response.data?.total;
+      });
 
-      return data
+      return data;
     },
-    placeholderData: keepPreviousData
-  })
-
+    placeholderData: keepPreviousData,
+  });
 
   const deleteMutation = useMutation({
     mutationKey: designationQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/designations/${id}`)
+      return await api.delete(`/api/designations/${id}`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: designationQueryKey })
-    }
-  })
-
-  
+      queryClient.invalidateQueries({ queryKey: designationQueryKey });
+    },
+  });
 
   const columns: ColumnDef<IDesignation>[] = useMemo<ColumnDef<IDesignation>[]>(
     () => [
       {
         accessorKey: "title",
         header: ({ column }) => (
-          <DataTableColumnHeader table={table} column={column} accessorKey="title" title="Position title" />
+          <DataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="title"
+            title="Position title"
+          />
         ),
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end">
-          <DataTableRowActions 
-            id={row.original._id} 
-            name={row.original.title} 
-            updatePath={`/admin/designations/${row.original._id}/update`} 
-            deleteMutation={deleteMutation} 
-          />
-        </div>
-      }
-    ], []
-  )
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <DataTableRowActions
+              id={row.original._id}
+              name={row.original.title}
+              updatePath={`/admin/designations/${row.original._id}/update`}
+              deleteMutation={deleteMutation}
+            />
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
@@ -138,7 +150,7 @@ export default function AdminDesignationsPage() {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-  })
+  });
 
   return (
     <section>
@@ -149,7 +161,7 @@ export default function AdminDesignationsPage() {
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate('/admin/designations/create')}
+            onClick={() => navigate("/admin/designations/create")}
           >
             <Briefcase />
             Create Designation
@@ -160,5 +172,5 @@ export default function AdminDesignationsPage() {
         <DataTablePagination table={table} />
       </div>
     </section>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction } from "react"
-import { UseMutationResult } from "@tanstack/react-query"
-import { AxiosResponse } from "axios"
-import { Button } from "@/components/ui/button"
+import { Dispatch, SetStateAction } from "react";
+import { UseMutationResult } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,16 +10,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Slide, toast } from "react-toastify"
-
+} from "@/components/ui/dialog";
+import { Slide, toast } from "react-toastify";
 
 interface IDialogConfirmation {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  name: string
-  id: string
-  deleteMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  name: string;
+  id: string;
+  deleteMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    string,
+    unknown
+  >;
 }
 
 export default function AppDialogDeleteConfirmation({
@@ -27,9 +31,8 @@ export default function AppDialogDeleteConfirmation({
   setDialogOpen,
   name,
   id,
-  deleteMutation
+  deleteMutation,
 }: IDialogConfirmation) {
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -37,19 +40,24 @@ export default function AppDialogDeleteConfirmation({
         <button className="hidden">Hidden Trigger</button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] absolute top-10 left-1/2 -translate-x-1/2 translate-y-0 w-full max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete?</DialogTitle>
-            <DialogDescription>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mb-3">
-          Delete <span className="font-semibold text-red-500">{name ? name : 'this data'}</span>?
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setDialogOpen(false) }>No</Button>
-            <Button className="bg-red-600" onClick={() => {
-              deleteMutation.mutate(id)
-              setDialogOpen(false)
+        <DialogHeader>
+          <DialogTitle>Delete?</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <div className="mb-3">
+          Delete{" "}
+          <span className="font-semibold text-red-500">
+            {name ? name : "this data"}
+          </span>
+          ?
+        </div>
+        <DialogFooter>
+          <Button onClick={() => setDialogOpen(false)}>No</Button>
+          <Button
+            className="bg-red-600"
+            onClick={() => {
+              deleteMutation.mutate(id);
+              setDialogOpen(false);
 
               toast.success(`${name} is deleted successfully.`, {
                 position: "top-right",
@@ -61,11 +69,14 @@ export default function AppDialogDeleteConfirmation({
                 progress: undefined,
                 theme: "light",
                 transition: Slide,
-                className: 'text-sm',
+                className: "text-sm",
               });
-            }}>Yes</Button>
-          </DialogFooter>
-        </DialogContent>
+            }}
+          >
+            Yes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
-  )
+  );
 }

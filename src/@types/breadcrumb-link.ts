@@ -1,4 +1,4 @@
 export interface IBreadcrumbLink {
-  label: string
-  url: string
+  label: string;
+  url: string;
 }

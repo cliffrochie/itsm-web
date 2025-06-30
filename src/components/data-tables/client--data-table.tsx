@@ -1,9 +1,4 @@
-"use client"
- 
-import {
-  flexRender,
-  Table as TanstackTable
-} from "@tanstack/react-table"
+import { flexRender, Table as TanstackTable } from "@tanstack/react-table";
 
 import {
   Table,
@@ -12,20 +7,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-
-
+} from "@/components/ui/table";
 
 interface ClientDataTableProps<T> {
-  table: TanstackTable<T>
-  totalColumns: number
+  table: TanstackTable<T>;
+  totalColumns: number;
 }
 
 export function ClientDataTable<T>({
   table,
-  totalColumns
+  totalColumns,
 }: ClientDataTableProps<T>) {
-
   return (
     <div>
       <div className="rounded-md border mb-3 mt-4">
@@ -43,7 +35,7 @@ export function ClientDataTable<T>({
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -57,7 +49,10 @@ export function ClientDataTable<T>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -72,7 +67,6 @@ export function ClientDataTable<T>({
           </TableBody>
         </Table>
       </div>
-      
     </div>
-  )
+  );
 }

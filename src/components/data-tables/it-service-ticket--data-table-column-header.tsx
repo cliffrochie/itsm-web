@@ -1,10 +1,10 @@
-import { Column, Table } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react"
+import { Column, Table } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { Button } from '@/components/ui/button'
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import {
   Select,
@@ -20,19 +20,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-import { taskTypes } from "@/data/task-types"
-import { equipmentTypes } from "@/data/equipment-types"
-import { priorities } from "@/data/priority"
-import { serviceStatuses } from "@/data/service-status"
+import { taskTypes } from "@/data/task-types";
+import { equipmentTypes } from "@/data/equipment-types";
+import { priorities } from "@/data/priority";
+import { serviceStatuses } from "@/data/service-status";
 
 interface ServiceTicketDataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
-  table: Table<TData>
-  column: Column<TData, TValue>
-  accessorKey: string
-  title: string
+  table: Table<TData>;
+  column: Column<TData, TValue>;
+  accessorKey: string;
+  title: string;
 }
 
 export function ServiceTicketDataTableColumnHeader<TData, TValue>({
@@ -43,7 +43,7 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
   className,
 }: ServiceTicketDataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>
+    return <div className={cn(className)}>{title}</div>;
   }
 
   return (
@@ -82,21 +82,29 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        { accessorKey !== 'serviceStatus' && accessorKey !== 'taskType' && accessorKey !== 'equipmentType' && accessorKey !== 'priority' && accessorKey !== 'createdAt' && (
-          <Input
-            placeholder={'Filter '+ title.toLowerCase() +'..' }
-            className="h-6 text-nowrap p-1"
-            value={(table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(accessorKey)?.setFilterValue(event.target.value)
-            }
-          />
-        )}
+        {accessorKey !== "serviceStatus" &&
+          accessorKey !== "taskType" &&
+          accessorKey !== "equipmentType" &&
+          accessorKey !== "priority" &&
+          accessorKey !== "createdAt" && (
+            <Input
+              placeholder={"Filter " + title.toLowerCase() + ".."}
+              className="h-6 text-nowrap p-1"
+              value={
+                (table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn(accessorKey)?.setFilterValue(event.target.value)
+              }
+            />
+          )}
 
-        {accessorKey === 'taskType' && (
-          <Select onValueChange={(value) => {
-            table.getColumn(accessorKey)?.setFilterValue(value)
-          }}>
+        {accessorKey === "taskType" && (
+          <Select
+            onValueChange={(value) => {
+              table.getColumn(accessorKey)?.setFilterValue(value);
+            }}
+          >
             <SelectTrigger className="h-6 p-1">
               <SelectValue placeholder="All task types" />
             </SelectTrigger>
@@ -113,10 +121,12 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
           </Select>
         )}
 
-        {accessorKey === 'equipmentType' && (
-          <Select onValueChange={(value) => {
-            table.getColumn(accessorKey)?.setFilterValue(value)
-          }}>
+        {accessorKey === "equipmentType" && (
+          <Select
+            onValueChange={(value) => {
+              table.getColumn(accessorKey)?.setFilterValue(value);
+            }}
+          >
             <SelectTrigger className="h-6 p-1">
               <SelectValue placeholder="All equipment types" />
             </SelectTrigger>
@@ -125,7 +135,10 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
                 <span className="">All equipment types</span>
               </SelectItem>
               {equipmentTypes.map((equipmentType) => (
-                <SelectItem key={equipmentType.value} value={equipmentType.value}>
+                <SelectItem
+                  key={equipmentType.value}
+                  value={equipmentType.value}
+                >
                   <span className="text-red-700">{equipmentType.label}</span>
                 </SelectItem>
               ))}
@@ -133,10 +146,12 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
           </Select>
         )}
 
-        {accessorKey === 'serviceStatus' && (
-          <Select onValueChange={(value) => {
-            table.getColumn(accessorKey)?.setFilterValue(value)
-          }}>
+        {accessorKey === "serviceStatus" && (
+          <Select
+            onValueChange={(value) => {
+              table.getColumn(accessorKey)?.setFilterValue(value);
+            }}
+          >
             <SelectTrigger className="h-6 p-1">
               <SelectValue placeholder="All service statuses" />
             </SelectTrigger>
@@ -145,7 +160,10 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
                 <span className="">All service status</span>
               </SelectItem>
               {serviceStatuses.map((serviceStatuse) => (
-                <SelectItem key={serviceStatuse.value} value={serviceStatuse.value}>
+                <SelectItem
+                  key={serviceStatuse.value}
+                  value={serviceStatuse.value}
+                >
                   <span className="text-red-700">{serviceStatuse.label}</span>
                 </SelectItem>
               ))}
@@ -153,15 +171,16 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
           </Select>
         )}
 
-        {accessorKey === 'priority' && (
-          <Select onValueChange={(value) => {
-            if(value === ' ') {
-              table.getColumn(accessorKey)?.setFilterValue('')
-            }
-            else {
-              table.getColumn(accessorKey)?.setFilterValue(value)
-            }
-          }}>
+        {accessorKey === "priority" && (
+          <Select
+            onValueChange={(value) => {
+              if (value === " ") {
+                table.getColumn(accessorKey)?.setFilterValue("");
+              } else {
+                table.getColumn(accessorKey)?.setFilterValue(value);
+              }
+            }}
+          >
             <SelectTrigger className="h-6 p-1">
               <SelectValue placeholder="All priorities" />
             </SelectTrigger>
@@ -179,5 +198,5 @@ export function ServiceTicketDataTableColumnHeader<TData, TValue>({
         )}
       </div>
     </div>
-  )
+  );
 }

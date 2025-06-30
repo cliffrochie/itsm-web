@@ -1,10 +1,9 @@
-
-import { useState } from 'react'
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AppComboBox } from "@/components/comboboxes/app-combobox"
+import { AppComboBox } from "@/components/comboboxes/app-combobox";
 // import { IDesignation } from '@/@types/designation'
-import { IOffice } from '@/@types/office';
-import api from '@/hooks/use-api'
+import { IOffice } from "@/@types/office";
+import api from "@/hooks/use-api";
 import { cn } from "@/lib/utils";
 
 export default function OfficeComboBox({
@@ -18,7 +17,6 @@ export default function OfficeComboBox({
   onValueChange: (value: string) => void;
   className?: string;
 }) {
-  
   const [value, setValue] = useState(defaultValue);
   const [label, setLabel] = useState("");
   const [search, setSearch] = useState("");
@@ -26,22 +24,22 @@ export default function OfficeComboBox({
   const { data } = useQuery({
     queryKey: [search, "officeComboBox"],
     queryFn: async () => {
-      let data: {value: string, label: string}[] = []
+      let data: { value: string; label: string }[] = [];
 
-      let aliasUrl = `/api/offices/?noPage=true&alias=${search}`
-      const aliasResponse = await api.get<IOffice[]>(aliasUrl)
+      let aliasUrl = `/api/offices/?noPage=true&alias=${search}`;
+      const aliasResponse = await api.get<IOffice[]>(aliasUrl);
 
-      aliasResponse.data.map(office => {
-        if(office.alias) {
+      aliasResponse.data.map((office) => {
+        if (office.alias) {
           data.push({
             value: office._id,
-            label: office.alias
-          })
+            label: office.alias,
+          });
         }
-      })
+      });
 
-      return data
-    }
+      return data;
+    },
   });
 
   return (
@@ -60,5 +58,5 @@ export default function OfficeComboBox({
       noResultsMsg="No offices found"
       selectItemMsg={previousValue || "Select an office"}
     />
-  )
+  );
 }

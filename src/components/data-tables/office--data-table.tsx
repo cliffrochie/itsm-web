@@ -1,9 +1,4 @@
-"use client"
- 
-import {
-  flexRender,
-  Table as TanstackTable
-} from "@tanstack/react-table"
+import { flexRender, Table as TanstackTable } from "@tanstack/react-table";
 
 import {
   Table,
@@ -12,20 +7,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-
-
+} from "@/components/ui/table";
 
 interface OfficeDataTableProps<T> {
-  table: TanstackTable<T>
-  totalColumns: number
+  table: TanstackTable<T>;
+  totalColumns: number;
 }
 
 export function OfficeDataTable<T>({
   table,
-  totalColumns
+  totalColumns,
 }: OfficeDataTableProps<T>) {
-
   return (
     <div className="rounded-md border mb-3 mt-4">
       <Table>
@@ -42,7 +34,7 @@ export function OfficeDataTable<T>({
                           header.getContext()
                         )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -71,5 +63,5 @@ export function OfficeDataTable<T>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

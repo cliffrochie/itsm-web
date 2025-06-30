@@ -1,10 +1,10 @@
-import { Column, Table } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react"
+import { Column, Table } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { Button } from '@/components/ui/button'
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import {
   DropdownMenu,
@@ -12,15 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
+} from "@/components/ui/dropdown-menu";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
-  table: Table<TData>
-  column: Column<TData, TValue>
-  accessorKey: string
-  title: string
+  table: Table<TData>;
+  column: Column<TData, TValue>;
+  accessorKey: string;
+  title: string;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
@@ -31,7 +30,7 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>
+    return <div className={cn(className)}>{title}</div>;
   }
 
   return (
@@ -70,11 +69,13 @@ export function DataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        {true  && (
+        {true && (
           <Input
-            placeholder={'Filter '+ title.toLowerCase() +'..' }
+            placeholder={"Filter " + title.toLowerCase() + ".."}
             className="h-6 text-nowrap p-1"
-            value={(table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""
+            }
             onChange={(event) =>
               table.getColumn(accessorKey)?.setFilterValue(event.target.value)
             }
@@ -82,5 +83,5 @@ export function DataTableColumnHeader<TData, TValue>({
         )}
       </div>
     </div>
-  )
+  );
 }

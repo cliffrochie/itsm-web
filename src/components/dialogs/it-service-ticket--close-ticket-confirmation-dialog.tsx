@@ -1,5 +1,5 @@
-import { SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,29 +8,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { UseMutationResult } from '@tanstack/react-query'
-import { AxiosResponse } from "axios"
-
-
+import { UseMutationResult } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 
 interface IProps {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  id?: string
-  name?: string
-  updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  id?: string;
+  name?: string;
+  updateMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    string,
+    unknown
+  >;
 }
 
 export default function CloseTicketConfirmationDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   id,
   name,
-  updateMutation
+  updateMutation,
 }: IProps) {
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -44,20 +46,37 @@ export default function CloseTicketConfirmationDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
-           <p>Are you sure you want to close <span className="font-semibold text-red-500">{name}</span>?</p>
-          </div>
+        <div className="grid gap-4 py-3">
+          <p>
+            Are you sure you want to close{" "}
+            <span className="font-semibold text-red-500">{name}</span>?
+          </p>
+        </div>
         <DialogFooter>
-          <Button variant="outline" className="w-24" onClick={() => setDialogOpen(false)}>No</Button>
-          <Button type="submit" className="bg-blue-500 w-24" onClick={() => {
-            updateMutation.mutate(JSON.stringify({
-              id: String(id), 
-              name: name, 
-            }))
-            setDialogOpen(false)
-          }}>Yes</Button>
+          <Button
+            variant="outline"
+            className="w-24"
+            onClick={() => setDialogOpen(false)}
+          >
+            No
+          </Button>
+          <Button
+            type="submit"
+            className="bg-blue-500 w-24"
+            onClick={() => {
+              updateMutation.mutate(
+                JSON.stringify({
+                  id: String(id),
+                  name: name,
+                })
+              );
+              setDialogOpen(false);
+            }}
+          >
+            Yes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

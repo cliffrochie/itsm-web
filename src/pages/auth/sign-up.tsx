@@ -1,18 +1,17 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Link } from "react-router"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import api from '@/hooks/use-api'
-import { handleAxiosError } from '@/utils/error-handler'
+import api from "@/hooks/use-api";
+import { handleAxiosError } from "@/utils/error-handler";
 
-
-import { toast, Slide } from 'react-toastify';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { toast, Slide } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -20,10 +19,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { withMask } from 'use-mask-input'
-
+} from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { withMask } from "use-mask-input";
 
 const formSchema = z.object({
   firstName: z.string().min(2),
@@ -32,40 +30,41 @@ const formSchema = z.object({
   extensionName: z.string().nullable(),
   username: z.string().min(4),
   email: z.string().email(),
-  contactNo: z.string().max(13).regex(/^\d+$/, {
-    message: "Must be a string containing only numbers",
-  }).nullable(),
+  contactNo: z
+    .string()
+    .max(13)
+    .regex(/^\d+$/, {
+      message: "Must be a string containing only numbers",
+    })
+    .nullable(),
   password: z.string().nonempty(),
   password2: z.string().nonempty(),
-})
-
+});
 
 export default function SignUpPage() {
-  const navigate = useNavigate()
-  const [errors, setErrors] = useState<any>(null)
-
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState<any>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      extensionName: '',
-      username: '',
-      email: '',
-      password: '', 
-      password2: '',
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      extensionName: "",
+      username: "",
+      email: "",
+      password: "",
+      password2: "",
     },
-  })
-
+  });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
+    console.log(data);
     try {
-      const response = await api.post('/api/users/signup', data)
-      if(response.status === 201) {
-        toast.success('User created successfully.', {
+      const response = await api.post("/api/users/signup", data);
+      if (response.status === 201) {
+        toast.success("User created successfully.", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -75,23 +74,21 @@ export default function SignUpPage() {
           progress: undefined,
           theme: "light",
           transition: Slide,
-          className: 'text-sm',
+          className: "text-sm",
         });
 
         setTimeout(() => {
-          navigate('/sign-in')
-        }, 500)
+          navigate("/sign-in");
+        }, 500);
+      } else {
+        console.log(response.status);
       }
-      else {
-        console.log(response.status)
-      }
-    }
-    catch(e) {
-      const err = await handleAxiosError(e)
-      console.log(err)
-      let obj: any = {}
-      obj[err.key] = err.message
-      setErrors(obj)
+    } catch (e) {
+      const err = await handleAxiosError(e);
+      console.log(err);
+      let obj: any = {};
+      obj[err.key] = err.message;
+      setErrors(obj);
     }
   }
 
@@ -102,25 +99,33 @@ export default function SignUpPage() {
           <Card className="w-auto py-10">
             <CardHeader>
               <CardTitle className="text-center">
-                <div className="flex justify-center align-middle w-auto mb-5">
+                <div className="flex justify-center align-middle w-auto mb-5"></div>
+                <div className="text-5xl font-mono font-bold text-gray-600">
+                  Create an Account
                 </div>
-                <div className="text-5xl font-mono font-bold text-gray-600">Create an Account</div>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-16">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full grid gap-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4 w-full grid gap-4"
+                >
                   <div className="grid lg:grid-cols-3 sm:grid-cols-1 gap-4">
                     <FormField
                       control={form.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
+                          <FormLabel
+                            className={errors?.username ? "text-red-500" : ""}
+                          >
+                            Username
+                          </FormLabel>
                           <FormControl>
                             <Input {...field} className="h-7" />
                           </FormControl>
-                          <FormMessage>{ errors?.username }</FormMessage>
+                          <FormMessage>{errors?.username}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -129,11 +134,15 @@ export default function SignUpPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
+                          <FormLabel
+                            className={errors?.email ? "text-red-500" : ""}
+                          >
+                            Email
+                          </FormLabel>
                           <FormControl>
                             <Input {...field} type="email" className="h-7" />
                           </FormControl>
-                          <FormMessage>{ errors?.email }</FormMessage>
+                          <FormMessage>{errors?.email}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -142,11 +151,21 @@ export default function SignUpPage() {
                       name="contactNo"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
+                          <FormLabel
+                            className={errors?.contactNo ? "text-red-500" : ""}
+                          >
+                            Contact Number
+                          </FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} ref={withMask('9999 999 9999')} type="contactNo" className="h-7" />
+                            <Input
+                              {...field}
+                              value={field.value || ""}
+                              ref={withMask("9999 999 9999")}
+                              type="contactNo"
+                              className="h-7"
+                            />
                           </FormControl>
-                          <FormMessage>{ errors?.contactNo }</FormMessage>
+                          <FormMessage>{errors?.contactNo}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -159,7 +178,11 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value.toUpperCase()} className="h-7" />
+                            <Input
+                              {...field}
+                              value={field.value.toUpperCase()}
+                              className="h-7"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -172,7 +195,11 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Middle Name</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value?.toUpperCase() || ""} className="h-7" />
+                            <Input
+                              {...field}
+                              value={field.value?.toUpperCase() || ""}
+                              className="h-7"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -185,7 +212,11 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value.toUpperCase()} className="h-7" />
+                            <Input
+                              {...field}
+                              value={field.value.toUpperCase()}
+                              className="h-7"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -198,7 +229,11 @@ export default function SignUpPage() {
                         <FormItem>
                           <FormLabel>Extension</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value?.toUpperCase() || ""} className="h-7" />
+                            <Input
+                              {...field}
+                              value={field.value?.toUpperCase() || ""}
+                              className="h-7"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -233,16 +268,21 @@ export default function SignUpPage() {
                       )}
                     />
                   </div>
-                  <Button type="submit" className="bg-blue-500">Submit</Button>
+                  <Button type="submit" className="bg-blue-500">
+                    Submit
+                  </Button>
                 </form>
               </Form>
               <div className="py-5 text-sm">
-                Already have an account? <Link to="/sign-in" className="text-blue-500">Sign-in here.</Link>
+                Already have an account?{" "}
+                <Link to="/sign-in" className="text-blue-500">
+                  Sign-in here.
+                </Link>
               </div>
             </CardContent>
           </Card>
         </div>
       </section>
     </>
-  )
+  );
 }

@@ -1,9 +1,8 @@
-
-import { useState } from 'react'
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AppComboBox } from "@/components/comboboxes/app-combobox"
-import { IDesignation } from '@/@types/designation'
-import api from '@/hooks/use-api'
+import { AppComboBox } from "@/components/comboboxes/app-combobox";
+import { IDesignation } from "@/@types/designation";
+import api from "@/hooks/use-api";
 import { cn } from "@/lib/utils";
 
 export default function DesignationComboBox({
@@ -17,7 +16,6 @@ export default function DesignationComboBox({
   onValueChange: (value: string) => void;
   className?: string;
 }) {
-  
   const [value, setValue] = useState(defaultValue);
   const [label, setLabel] = useState("");
   const [search, setSearch] = useState("");
@@ -25,24 +23,23 @@ export default function DesignationComboBox({
   const { data } = useQuery({
     queryKey: [search, "designationComboBox"],
     queryFn: async () => {
-      
-      let url = `/api/designations/?noPage=true&sort=title&title=${search}`
-      const response = await api.get<IDesignation[]>(url)
+      let url = `/api/designations/?noPage=true&sort=title&title=${search}`;
+      const response = await api.get<IDesignation[]>(url);
 
-      let data: {value: string, label: string}[] = []
+      let data: { value: string; label: string }[] = [];
 
-      response.data.map(designation => {
+      response.data.map((designation) => {
         data.push({
           value: designation._id,
-          label: designation.title
-        })
-      })
+          label: designation.title,
+        });
+      });
 
-      console.log(response.data)
-      console.log(data)
+      console.log(response.data);
+      console.log(data);
 
-      return data
-    }
+      return data;
+    },
   });
 
   return (
@@ -63,6 +60,5 @@ export default function DesignationComboBox({
         selectItemMsg={previousValue || "Select a designation"}
       />
     </>
-    
-  )
+  );
 }

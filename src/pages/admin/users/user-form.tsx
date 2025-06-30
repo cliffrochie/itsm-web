@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useParams } from "react-router"
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useParams } from "react-router";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import api from '@/hooks/use-api'
-import { handleAxiosError } from '@/utils/error-handler'
+import api from "@/hooks/use-api";
+import { handleAxiosError } from "@/utils/error-handler";
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from "@tanstack/react-query";
 
-import { toast, Slide } from 'react-toastify';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { toast, Slide } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -23,10 +23,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
-import { IUser } from '@/@types/user'
-
+import { IUser } from "@/@types/user";
 
 const formSchema = z.object({
   firstName: z.string().min(2),
@@ -35,94 +34,103 @@ const formSchema = z.object({
   extensionName: z.string().nullable(),
   username: z.string().min(4),
   email: z.string().email(),
-  contactNo: z.string().max(13).regex(/^\d+$/, {
-    message: "Must be a string containing only numbers",
-  }).nullable(),
+  contactNo: z
+    .string()
+    .max(13)
+    .regex(/^\d+$/, {
+      message: "Must be a string containing only numbers",
+    })
+    .nullable(),
   password: z.string().nonempty(),
   password2: z.string().nonempty(),
-  role: z.enum(['user', 'staff', 'admin'], {
-    message: 'You need to select a user role.'
-  })
-})
+  role: z.enum(["user", "staff", "admin"], {
+    message: "You need to select a user role.",
+  }),
+});
 
 export default function AdminUserForm() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const params = useParams()
-  const currentPath = location.pathname.split('/')
-  const [errors, setErrors] = useState<any>(null)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
+  const currentPath = location.pathname.split("/");
+  const [errors, setErrors] = useState<any>(null);
 
-  let isUpdate = false
+  let isUpdate = false;
 
-  let title = ''
-  if(currentPath[currentPath.length-1] === 'create') {
-    title = 'Create'
-  }
-  else if(currentPath[currentPath.length-1] === 'update') {
-    title = 'Update'
-    isUpdate = true
+  let title = "";
+  if (currentPath[currentPath.length - 1] === "create") {
+    title = "Create";
+  } else if (currentPath[currentPath.length - 1] === "update") {
+    title = "Update";
+    isUpdate = true;
   }
 
   const { data } = useQuery({
-    queryKey: ['userForm'],
+    queryKey: ["userForm"],
     queryFn: async () => {
       let data: IUser = {
-        _id: '',
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        extensionName: '',
-        username: '',
-        email: '',
-        contactNo: '',
-        role: 'user',
-        isActive: false
+        _id: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        extensionName: "",
+        username: "",
+        email: "",
+        contactNo: "",
+        role: "user",
+        isActive: false,
+      };
+      let url = `/api/users/${params.userId}`;
+      if (params.userId) {
+        await api.get(url).then((response) => {
+          data = response.data;
+        });
       }
-      let url = `/api/users/${params.userId}`
-      if(params.userId) {
-        await api.get(url).then(response => {
-          data = response.data
-        })
-      }
-      return data
-    }
-  }) 
+      return data;
+    },
+  });
 
   useEffect(() => {
-    if(isUpdate) {
-      console.log(data)
-      form.setValue('firstName', data ? data.firstName : '')
-      form.setValue('middleName', data ? data.middleName !== undefined ? data.middleName : '' : '')
-      form.setValue('lastName', data ? data.lastName : '')
-      form.setValue('extensionName', data ? data.extensionName !== undefined ? data.extensionName : '' : '')
-      form.setValue('username', data ? data.username : '')
-      form.setValue('email', data ? data.email : '')
-      form.setValue('contactNo', data ? data.contactNo !== undefined ? data.contactNo : '' : '')
-      form.setValue('role', data ? data.role : 'user')
+    if (isUpdate) {
+      console.log(data);
+      form.setValue("firstName", data ? data.firstName : "");
+      form.setValue(
+        "middleName",
+        data ? (data.middleName !== undefined ? data.middleName : "") : ""
+      );
+      form.setValue("lastName", data ? data.lastName : "");
+      form.setValue(
+        "extensionName",
+        data ? (data.extensionName !== undefined ? data.extensionName : "") : ""
+      );
+      form.setValue("username", data ? data.username : "");
+      form.setValue("email", data ? data.email : "");
+      form.setValue(
+        "contactNo",
+        data ? (data.contactNo !== undefined ? data.contactNo : "") : ""
+      );
+      form.setValue("role", data ? data.role : "user");
     }
-  }, [data])  
-
+  }, [data]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      extensionName: '',
-      username: '',
-      email: '',
-      password: '', 
-      password2: '',
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      extensionName: "",
+      username: "",
+      email: "",
+      password: "",
+      password2: "",
     },
-  })
-
+  });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data)
+    console.log(data);
     try {
-      if(isUpdate) {
-        
+      if (isUpdate) {
         const updatedData = {
           firstName: data.firstName,
           middleName: data.middleName,
@@ -131,12 +139,15 @@ export default function AdminUserForm() {
           username: data.username,
           email: data.email,
           contactNo: data.contactNo,
-          role: data.role
-        }
+          role: data.role,
+        };
 
-        const response = await api.put(`/api/users/${params.userId}`, updatedData)
-        if(response.status === 200) {
-          toast.success('User created successfully.', {
+        const response = await api.put(
+          `/api/users/${params.userId}`,
+          updatedData
+        );
+        if (response.status === 200) {
+          toast.success("User created successfully.", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -146,20 +157,17 @@ export default function AdminUserForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
-            className: 'text-sm',
+            className: "text-sm",
           });
-  
-          navigate('/admin/users')
+
+          navigate("/admin/users");
+        } else {
+          console.log(response.status);
         }
-        else {
-          console.log(response.status)
-        }
-        
-      }
-      else {
-        const response = await api.post('/api/users/signup', data)
-        if(response.status === 201) {
-          toast.success('User created successfully.', {
+      } else {
+        const response = await api.post("/api/users/signup", data);
+        if (response.status === 201) {
+          toast.success("User created successfully.", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -169,33 +177,32 @@ export default function AdminUserForm() {
             progress: undefined,
             theme: "light",
             transition: Slide,
-            className: 'text-sm',
+            className: "text-sm",
           });
-  
-          navigate('/admin/users')
-        }
-        else {
-          console.log(response.status)
+
+          navigate("/admin/users");
+        } else {
+          console.log(response.status);
         }
       }
-      
-    }
-    catch(e) {
-      const err = await handleAxiosError(e)
-      console.log(err)
-      let obj: any = {}
-      obj[err.key] = err.message
-      setErrors(obj)
+    } catch (e) {
+      const err = await handleAxiosError(e);
+      console.log(err);
+      let obj: any = {};
+      obj[err.key] = err.message;
+      setErrors(obj);
     }
   }
-
 
   return (
     <section>
       <h3 className="text-xl font-semibold">{title} User</h3>
       <div className="mt-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 lg:w-6/12 md:w-7/12 sm:w-full"
+          >
             <Label className="text-gray-500">User Information</Label>
             <div className="grid lg:grid-cols-4 sm:grid-cols-1 gap-4">
               <FormField
@@ -218,7 +225,11 @@ export default function AdminUserForm() {
                   <FormItem>
                     <FormLabel>Middle Name</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="h-7" />
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        className="h-7"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -244,7 +255,11 @@ export default function AdminUserForm() {
                   <FormItem>
                     <FormLabel>Extension Name</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="h-7" />
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        className="h-7"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -257,11 +272,15 @@ export default function AdminUserForm() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={ errors?.username ? 'text-red-500' : ''}>Username</FormLabel>
+                    <FormLabel
+                      className={errors?.username ? "text-red-500" : ""}
+                    >
+                      Username
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} className="h-7" />
                     </FormControl>
-                    <FormMessage>{ errors?.username }</FormMessage>
+                    <FormMessage>{errors?.username}</FormMessage>
                   </FormItem>
                 )}
               />
@@ -271,11 +290,15 @@ export default function AdminUserForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={ errors?.email ? 'text-red-500' : ''}>Email</FormLabel>
+                      <FormLabel
+                        className={errors?.email ? "text-red-500" : ""}
+                      >
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} type="email" className="h-7" />
                       </FormControl>
-                      <FormMessage>{ errors?.email }</FormMessage>
+                      <FormMessage>{errors?.email}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -284,18 +307,27 @@ export default function AdminUserForm() {
                   name="contactNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={ errors?.contactNo ? 'text-red-500' : ''}>Contact Number</FormLabel>
+                      <FormLabel
+                        className={errors?.contactNo ? "text-red-500" : ""}
+                      >
+                        Contact Number
+                      </FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} type="contactNo" className="h-7" />
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          type="contactNo"
+                          className="h-7"
+                        />
                       </FormControl>
-                      <FormMessage>{ errors?.contactNo }</FormMessage>
+                      <FormMessage>{errors?.contactNo}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
             </div>
             <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
-              { !isUpdate && (
+              {!isUpdate && (
                 <div className="grid gap-4">
                   <FormField
                     control={form.control}
@@ -342,25 +374,19 @@ export default function AdminUserForm() {
                             <FormControl>
                               <RadioGroupItem value="user" />
                             </FormControl>
-                            <FormLabel className="font-normal">
-                              User
-                            </FormLabel>
+                            <FormLabel className="font-normal">User</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="staff" />
                             </FormControl>
-                            <FormLabel className="font-normal">
-                              Staff
-                            </FormLabel>
+                            <FormLabel className="font-normal">Staff</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="admin" />
                             </FormControl>
-                            <FormLabel className="font-normal">
-                              Admin
-                            </FormLabel>
+                            <FormLabel className="font-normal">Admin</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -370,11 +396,13 @@ export default function AdminUserForm() {
                 />
               </div>
             </div>
-            
-            <Button type="submit" className="bg-blue-500">Submit</Button>
+
+            <Button type="submit" className="bg-blue-500">
+              Submit
+            </Button>
           </form>
         </Form>
       </div>
     </section>
-  )
+  );
 }

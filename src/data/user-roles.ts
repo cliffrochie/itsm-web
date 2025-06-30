@@ -1,19 +1,19 @@
-import { CircleUserRound, UsersRound, UserRoundPen } from "lucide-react"
+import { CircleUserRound, UsersRound, UserRoundPen } from "lucide-react";
 
 export const roles = [
   {
     value: "user",
     label: "User",
-    icon: UsersRound
+    icon: UsersRound,
   },
   {
     value: "staff",
     label: "Staff",
-    icon: CircleUserRound
+    icon: CircleUserRound,
   },
   {
     value: "admin",
     label: "Admin",
-    icon: UserRoundPen
+    icon: UserRoundPen,
   },
-]
+];

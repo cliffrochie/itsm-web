@@ -1,23 +1,19 @@
-import { 
-  ChevronDownCircle,
-  ChevronUpCircle,
-  CircleMinus,
-} from "lucide-react"
+import { ChevronDownCircle, ChevronUpCircle, CircleMinus } from "lucide-react";
 
 export const priorities = [
   {
     value: "low",
     label: "Low",
-    icon: ChevronDownCircle
+    icon: ChevronDownCircle,
   },
   {
     value: "medium",
     label: "Medium",
-    icon: CircleMinus
+    icon: CircleMinus,
   },
   {
     value: "high",
     label: "High",
-    icon: ChevronUpCircle
+    icon: ChevronUpCircle,
   },
-]
+];

@@ -1,13 +1,10 @@
-
-import { useState } from 'react'
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AppComboBox } from "@/components/comboboxes/app-combobox"
+import { AppComboBox } from "@/components/comboboxes/app-combobox";
 // import { IDesignation } from '@/@types/designation'
-import { IUser } from '@/@types/user';
-import api from '@/hooks/use-api'
+import { IUser } from "@/@types/user";
+import api from "@/hooks/use-api";
 import { cn } from "@/lib/utils";
-
-
 
 export default function UserComboBox({
   defaultValue,
@@ -16,13 +13,12 @@ export default function UserComboBox({
   className,
   excludeUser,
 }: {
-  defaultValue?: string
+  defaultValue?: string;
   previousValue?: string;
-  onValueChange: (value: string) => void
-  className?: string
-  excludeUser?: string
+  onValueChange: (value: string) => void;
+  className?: string;
+  excludeUser?: string;
 }) {
-  
   const [value, setValue] = useState(defaultValue);
   const [label, setLabel] = useState("");
   const [search, setSearch] = useState("");
@@ -30,25 +26,30 @@ export default function UserComboBox({
   const { data } = useQuery({
     queryKey: [search, "userComboBox"],
     queryFn: async () => {
-      let data: {value: string, label: string}[] = []
+      let data: { value: string; label: string }[] = [];
 
-      let userUrl = `/api/users/?noPage=true&personnel=true&fullName=${search}`
-      if(excludeUser) {
-        userUrl += `&exclude=${excludeUser}`
+      let userUrl = `/api/users/?noPage=true&personnel=true&fullName=${search}`;
+      if (excludeUser) {
+        userUrl += `&exclude=${excludeUser}`;
       }
-      const userResponse = await api.get<IUser[]>(userUrl)
+      const userResponse = await api.get<IUser[]>(userUrl);
 
-      userResponse.data.map(user => {
-        if(user.firstName) {
+      userResponse.data.map((user) => {
+        if (user.firstName) {
           data.push({
             value: user._id,
-            label: user.firstName +' '+ (user.middleName ? user.middleName[0] +'. ' : '') + user.lastName + (user.extensionName ? user.extensionName : '')
-          })
+            label:
+              user.firstName +
+              " " +
+              (user.middleName ? user.middleName[0] + ". " : "") +
+              user.lastName +
+              (user.extensionName ? user.extensionName : ""),
+          });
         }
-      })
+      });
 
-      return data
-    }
+      return data;
+    },
   });
 
   return (
@@ -67,5 +68,5 @@ export default function UserComboBox({
       noResultsMsg="No service engineer found"
       selectItemMsg={previousValue || "Select a service engineer"}
     />
-  )
+  );
 }

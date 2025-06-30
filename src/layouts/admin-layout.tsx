@@ -1,53 +1,58 @@
-import SidebarLayout from "@/layouts/sidebar-layout"
-import { useState } from 'react';
-import { INavLink } from '@/@types/nav-link';
-import { LayoutDashboard, ListOrdered, UserRound, SquareUserRound, BriefcaseBusiness, House } from "lucide-react"
-
-
+import SidebarLayout from "@/layouts/sidebar-layout";
+import { useState } from "react";
+import { INavLink } from "@/@types/nav-link";
+import {
+  LayoutDashboard,
+  ListOrdered,
+  UserRound,
+  SquareUserRound,
+  BriefcaseBusiness,
+  House,
+} from "lucide-react";
 
 export default function AdminLayout() {
   const [links, setLinks] = useState<INavLink[]>([
     {
-      title: 'Dashboard',
-      url: '/admin',
+      title: "Dashboard",
+      url: "/admin",
       icon: LayoutDashboard,
-      isActive: true
+      isActive: true,
     },
     {
-      title: 'IT Service Tickets',
-      url: '/admin/it-service-tickets',
+      title: "IT Service Tickets",
+      url: "/admin/it-service-tickets",
       icon: ListOrdered,
-      isActive: false
+      isActive: false,
     },
     {
-      title: 'Users',
-      url: '/admin/users',
+      title: "Users",
+      url: "/admin/users",
       icon: UserRound,
-      isActive: false
+      isActive: false,
     },
     {
-      title: 'Clients',
-      url: '/admin/clients',
+      title: "Clients",
+      url: "/admin/clients",
       icon: SquareUserRound,
-      isActive: false
+      isActive: false,
     },
     {
-      title: 'Designations',
-      url: '/admin/designations',
+      title: "Designations",
+      url: "/admin/designations",
       icon: BriefcaseBusiness,
-      isActive: false
+      isActive: false,
     },
     {
-      title: 'Offices',
-      url: '/admin/offices',
+      title: "Offices",
+      url: "/admin/offices",
       icon: House,
-      isActive: false
+      isActive: false,
     },
-  ])
+  ]);
 
   return (
     <>
       <SidebarLayout links={links} setLinks={setLinks} />
     </>
-  )
+  );
 }

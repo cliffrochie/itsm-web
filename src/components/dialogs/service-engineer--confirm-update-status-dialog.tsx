@@ -1,5 +1,5 @@
-import { SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,35 +8,36 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { UseMutationResult } from '@tanstack/react-query'
-import { capitalizeFirstLetter } from "@/utils"
-import { AxiosResponse } from "axios"
-
-
+import { UseMutationResult } from "@tanstack/react-query";
+import { capitalizeFirstLetter } from "@/utils";
+import { AxiosResponse } from "axios";
 
 interface IUpdateStatusDialogProps {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  id?: string
-  name?: string
-  newValue?: string
-  currentValue?: string
-  selectedServiceStatus?: string
-  updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  id?: string;
+  name?: string;
+  newValue?: string;
+  currentValue?: string;
+  selectedServiceStatus?: string;
+  updateMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    string,
+    unknown
+  >;
 }
 
 export default function UpdateStatusAssignedTicketDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   id,
   name,
   newValue,
-  updateMutation
+  updateMutation,
 }: IUpdateStatusDialogProps) {
- 
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -50,24 +51,42 @@ export default function UpdateStatusAssignedTicketDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3 px-4 border rounded-md">
-            <p className="text-md">Change to <span className="font-semibold text-blue-600">{capitalizeFirstLetter(newValue as string)}</span>?</p>
-          </div>
+        <div className="grid gap-4 py-3 px-4 border rounded-md">
+          <p className="text-md">
+            Change to{" "}
+            <span className="font-semibold text-blue-600">
+              {capitalizeFirstLetter(newValue as string)}
+            </span>
+            ?
+          </p>
+        </div>
         <DialogFooter className="gap-2">
-          <Button type="submit" className="custom-md:w-20" variant="outline" onClick={() => setDialogOpen(false)}>
+          <Button
+            type="submit"
+            className="custom-md:w-20"
+            variant="outline"
+            onClick={() => setDialogOpen(false)}
+          >
             No
           </Button>
-          <Button type="submit" className="custom-md:w-20 bg-blue-500" onClick={() => {
-            updateMutation.mutate(JSON.stringify({
-              id: String(id), 
-              name: name, 
-              serviceStatus: newValue
-            }))
-            setDialogOpen(false)
-          }}>Yes</Button>
-          
+          <Button
+            type="submit"
+            className="custom-md:w-20 bg-blue-500"
+            onClick={() => {
+              updateMutation.mutate(
+                JSON.stringify({
+                  id: String(id),
+                  name: name,
+                  serviceStatus: newValue,
+                })
+              );
+              setDialogOpen(false);
+            }}
+          >
+            Yes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

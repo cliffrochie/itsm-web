@@ -1,9 +1,4 @@
-"use client"
- 
-import {
-  flexRender,
-  Table as TanstackTable
-} from "@tanstack/react-table"
+import { flexRender, Table as TanstackTable } from "@tanstack/react-table";
 
 import {
   Table,
@@ -12,24 +7,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
-
-
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface ServiceTicketDataTableProps<T> {
-  table: TanstackTable<T>
-  totalColumns: number
-  className?: string
+  table: TanstackTable<T>;
+  totalColumns: number;
+  className?: string;
 }
 
 export function ServiceTicketDataTable<T>({
   table,
   totalColumns,
-  className
+  className,
 }: ServiceTicketDataTableProps<T>) {
-
-
   return (
     <div className={cn("rounded-md border mb-3 mt-4", className)}>
       <Table>
@@ -46,7 +37,7 @@ export function ServiceTicketDataTable<T>({
                           header.getContext()
                         )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -75,5 +66,5 @@ export function ServiceTicketDataTable<T>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

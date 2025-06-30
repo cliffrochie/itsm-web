@@ -1,29 +1,28 @@
-import { useEffect } from 'react'
-import { useAuth } from '@/contexts/auth-context'
-import { Button } from "@/components/ui/button"
-import { useNavigate } from 'react-router-dom'
-import Logo from '@/assets/images/logo.svg'
-
+import { useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import Logo from "@/assets/images/logo.svg";
 
 export default function HomePage() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if(user) {
-      switch(user.role) {
-        case 'user':
-          navigate('/client')
-          break
-        case 'staff':
-          navigate('/service-engineer')
-          break
-        case 'admin':
-          navigate('/admin')
-          break
-      } 
+    if (user) {
+      switch (user.role) {
+        case "user":
+          navigate("/client");
+          break;
+        case "staff":
+          navigate("/service-engineer");
+          break;
+        case "admin":
+          navigate("/admin");
+          break;
+      }
     }
-  }, [user])
+  }, [user]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-gray-100">
@@ -34,15 +33,26 @@ export default function HomePage() {
           <h2 className="text-6xl font-semibold font-mono text-gray-700 mb-4">
             NIA ITSM
           </h2>
-          <p className="text-lg text-gray-600">
-            IT Service Management System
-          </p>
+          <p className="text-lg text-gray-600">IT Service Management System</p>
           <p className="text-lg text-gray-500 mb-8">
             The best place to seek IT assistance in NIA Caraga.
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="default" className="bg-gray-600" size="lg" onClick={() => navigate('/sign-up')}>Sign Up</Button>
-            <Button variant="outline" size="lg" onClick={() => navigate('/sign-in')}>Sign In</Button>
+            <Button
+              variant="default"
+              className="bg-gray-600"
+              size="lg"
+              onClick={() => navigate("/sign-up")}
+            >
+              Sign Up
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => navigate("/sign-in")}
+            >
+              Sign In
+            </Button>
           </div>
         </div>
       </main>
@@ -54,5 +64,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

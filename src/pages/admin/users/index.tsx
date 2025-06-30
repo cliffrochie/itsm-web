@@ -1,12 +1,12 @@
-import { useState, useMemo } from 'react'
-import { UserRoundPlus } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { 
-  useQuery, 
-  keepPreviousData, 
+import { useState, useMemo } from "react";
+import { UserRoundPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  useQuery,
+  keepPreviousData,
   useMutation,
-  useQueryClient
-} from '@tanstack/react-query'
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,119 +15,150 @@ import {
   VisibilityState,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 
-import api from '@/hooks/use-api'
+import api from "@/hooks/use-api";
 
-import { UserDataTable } from '@/components/data-tables/user--data-table'
-import { UserDataTableColumnHeader } from '@/components/data-tables/user--data-table-column-header'
-import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
-import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTableRowActions } from '@/components/data-tables/data-table-row-actions'
+import { UserDataTable } from "@/components/data-tables/user--data-table";
+import { UserDataTableColumnHeader } from "@/components/data-tables/user--data-table-column-header";
+import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
+import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
+import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
 
-import { roles } from '@/data/user-roles'
-import { IUser } from '@/@types/user'
-
+import { roles } from "@/data/user-roles";
+import { IUser } from "@/@types/user";
 
 export default function AdminUsersPage() {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10})
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const userQueryKey = ['users', pagination, sorting, columnFilters]
+  const userQueryKey = ["users", pagination, sorting, columnFilters];
 
   const dataQuery = useQuery({
     queryKey: userQueryKey,
     queryFn: async () => {
-      let sortValue = ''      
-      let data = { rows: [], pageCount: 0, rowCount: 0 }
+      let sortValue = "";
+      let data = { rows: [], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/users/`
-      url += `?page=${pagination.pageIndex+1}`
-      url += `&limit=${pagination.pageSize}`
+      let url = `/api/users/`;
+      url += `?page=${pagination.pageIndex + 1}`;
+      url += `&limit=${pagination.pageSize}`;
 
-      if(sorting.length > 0) {
-        sorting.forEach(sort => {
-          sortValue = sort.desc ? '-'+ sort.id : sort.id
-          url += `&sort=${sortValue}`
-        })
+      if (sorting.length > 0) {
+        sorting.forEach((sort) => {
+          sortValue = sort.desc ? "-" + sort.id : sort.id;
+          url += `&sort=${sortValue}`;
+        });
       }
-      
-      if(columnFilters.length > 0) {
-        columnFilters.forEach(filter => {
-          if(filter.value && filter.value !== ' ') {
-            url += `&${filter.id}=${filter.value}`
+
+      if (columnFilters.length > 0) {
+        columnFilters.forEach((filter) => {
+          if (filter.value && filter.value !== " ") {
+            url += `&${filter.id}=${filter.value}`;
           }
-        })
-      } 
+        });
+      }
 
-      await api.get(url).then(response => {
-        data.rows = response.data?.results  
-        data.pageCount = response.data?.totalPages
-        data.rowCount = response.data?.total
-      })
+      await api.get(url).then((response) => {
+        data.rows = response.data?.results;
+        data.pageCount = response.data?.totalPages;
+        data.rowCount = response.data?.total;
+      });
 
-      return data
+      return data;
     },
-    placeholderData: keepPreviousData
-  })
+    placeholderData: keepPreviousData,
+  });
 
   const deleteMutation = useMutation({
     mutationKey: userQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/offices/${id}`)
+      return await api.delete(`/api/users/${id}`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: userQueryKey })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: userQueryKey });
+    },
+  });
 
-  const defaultData = useMemo(() => [], [])
+  const defaultData = useMemo(() => [], []);
 
   const columns: ColumnDef<IUser>[] = useMemo<ColumnDef<IUser>[]>(
     () => [
       {
         accessorKey: "username",
         header: ({ column }) => (
-          <UserDataTableColumnHeader table={table} column={column} accessorKey="username" title="Username" />
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="username"
+            title="Username"
+          />
         ),
-        sortingFn: 'alphanumeric',
+        sortingFn: "alphanumeric",
       },
       {
         accessorKey: "email",
         header: ({ column }) => (
-          <UserDataTableColumnHeader table={table} column={column} accessorKey="email" title="Email" />
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="email"
+            title="Email"
+          />
         ),
-        sortingFn: 'alphanumeric',
+        sortingFn: "alphanumeric",
       },
       {
         accessorKey: "firstName",
         header: ({ column }) => (
-          <UserDataTableColumnHeader table={table} column={column} accessorKey="firstName" title="First Name" />
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="firstName"
+            title="First Name"
+          />
         ),
-        sortingFn: 'alphanumeric',
+        sortingFn: "alphanumeric",
       },
       {
         accessorKey: "lastName",
         header: ({ column }) => (
-          <UserDataTableColumnHeader table={table} column={column} accessorKey="lastName" title="Last Name" />
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="lastName"
+            title="Last Name"
+          />
         ),
-        sortingFn: 'alphanumeric',
+        sortingFn: "alphanumeric",
       },
       {
         accessorKey: "role",
         header: ({ column }) => (
-          <UserDataTableColumnHeader table={table} column={column} accessorKey="role" title="Role" />
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="role"
+            title="Role"
+          />
         ),
         cell: ({ row }) => {
-          const role = roles.find((role) => role.value === row.getValue('role'))
-          if(!role) { return null }
+          const role = roles.find(
+            (role) => role.value === row.getValue("role")
+          );
+          if (!role) {
+            return null;
+          }
           return (
             <div className="flex items-center">
               {role.icon && (
@@ -135,23 +166,26 @@ export default function AdminUsersPage() {
               )}
               <span>{role.label}</span>
             </div>
-          )
+          );
         },
-        sortingFn: 'alphanumeric',
+        sortingFn: "alphanumeric",
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end">
-          <DataTableRowActions 
-            id={row.original._id} 
-            name={row.original.username} 
-            updatePath={`/admin/users/${row.original._id}/update`} 
-            deleteMutation={deleteMutation} 
-          />
-        </div>
-      }
-    ], []
-  )
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <DataTableRowActions
+              id={row.original._id}
+              name={row.original.username}
+              updatePath={`/admin/users/${row.original._id}/update`}
+              deleteMutation={deleteMutation}
+            />
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
@@ -176,7 +210,7 @@ export default function AdminUsersPage() {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-  })
+  });
 
   return (
     <section>
@@ -187,7 +221,7 @@ export default function AdminUsersPage() {
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate('/admin/users/create')}
+            onClick={() => navigate("/admin/users/create")}
           >
             <UserRoundPlus />
             Create User
@@ -198,5 +232,5 @@ export default function AdminUsersPage() {
         <DataTablePagination table={table} />
       </div>
     </section>
-  )
+  );
 }

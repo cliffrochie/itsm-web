@@ -1,59 +1,59 @@
-import { 
+import {
   LockOpen,
   Loader,
   CircleUser,
   CirclePause,
   TrendingUp,
-  RefreshCwOff, 
-  RefreshCw, 
+  RefreshCwOff,
+  RefreshCw,
   Check,
   Lock,
-} from "lucide-react"
+} from "lucide-react";
 
 export const serviceStatuses = [
   {
     value: "open",
     label: "Open",
-    icon: LockOpen
+    icon: LockOpen,
   },
   {
     value: "assigned",
     label: "Assigned",
-    icon: CircleUser
+    icon: CircleUser,
   },
   {
     value: "in progress",
     label: "In Progress",
-    icon: Loader
+    icon: Loader,
   },
   {
     value: "on hold",
     label: "On Hold",
-    icon: CirclePause
+    icon: CirclePause,
   },
   {
     value: "escalated",
     label: "Escalated",
-    icon: TrendingUp
+    icon: TrendingUp,
   },
   {
     value: "canceled",
     label: "Canceled",
-    icon: RefreshCwOff
+    icon: RefreshCwOff,
   },
   {
     value: "reopened",
     label: "Reopened",
-    icon: RefreshCw
+    icon: RefreshCw,
   },
   {
     value: "resolved",
     label: "Resolved",
-    icon: Check
+    icon: Check,
   },
   {
     value: "closed",
     label: "Closed",
-    icon: Lock
+    icon: Lock,
   },
-]
+];

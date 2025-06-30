@@ -1,9 +1,4 @@
-"use client"
- 
-import {
-  flexRender,
-  Table as TanstackTable
-} from "@tanstack/react-table"
+import { flexRender, Table as TanstackTable } from "@tanstack/react-table";
 
 import {
   Table,
@@ -12,21 +7,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-
-
+} from "@/components/ui/table";
 
 interface DesignationDataTableProps<T> {
-  table: TanstackTable<T>
-  totalColumns: number
+  table: TanstackTable<T>;
+  totalColumns: number;
 }
 
 export function DesignationDataTable<T>({
   table,
-  totalColumns
+  totalColumns,
 }: DesignationDataTableProps<T>) {
-
-
   return (
     <div className="rounded-md border mb-3 mt-4">
       <Table>
@@ -43,7 +34,7 @@ export function DesignationDataTable<T>({
                           header.getContext()
                         )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
@@ -72,5 +63,5 @@ export function DesignationDataTable<T>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

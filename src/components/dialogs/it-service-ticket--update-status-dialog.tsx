@@ -1,5 +1,5 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,38 +8,49 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { serviceStatuses } from '@/data/service-status'
-import { UseMutationResult } from '@tanstack/react-query'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AxiosResponse } from "axios"
-
-
+} from "@/components/ui/dialog";
+import { serviceStatuses } from "@/data/service-status";
+import { UseMutationResult } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AxiosResponse } from "axios";
 
 interface IUpdateStatusDialogProps {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  id?: string
-  name?: string
-  selectedServiceStatus?: string
-  updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  id?: string;
+  name?: string;
+  selectedServiceStatus?: string;
+  updateMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    string,
+    unknown
+  >;
 }
 
 export default function UpdateStatusDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   id,
   name,
   selectedServiceStatus,
-  updateMutation
+  updateMutation,
 }: IUpdateStatusDialogProps) {
-  const [selectedOption, setSelectedOption] = useState('')
+  const [selectedOption, setSelectedOption] = useState("");
 
   useEffect(() => {
-    if(selectedServiceStatus) {
-      setSelectedOption(selectedServiceStatus)
+    if (selectedServiceStatus) {
+      setSelectedOption(selectedServiceStatus);
     }
-  }, [selectedServiceStatus])
+  }, [selectedServiceStatus]);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -54,37 +65,50 @@ export default function UpdateStatusDialog({
             <span className="text-sm font-mono">{name}</span>
           </DialogDescription>
         </DialogHeader>
-          <div className="grid gap-4 py-3">
-            <Select 
-              value={selectedOption}
-              onValueChange={(value) => {
-                setSelectedOption(value)
-              }}
-            >
-              <SelectTrigger className="w-full text-foreground h-7">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Service Status</SelectLabel>
-                  {serviceStatuses.map((serviceStatus) => (
-                    <SelectItem key={serviceStatus.value} value={serviceStatus.value}>{serviceStatus.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid gap-4 py-3">
+          <Select
+            value={selectedOption}
+            onValueChange={(value) => {
+              setSelectedOption(value);
+            }}
+          >
+            <SelectTrigger className="w-full text-foreground h-7">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Service Status</SelectLabel>
+                {serviceStatuses.map((serviceStatus) => (
+                  <SelectItem
+                    key={serviceStatus.value}
+                    value={serviceStatus.value}
+                  >
+                    {serviceStatus.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <DialogFooter>
-          <Button type="submit" className="bg-blue-500" onClick={() => {
-            updateMutation.mutate(JSON.stringify({
-              id: String(id), 
-              name: name, 
-              serviceStatus: selectedOption
-            }))
-            setDialogOpen(false)
-          }}>Submit</Button>
+          <Button
+            type="submit"
+            className="bg-blue-500"
+            onClick={() => {
+              updateMutation.mutate(
+                JSON.stringify({
+                  id: String(id),
+                  name: name,
+                  serviceStatus: selectedOption,
+                })
+              );
+              setDialogOpen(false);
+            }}
+          >
+            Submit
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

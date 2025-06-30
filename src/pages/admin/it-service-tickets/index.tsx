@@ -1,107 +1,148 @@
-import { useMemo, useState } from "react"
-import { ColumnDef, ColumnFiltersState, getCoreRowModel, PaginationState, SortingState, useReactTable, VisibilityState } from "@tanstack/react-table"
-import { useNavigate } from "react-router-dom"
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import api from "@/hooks/use-api"
-import { IServiceTicket } from "@/@types/service-ticket"
-import { Button } from "@/components/ui/button"
-import { Briefcase } from "lucide-react"
-import { ServiceTicketDataTableColumnHeader } from "@/components/data-tables/it-service-ticket--data-table-column-header"
-import { ServiceTicketDataTable } from "@/components/data-tables/it-service-ticket--data-table"
-import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions"
-import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options"
-import { DataTablePagination } from "@/components/data-tables/data-table-pagination"
-import { isClientInterface } from "@/@types/client"
-import { isUserInterface } from '@/@types/user'
-import { serviceStatuses } from "@/data/service-status"
-import { priorities } from "@/data/priority"
-import { capitalizeFirstLetter } from "@/utils"
-
+import { useMemo, useState } from "react";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { useNavigate } from "react-router-dom";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import api from "@/hooks/use-api";
+import { IServiceTicket } from "@/@types/service-ticket";
+import { Button } from "@/components/ui/button";
+import { Briefcase } from "lucide-react";
+import { ServiceTicketDataTableColumnHeader } from "@/components/data-tables/it-service-ticket--data-table-column-header";
+import { ServiceTicketDataTable } from "@/components/data-tables/it-service-ticket--data-table";
+import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
+import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
+import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
+import { isClientInterface } from "@/@types/client";
+import { isUserInterface } from "@/@types/user";
+import { serviceStatuses } from "@/data/service-status";
+import { priorities } from "@/data/priority";
+import { capitalizeFirstLetter } from "@/utils";
 
 export default function AdminITServiceTicketsPage() {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10})
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const defaultData = useMemo(() => [], [])
-  const serviceTicketQueryKey = ['serviceTicket', pagination, sorting, columnFilters]
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const defaultData = useMemo(() => [], []);
+  const serviceTicketQueryKey = [
+    "serviceTicket",
+    pagination,
+    sorting,
+    columnFilters,
+  ];
 
   const dataQuery = useQuery({
     queryKey: serviceTicketQueryKey,
     queryFn: async () => {
-      let sortValue = ''      
-      let data = { rows: [], pageCount: 0, rowCount: 0 }
+      let sortValue = "";
+      let data = { rows: [], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/service-tickets/`
-      url += `?page=${pagination.pageIndex+1}`
-      url += `&limit=${pagination.pageSize}`
-      url += `&includes=all`
+      let url = `/api/service-tickets/`;
+      url += `?page=${pagination.pageIndex + 1}`;
+      url += `&limit=${pagination.pageSize}`;
+      url += `&includes=all`;
 
-      if(sorting.length > 0) {
-        sorting.forEach(sort => {
-          sortValue = sort.desc ? '-'+ sort.id : sort.id
-          url += `&sort=${sortValue}`
-        })
+      if (sorting.length > 0) {
+        sorting.forEach((sort) => {
+          sortValue = sort.desc ? "-" + sort.id : sort.id;
+          url += `&sort=${sortValue}`;
+        });
       }
-      
-      if(columnFilters.length > 0) {
-        columnFilters.forEach(filter => {
-          if(filter.value && filter.value !== ' ') {
-            url += `&${filter.id}=${filter.value}`
+
+      if (columnFilters.length > 0) {
+        columnFilters.forEach((filter) => {
+          if (filter.value && filter.value !== " ") {
+            url += `&${filter.id}=${filter.value}`;
           }
-        })
-      } 
+        });
+      }
 
-      await api.get(url).then(response => {
-        data.rows = response.data?.results  
-        data.pageCount = response.data?.totalPages
-        data.rowCount = response.data?.total
-      })
+      await api.get(url).then((response) => {
+        data.rows = response.data?.results;
+        data.pageCount = response.data?.totalPages;
+        data.rowCount = response.data?.total;
+      });
 
-      return data
+      return data;
     },
-    placeholderData: keepPreviousData
-  })
+    placeholderData: keepPreviousData,
+  });
 
   useMutation({
     mutationKey: serviceTicketQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/service-tickets/${id}`)
+      return await api.delete(`/api/service-tickets/${id}`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: serviceTicketQueryKey })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: serviceTicketQueryKey });
+    },
+  });
 
   // console.log(dataQuery.data)
-  
 
-  const columns: ColumnDef<IServiceTicket>[] = useMemo<ColumnDef<IServiceTicket>[]>(
+  const columns: ColumnDef<IServiceTicket>[] = useMemo<
+    ColumnDef<IServiceTicket>[]
+  >(
     () => [
       {
         accessorKey: "ticketNo",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="ticketNo" title="Ticket No." />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="ticketNo"
+            title="Ticket No."
+          />
         ),
       },
       {
         accessorKey: "title",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="title" title="Title" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="title"
+            title="Title"
+          />
         ),
       },
       {
         accessorKey: "serviceStatus",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="serviceStatus" title="Service Status" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="serviceStatus"
+            title="Service Status"
+          />
         ),
         cell: ({ row }) => {
-          const serviceStatus = serviceStatuses.find((serviceStatus) => serviceStatus.value === row.getValue('serviceStatus'))
-          if(!serviceStatus) { return null }
+          const serviceStatus = serviceStatuses.find(
+            (serviceStatus) =>
+              serviceStatus.value === row.getValue("serviceStatus")
+          );
+          if (!serviceStatus) {
+            return null;
+          }
           return (
             <div className="flex items-center">
               {serviceStatus.icon && (
@@ -109,17 +150,26 @@ export default function AdminITServiceTicketsPage() {
               )}
               <span>{serviceStatus.label}</span>
             </div>
-          )
+          );
         },
       },
       {
         accessorKey: "priority",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="priority" title="Service Status" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="priority"
+            title="Service Status"
+          />
         ),
         cell: ({ row }) => {
-          const priority = priorities.find((priority) => priority.value === row.getValue('priority'))
-          if(!priority) { return null }
+          const priority = priorities.find(
+            (priority) => priority.value === row.getValue("priority")
+          );
+          if (!priority) {
+            return null;
+          }
           return (
             <div className="flex items-center">
               {priority.icon && (
@@ -127,82 +177,116 @@ export default function AdminITServiceTicketsPage() {
               )}
               <span>{priority.label}</span>
             </div>
-          )
+          );
         },
       },
-      
+
       {
         accessorKey: "client",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="client" title="Client" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="client"
+            title="Client"
+          />
         ),
         cell: ({ row }) => {
-          const firstName = isClientInterface(row.original.client) ? row.original.client.firstName : ''
-          const lastName = isClientInterface(row.original.client) ? row.original.client.lastName : ''
-          const fullName = String(firstName).charAt(0).toUpperCase() + String(firstName).slice(1).toLowerCase() +' '+ String(lastName).charAt(0).toUpperCase() + String(lastName).slice(1).toLowerCase()
+          const firstName = isClientInterface(row.original.client)
+            ? row.original.client.firstName
+            : "";
+          const lastName = isClientInterface(row.original.client)
+            ? row.original.client.lastName
+            : "";
+          const fullName =
+            String(firstName).charAt(0).toUpperCase() +
+            String(firstName).slice(1).toLowerCase() +
+            " " +
+            String(lastName).charAt(0).toUpperCase() +
+            String(lastName).slice(1).toLowerCase();
 
           return (
             <div className="flex w-full items-center">
               <span>{fullName}</span>
             </div>
-          )
+          );
         },
       },
       {
         accessorKey: "serviceEngineer",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="serviceEngineer" title="Service Engineer" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="serviceEngineer"
+            title="Service Engineer"
+          />
         ),
         cell: ({ row }) => {
-          const firstName = isUserInterface(row.original.serviceEngineer) ? row.original.serviceEngineer.firstName : ''
-          const lastName = isUserInterface(row.original.serviceEngineer) ? row.original.serviceEngineer.lastName : ''
-          const fullName = capitalizeFirstLetter(firstName) +' '+ capitalizeFirstLetter(lastName)
+          const firstName = isUserInterface(row.original.serviceEngineer)
+            ? row.original.serviceEngineer.firstName
+            : "";
+          const lastName = isUserInterface(row.original.serviceEngineer)
+            ? row.original.serviceEngineer.lastName
+            : "";
+          const fullName =
+            capitalizeFirstLetter(firstName) +
+            " " +
+            capitalizeFirstLetter(lastName);
 
           return (
             <div className="flex w-full items-center">
               <span>{fullName}</span>
             </div>
-          )
+          );
         },
       },
       {
         accessorKey: "createdAt",
         header: ({ column }) => (
-          <ServiceTicketDataTableColumnHeader table={table} column={column} accessorKey="createdAt" title="Date Created" />
+          <ServiceTicketDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="createdAt"
+            title="Date Created"
+          />
         ),
         cell: ({ row }) => {
-          const createdAt = new Date(row.getValue('createdAt'))
+          const createdAt = new Date(row.getValue("createdAt"));
 
-          const formattedDate = createdAt.toLocaleDateString('en-US', { 
-              timeZone: "Asia/Singapore",
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-              hour12: true // Set to false for 24-hour format
+          const formattedDate = createdAt.toLocaleDateString("en-US", {
+            timeZone: "Asia/Singapore",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true, // Set to false for 24-hour format
           });
 
           return (
             <div className="flex items-center">
               <span>{formattedDate}</span>
             </div>
-          )
-        }
+          );
+        },
       },
       {
         id: "actions",
-        cell: ({ row }) => <div className="flex justify-end">
-          <DataTableRowActions 
-            id={row.original._id} 
-            name={row.original.ticketNo} 
-            viewPath={`/admin/it-service-tickets/${row.original._id}/view`}
-            updatePath={`/admin/it-service-tickets/${row.original._id}/update`} 
-          />
-        </div>
-      }
-    ], []
-  )
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <DataTableRowActions
+              id={row.original._id}
+              name={row.original.ticketNo}
+              viewPath={`/admin/it-service-tickets/${row.original._id}/view`}
+              updatePath={`/admin/it-service-tickets/${row.original._id}/update`}
+            />
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data: dataQuery.data?.rows ?? defaultData,
@@ -227,10 +311,7 @@ export default function AdminITServiceTicketsPage() {
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-  })
-
-
-
+  });
 
   return (
     <section>
@@ -241,7 +322,7 @@ export default function AdminITServiceTicketsPage() {
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate('/admin/it-service-tickets/create')}
+            onClick={() => navigate("/admin/it-service-tickets/create")}
           >
             <Briefcase />
             Create Service Ticket
@@ -252,5 +333,5 @@ export default function AdminITServiceTicketsPage() {
         <DataTablePagination table={table} />
       </div>
     </section>
-  )
+  );
 }

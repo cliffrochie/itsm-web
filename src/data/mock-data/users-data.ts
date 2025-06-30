@@ -5,7 +5,7 @@ export const users = [
     password: "samplepassword",
     firstName: "Wilmer",
     lastName: "Wims",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "nfynes1",
@@ -13,7 +13,7 @@ export const users = [
     password: "sample",
     firstName: "Nevin",
     lastName: "Fynes",
-    role: "user"
+    role: "user",
   },
   {
     username: "nprettyman2",
@@ -21,7 +21,7 @@ export const users = [
     password: "sample",
     firstName: "Norah",
     lastName: "Prettyman",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "nstobie3",
@@ -29,7 +29,7 @@ export const users = [
     password: "samplepassword",
     firstName: "Ninette",
     lastName: "Stobie",
-    role: "user"
+    role: "user",
   },
   {
     username: "celgood4",
@@ -37,7 +37,7 @@ export const users = [
     password: "12345",
     firstName: "Cloe",
     lastName: "Elgood",
-    role: "user"
+    role: "user",
   },
   {
     username: "rstickney5",
@@ -45,7 +45,7 @@ export const users = [
     password: "samplepassword",
     firstName: "Regen",
     lastName: "Stickney",
-    role: "user"
+    role: "user",
   },
   {
     username: "gwapplington6",
@@ -53,7 +53,7 @@ export const users = [
     password: "sample",
     firstName: "Ginnie",
     lastName: "Wapplington",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "jpopelay7",
@@ -61,7 +61,7 @@ export const users = [
     password: "password",
     firstName: "Jules",
     lastName: "Popelay",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "amines8",
@@ -69,7 +69,7 @@ export const users = [
     password: "password",
     firstName: "Ara",
     lastName: "Mines",
-    role: "user"
+    role: "user",
   },
   {
     username: "sbuddleigh9",
@@ -77,7 +77,7 @@ export const users = [
     password: "sample",
     firstName: "Steffi",
     lastName: "Buddleigh",
-    role: "user"
+    role: "user",
   },
   {
     username: "dmcgillecolea",
@@ -85,7 +85,7 @@ export const users = [
     password: "password",
     firstName: "Dennet",
     lastName: "McGillecole",
-    role: "user"
+    role: "user",
   },
   {
     username: "bfengeb",
@@ -93,7 +93,7 @@ export const users = [
     password: "password",
     firstName: "Bastian",
     lastName: "Fenge",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "bkirknessc",
@@ -101,7 +101,7 @@ export const users = [
     password: "samplepassword",
     firstName: "Blair",
     lastName: "Kirkness",
-    role: "user"
+    role: "user",
   },
   {
     username: "pcroftd",
@@ -109,7 +109,7 @@ export const users = [
     password: "samplepassword",
     firstName: "Petronilla",
     lastName: "Croft",
-    role: "user"
+    role: "user",
   },
   {
     username: "nbottelle",
@@ -117,7 +117,7 @@ export const users = [
     password: "sample",
     firstName: "Nicol",
     lastName: "Bottell",
-    role: "user"
+    role: "user",
   },
   {
     username: "jbarronf",
@@ -125,7 +125,7 @@ export const users = [
     password: "12345",
     firstName: "Joel",
     lastName: "Barron",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "choulworthg",
@@ -133,7 +133,7 @@ export const users = [
     password: "sample",
     firstName: "Carlee",
     lastName: "Houlworth",
-    role: "staff"
+    role: "staff",
   },
   {
     username: "jgabbitish",
@@ -141,7 +141,7 @@ export const users = [
     password: "sample",
     firstName: "Jaquelin",
     lastName: "Gabbitis",
-    role: "user"
+    role: "user",
   },
   {
     username: "gbaggei",
@@ -149,7 +149,7 @@ export const users = [
     password: "password",
     firstName: "Gianna",
     lastName: "Bagge",
-    role: "user"
+    role: "user",
   },
   {
     username: "cbricknallj",
@@ -157,6 +157,6 @@ export const users = [
     password: "12345",
     firstName: "Cherice",
     lastName: "Bricknall",
-    role: "admin"
-  }
-]
+    role: "admin",
+  },
+];

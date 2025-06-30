@@ -1,1 +1,1 @@
-export default (k: any) => import.meta.env[k]
+export default (k: any) => import.meta.env[k];

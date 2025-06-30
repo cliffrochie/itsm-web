@@ -1,5 +1,5 @@
-import { useState, useEffect, SetStateAction, Dispatch } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,69 +8,71 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import DesignationComboBox from '@/components/comboboxes/designation-combobox'
-import OfficeComboBox from '@/components/comboboxes/office-combobox'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import DesignationComboBox from "@/components/comboboxes/designation-combobox";
+import OfficeComboBox from "@/components/comboboxes/office-combobox";
 
-import { UseMutationResult } from '@tanstack/react-query'
-import { AxiosResponse } from "axios"
-
+import { UseMutationResult } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 
 interface ThisInterface {
-  dialogOpen: boolean
-  setDialogOpen: Dispatch<SetStateAction<boolean>>
-  name?: string
-  updateMutation: UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
+  dialogOpen: boolean;
+  setDialogOpen: Dispatch<SetStateAction<boolean>>;
+  name?: string;
+  updateMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    string,
+    unknown
+  >;
 }
 
-
 export default function AddClientDialog({
-  dialogOpen, 
+  dialogOpen,
   setDialogOpen,
   name,
-  updateMutation
+  updateMutation,
 }: ThisInterface) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({
-    firstName: '',
-    lastName: '',
+    firstName: "",
+    lastName: "",
     // designation: '',
     // office: '',
-  })
-  const [firstName, setFirstName] = useState('')
-  const [middleName, setMiddleName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [extensionName, setExtensionName] = useState('')
-  const [searchDesignation, setSearchDesignation] = useState('') 
-  const [searchOffice, setSearchOffice] = useState('') 
+  });
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [extensionName, setExtensionName] = useState("");
+  const [searchDesignation, setSearchDesignation] = useState("");
+  const [searchOffice, setSearchOffice] = useState("");
 
   const validate = () => {
-    const newErrors: { [key: string]: string } = {}
+    const newErrors: { [key: string]: string } = {};
 
-    if(!firstName) {
-      newErrors.firstName = 'First name is required'
+    if (!firstName) {
+      newErrors.firstName = "First name is required";
     }
 
-    if(!lastName) {
-      newErrors.lastName = 'Last name is required'
+    if (!lastName) {
+      newErrors.lastName = "Last name is required";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   useEffect(() => {
-    if(firstName) {
-      setErrors((prev) => ({...prev, firstName: ''}))
+    if (firstName) {
+      setErrors((prev) => ({ ...prev, firstName: "" }));
     }
-  }, [firstName])
+  }, [firstName]);
 
   useEffect(() => {
-    if(lastName) {
-      setErrors((prev) => ({...prev, lastName: ''}))
+    if (lastName) {
+      setErrors((prev) => ({ ...prev, lastName: "" }));
     }
-  }, [lastName])
-
+  }, [lastName]);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -87,51 +89,89 @@ export default function AddClientDialog({
         </DialogHeader>
         <div className="grid gap-4 py-3">
           <div>
-            <Input value={firstName} className={errors.firstName ? 'border-red-500' : ''} placeholder="First Name (required)" onChange={(e) => setFirstName(e.target.value.toUpperCase()) } />
-            {errors.firstName && <span className="text-red-600 text-sm p-1">{errors.firstName}</span>}
+            <Input
+              value={firstName}
+              className={errors.firstName ? "border-red-500" : ""}
+              placeholder="First Name (required)"
+              onChange={(e) => setFirstName(e.target.value.toUpperCase())}
+            />
+            {errors.firstName && (
+              <span className="text-red-600 text-sm p-1">
+                {errors.firstName}
+              </span>
+            )}
           </div>
           <div>
-            <Input value={middleName} placeholder="Middle Name" onChange={(e) => setMiddleName(e.target.value.toUpperCase()) } />
+            <Input
+              value={middleName}
+              placeholder="Middle Name"
+              onChange={(e) => setMiddleName(e.target.value.toUpperCase())}
+            />
           </div>
           <div>
-            <Input value={lastName} className={errors.lastName ? 'border-red-500' : ''} placeholder="Last Name (required)" onChange={(e) => setLastName(e.target.value.toUpperCase()) } />
-            {errors.lastName && <span className="text-red-600 text-sm p-1">{errors.lastName}</span>}
+            <Input
+              value={lastName}
+              className={errors.lastName ? "border-red-500" : ""}
+              placeholder="Last Name (required)"
+              onChange={(e) => setLastName(e.target.value.toUpperCase())}
+            />
+            {errors.lastName && (
+              <span className="text-red-600 text-sm p-1">
+                {errors.lastName}
+              </span>
+            )}
           </div>
           <div>
-            <Input value={extensionName} placeholder="Ext." onChange={(e) => setExtensionName(e.target.value.toUpperCase()) } />
+            <Input
+              value={extensionName}
+              placeholder="Ext."
+              onChange={(e) => setExtensionName(e.target.value.toUpperCase())}
+            />
           </div>
           <div>
-            <DesignationComboBox defaultValue={searchDesignation} onValueChange={(value: string) => {
-              setSearchDesignation(value)
-            }} />
+            <DesignationComboBox
+              defaultValue={searchDesignation}
+              onValueChange={(value: string) => {
+                setSearchDesignation(value);
+              }}
+            />
           </div>
           <div>
-            <OfficeComboBox defaultValue={searchOffice} onValueChange={(value: string) => {
-              setSearchOffice(value)
-            }} />
+            <OfficeComboBox
+              defaultValue={searchOffice}
+              onValueChange={(value: string) => {
+                setSearchOffice(value);
+              }}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" className="bg-blue-500" onClick={() => {
-             
-            const result = validate()
-            console.log(result)
+          <Button
+            type="submit"
+            className="bg-blue-500"
+            onClick={() => {
+              const result = validate();
+              console.log(result);
 
-            if(result) {
-              updateMutation.mutate(JSON.stringify({
-                firstName,
-                middleName,
-                lastName,
-                extensionName,
-                designation: searchDesignation,
-                office: searchOffice 
-              }))
-              setDialogOpen(false)
-            }
-
-          }}>Submit</Button>
+              if (result) {
+                updateMutation.mutate(
+                  JSON.stringify({
+                    firstName,
+                    middleName,
+                    lastName,
+                    extensionName,
+                    designation: searchDesignation,
+                    office: searchOffice,
+                  })
+                );
+                setDialogOpen(false);
+              }
+            }}
+          >
+            Submit
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
