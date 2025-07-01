@@ -33,7 +33,7 @@ const formSchema = z.object({
   contactNo: z
     .string()
     .max(13)
-    .regex(/^\d+$/, {
+    .regex(/^[0-9\s]*$/, {
       message: "Must be a string containing only numbers",
     })
     .nullable(),
@@ -56,6 +56,7 @@ export default function SignUpPage() {
       email: "",
       password: "",
       password2: "",
+      contactNo: "",
     },
   });
 
@@ -88,6 +89,9 @@ export default function SignUpPage() {
       console.log(err);
       let obj: any = {};
       obj[err.key] = err.message;
+      err.key === "firstName"
+        ? (obj["firstName"] = "Client name already existed.")
+        : undefined;
       setErrors(obj);
     }
   }
@@ -184,7 +188,7 @@ export default function SignUpPage() {
                               className="h-7"
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage>{errors?.firstName}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -201,7 +205,7 @@ export default function SignUpPage() {
                               className="h-7"
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage>{errors?.middleName}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -218,7 +222,7 @@ export default function SignUpPage() {
                               className="h-7"
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage>{errors?.lastName}</FormMessage>
                         </FormItem>
                       )}
                     />
