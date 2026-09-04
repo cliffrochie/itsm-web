@@ -53,7 +53,7 @@ export default function AdminITServiceTicketsPage() {
   const dataQuery = useQuery({
     queryKey: serviceTicketQueryKey,
     queryFn: async () => {
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
+      const data = { rows: [], pageCount: 0, rowCount: 0 };
 
       const params: Record<string, any> = {
         page: pagination.pageIndex + 1,

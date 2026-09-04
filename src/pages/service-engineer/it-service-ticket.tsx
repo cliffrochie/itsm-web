@@ -137,9 +137,10 @@ export default function ServiceEngineerITServiceTicket() {
           .join(" ")
       );
 
-      const officeObj = obj.office ? (obj.office as any) : "";
+      const officeObj = obj.office;
       if (officeObj) {
-        api.get(`/offices/${officeObj.id ?? officeObj._id ?? officeObj}`).then((response) => {
+        const officeId = typeof officeObj === "object" ? (officeObj.id ?? officeObj._id) : officeObj;
+        api.get(`/offices/${officeId}`).then((response) => {
           const off = response.data?.data ?? response.data;
           setOfficeName(off?.code || off?.alias || off?.name || "");
         });

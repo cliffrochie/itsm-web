@@ -184,7 +184,7 @@ export default function ClientTicketForm() {
       }
     } catch (e) {
       const err = await handleAxiosError(e);
-      let obj: any = {};
+      const obj: Record<string, any> = {};
       obj[err.key] = err.message;
       setErrors(obj);
     }
