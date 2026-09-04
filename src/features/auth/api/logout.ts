@@ -4,9 +4,9 @@ import Cookies from 'js-cookie';
 
 export const logout = async () => {
   try {
-    await api.post('/users/signout');
+    await api.delete('/auth/logout');
   } catch {
-    // Ignore error if signout fails on server
+    // Ignore error if logout fails on server
   } finally {
     useAuthStore.getState().clearAuth();
     Cookies.remove('jwt');
