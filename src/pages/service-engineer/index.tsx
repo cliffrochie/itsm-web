@@ -49,7 +49,7 @@ export default function ServiceEngineerPage() {
                         {assignedTickets && assignedTickets.length > 0 ? (
                           assignedTickets.map((data) => (
                             <TableRow
-                              key={data._id}
+                              key={data.id ?? data._id}
                               onClick={() => {
                                 navigate(`/service-engineer/${data.ticketNo}`);
                               }}
@@ -74,7 +74,7 @@ export default function ServiceEngineerPage() {
                               <TableCell className="font-medium p-5 custom-md:w-48">
                                 <span className="text-gray-500">
                                   {data.createdAt
-                                    ? formatDate(data.createdAt)
+                                    ? formatDate(new Date(data.createdAt))
                                     : undefined}
                                 </span>
                               </TableCell>
@@ -106,7 +106,7 @@ export default function ServiceEngineerPage() {
                         {closedTickets && closedTickets.length > 0 ? (
                           closedTickets.map((data) => (
                             <TableRow
-                              key={data._id}
+                              key={data.id ?? data._id}
                               onClick={() => {
                                 navigate(`/service-engineer/${data.ticketNo}`);
                               }}
@@ -131,7 +131,7 @@ export default function ServiceEngineerPage() {
                               <TableCell className="font-medium p-5 custom-md:w-48">
                                 <span className="text-gray-500">
                                   {data.createdAt
-                                    ? formatDate(data.createdAt)
+                                    ? formatDate(new Date(data.createdAt))
                                     : undefined}
                                 </span>
                               </TableCell>

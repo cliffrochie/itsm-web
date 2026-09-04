@@ -325,7 +325,7 @@ export default function ClientTicketView() {
                         <EquipmentTypeIcon size={16} />
                         <span className="text-sm">
                           {serviceTicket
-                            ? capitalizeFirstLetter(serviceTicket.equipmentType)
+                            ? capitalizeFirstLetter(serviceTicket.equipmentType || "")
                             : ""}
                         </span>
                       </div>
@@ -449,7 +449,7 @@ export default function ClientTicketView() {
       <RateServiceDialog
         dialogOpen={rateServiceDialog}
         setDialogOpen={setRateServiceDialog}
-        id={serviceTicket ? serviceTicket._id : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}
         serviceEngineerName={serviceEngineerFullName}
         updateMutation={rateServiceMutation}

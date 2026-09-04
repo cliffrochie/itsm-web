@@ -116,11 +116,9 @@ export default function AdminITServiceTicketForm() {
         serviceEngineer: "",
         client: "",
       };
-      let url = `/api/service-tickets/${params.serviceTicketId}/?includes=all`;
       if (params.serviceTicketId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
+        const response = await api.get(`/service-tickets/${params.serviceTicketId}`);
+        data = response.data?.data ?? response.data;
       }
       return data;
     },
@@ -189,36 +187,36 @@ export default function AdminITServiceTicketForm() {
 
       form.setValue("ticketNo", data ? data.ticketNo : "");
       form.setValue("taskType", data ? data.taskType : "");
-      form.setValue("equipmentType", data ? data.equipmentType : "");
+      form.setValue("equipmentType", data ? data.equipmentType || "" : "");
       form.setValue(
         "title",
         data ? (data.title !== undefined ? data.title : "") : ""
       );
       form.setValue(
         "natureOfWork",
-        data ? (data.natureOfWork !== undefined ? data.natureOfWork : "") : ""
+        data ? (data.natureOfWork !== undefined ? data.natureOfWork || "" : "") : ""
       );
       form.setValue(
         "serviceStatus",
-        data ? (data.serviceStatus !== undefined ? data.serviceStatus : "") : ""
+        data ? (data.serviceStatus !== undefined ? data.serviceStatus || "" : "") : ""
       );
       form.setValue("priority", data ? data.priority : "");
       form.setValue(
         "defectsFound",
-        data ? (data.defectsFound !== undefined ? data.defectsFound : "") : ""
+        data ? (data.defectsFound !== undefined ? data.defectsFound || "" : "") : ""
       );
       form.setValue(
         "serviceRendered",
         data
           ? data.serviceRendered !== undefined
-            ? data.serviceRendered
+            ? data.serviceRendered || ""
             : ""
           : ""
       );
-      form.setValue("client", client ? String(client.id ?? client._id ?? "") : "");
+      form.setValue("client", client ? String(client.id ?? client._id ?? "") : (data?.clientId ? String(data.clientId) : ""));
       form.setValue(
         "serviceEngineer",
-        serviceEngineer ? String(serviceEngineer._id ?? "") : null
+        serviceEngineer ? String(serviceEngineer.id ?? serviceEngineer._id ?? "") : (data?.serviceEngineerId ? String(data.serviceEngineerId) : null)
       );
     }
   }, [data, searchClient, searchUser]);
@@ -232,20 +230,33 @@ export default function AdminITServiceTicketForm() {
   }, [searchUser]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const newData = {
-      ...data,
+    const payload = {
+      taskType: data.taskType,
+      title: data.title,
+      natureOfWork: data.natureOfWork || null,
+      serialNo: data.serialNo || null,
+      equipmentType: data.equipmentType || null,
+      equipmentTypeOthers: data.equipmentTypeOthers || null,
+      defectsFound: data.defectsFound || null,
+      serviceRendered: data.serviceRendered || null,
+      priority: data.priority || "low",
+      remarks: data.remarks || null,
+      clientId: data.client ? Number(data.client) : null,
+      serviceEngineerId: data.serviceEngineer ? Number(data.serviceEngineer) : null,
+      ...(isUpdate && data.serviceStatus ? { serviceStatus: data.serviceStatus } : {}),
     };
 
-    console.log(newData);
+    console.log(payload);
 
     try {
       if (isUpdate) {
         const response = await api.put(
-          `/api/service-tickets/${params.serviceTicketId}`,
-          newData
+          `/service-tickets/${params.serviceTicketId}`,
+          payload
         );
         if (response.status === 200) {
-          toast.success(`${response.data.ticketNo} is updated successfully.`, {
+          const ticket = response.data?.data ?? response.data;
+          toast.success(`${ticket?.ticketNo || "Ticket"} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -261,9 +272,10 @@ export default function AdminITServiceTicketForm() {
           navigate("/admin/it-service-tickets/");
         }
       } else {
-        const response = await api.post("/api/service-tickets/", newData);
-        if (response.status === 201) {
-          toast.success(`${response.data.ticketNo} is created successfully.`, {
+        const response = await api.post("/service-tickets", payload);
+        if (response.status === 200 || response.status === 201) {
+          const ticket = response.data?.data ?? response.data;
+          toast.success(`${ticket?.ticketNo || "Ticket"} is created successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -282,10 +294,6 @@ export default function AdminITServiceTicketForm() {
     } catch (e: unknown) {
       const err = handleAxiosError(e);
       console.log(err);
-      //   let obj: any = {}
-      //   obj[err.key] = err.message
-      //   console.log(obj)
-      //   setErrors(obj)
     }
   }
 

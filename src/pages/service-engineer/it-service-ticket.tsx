@@ -435,7 +435,7 @@ export default function ServiceEngineerITServiceTicket() {
                     <EquipmentTypeIcon size={16} />
                     <span className="text-sm">
                       {serviceTicket
-                        ? capitalizeFirstLetter(serviceTicket.equipmentType)
+                        ? capitalizeFirstLetter(serviceTicket.equipmentType || "")
                         : ""}
                     </span>
                   </div>
@@ -610,23 +610,23 @@ export default function ServiceEngineerITServiceTicket() {
       <InputFindingsDialog
         dialogOpen={inputFindingsDialogOpen}
         setDialogOpen={setInputFindingsDialogOpen}
-        id={serviceTicket ? serviceTicket._id : ""}
-        currentValue={serviceTicket ? serviceTicket.defectsFound : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
+        currentValue={serviceTicket ? serviceTicket.defectsFound ?? "" : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}
         updateMutation={inputFindingsDialogMutation}
       />
       <InputServiceRenderDialog
         dialogOpen={inputServiceRenderedDialogOpen}
         setDialogOpen={setInputServiceRenderedDialogOpen}
-        id={serviceTicket ? serviceTicket._id : ""}
-        currentValue={serviceTicket ? serviceTicket.serviceRendered : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
+        currentValue={serviceTicket ? serviceTicket.serviceRendered ?? "" : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}
         updateMutation={inputServiceRenderedDialogMutation}
       />
       <UpdateStatusAssignedTicketDialog
         dialogOpen={updateStatusAssignedTicketDialogOpen}
         setDialogOpen={setUpdateStatusAssignedTicketDialogOpen}
-        id={serviceTicket ? serviceTicket._id : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
         newValue={serviceStatusValue}
         currentValue={serviceTicket ? serviceTicket.serviceStatus : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}

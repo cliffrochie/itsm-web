@@ -95,7 +95,7 @@ export default function ClientPage() {
                   {tickets.length > 0 ? (
                     tickets.map((ticket) => (
                       <TableRow
-                        key={ticket._id}
+                        key={ticket.id ?? ticket._id}
                         className="cursor-pointer"
                         onClick={() => navigate("/client/" + ticket.ticketNo)}
                       >
@@ -115,7 +115,7 @@ export default function ClientPage() {
                         <TableCell className="font-medium p-5 custom-md:w-48">
                           <span className="text-gray-500 hidden custom-md:block text-right">
                             {ticket.createdAt
-                              ? formatDate(ticket.createdAt)
+                              ? formatDate(new Date(ticket.createdAt))
                               : undefined}
                           </span>
                         </TableCell>

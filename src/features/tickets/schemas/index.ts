@@ -7,11 +7,13 @@ export const ticketFormSchema = z.object({
   natureOfWork: z.string().min(1, { message: 'Nature of work is required.' }),
   client: z.string().min(1, { message: 'Client is required.' }),
   serialNo: z.string().optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional(),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
   serviceStatus: z.string().optional(),
   remarks: z.string().optional(),
   adminRemarks: z.string().optional(),
   serviceEngineer: z.string().nullable().optional(),
+  clientId: z.number().optional().nullable(),
+  serviceEngineerId: z.number().optional().nullable(),
 });
 
 export type TicketFormValues = z.infer<typeof ticketFormSchema>;
@@ -24,3 +26,19 @@ export const ticketResolutionSchema = z.object({
 });
 
 export type TicketResolutionValues = z.infer<typeof ticketResolutionSchema>;
+
+export const updateTicketStatusSchema = z.object({
+  serviceStatus: z.enum(['open', 'in_progress', 'resolved', 'closed', 'cancelled']),
+  notes: z.string().optional().nullable(),
+});
+
+export const assignEngineerSchema = z.object({
+  serviceEngineerId: z.number().int().positive(),
+  notes: z.string().optional().nullable(),
+});
+
+export const ticketFeedbackSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  ratingComment: z.string().optional().nullable(),
+});
+
