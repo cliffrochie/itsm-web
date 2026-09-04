@@ -1,9 +1,11 @@
 export interface Notification {
-  _id: string;
-  userId: string;
+  id?: number;
+  _id?: string;
+  userId: number | string;
   title: string;
   message: string;
   isRead: boolean;
+  ticketId?: number | null;
   serviceTicketId?: string;
   ticketNo?: string;
   createdAt: string | Date;

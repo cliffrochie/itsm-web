@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import Logo from "@/assets/images/logo.svg";
 import { useMediaQuery } from "react-responsive";
 import { useEffect, useState } from "react";
 import { INotification } from "@/@types/notification";
-import useGetAuthUser from "@//hooks/user--use-auth-user";
+import useGetAuthUser from "@/hooks/user--use-auth-user";
 import {
   keepPreviousData,
   useMutation,
@@ -24,42 +24,50 @@ import {
 } from "@tanstack/react-query";
 import api from "@/hooks/use-api";
 import NotificationIcon from "@/components/app-notification-icon";
+import { connectSocket } from "@/lib/socket";
 
 export default function UserLayout() {
   const isSmallScreen = useMediaQuery({ maxWidth: 600 });
 
-  const [notifications, setNotifications] = useState<INotification[] | []>([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const { authUser } = useGetAuthUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const queryKey = ["notifications", authUser];
+  const queryKey = ["notifications", authUser?.id ?? authUser?._id];
+
+  useEffect(() => {
+    const userId = authUser?.id ?? (authUser as any)?._id;
+    if (userId) {
+      const socket = connectSocket(userId);
+      const handleNewNotification = (notification: any) => {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        toast.info(notification.message || "New notification received");
+      };
+      socket.on("notification:new", handleNewNotification);
+      return () => {
+        socket.off("notification:new", handleNewNotification);
+      };
+    }
+  }, [authUser, queryClient]);
 
   const dq = useQuery({
     queryKey,
     queryFn: async () => {
-      let data: INotification[] = [];
-      let url = "";
-      if (authUser) {
-        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`;
-      }
-
-      await api.get(url).then((response) => {
-        data = response.data;
+      if (!authUser) return [];
+      const response = await api.get("/notifications", {
+        params: { limit: 50 },
       });
-
-      return data;
+      const list: INotification[] =
+        response.data?.data || response.data || [];
+      return list.filter((n) => !n.isRead);
     },
     placeholderData: keepPreviousData,
   });
 
   const updateNotificationMutation = useMutation({
     mutationKey: ["updateNotificationMutation"],
-    mutationFn: async (data: string) => {
-      await api.put(`/api/notifications/${data}/read`).then((response) => {
-        if (response.status === 200) {
-          console.log("read");
-        }
-      });
+    mutationFn: async (data: string | number) => {
+      await api.patch(`/notifications/${data}/read`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
@@ -68,14 +76,8 @@ export default function UserLayout() {
 
   const clearNotificationMutation = useMutation({
     mutationKey: ["clearNotificationMutation"],
-    mutationFn: async (data: string) => {
-      await api
-        .put(`/api/notifications/clear-user-notifications/${data}`)
-        .then((response) => {
-          if (response.status === 200) {
-            console.log("clear all notifications");
-          }
-        });
+    mutationFn: async () => {
+      await api.patch(`/notifications/read-all`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
@@ -89,31 +91,45 @@ export default function UserLayout() {
   }, [dq.data]);
 
   function redirectToTicket(
-    notificationId: string,
-    serviceTicketId: string,
-    ticketNo: string
+    notificationId?: string | number,
+    ticketId?: string | number | null,
+    ticketNo?: string
   ) {
-    if (authUser?.role === "admin") {
-      navigate("/admin/it-service-tickets/" + serviceTicketId + "/view");
-    } else if (authUser?.role === "staff") {
-      navigate("/service-engineer/" + ticketNo);
-    } else {
-      navigate("/client/" + ticketNo);
+    if (ticketId && authUser?.role === "admin") {
+      navigate("/admin/it-service-tickets/" + ticketId + "/view");
+    } else if (ticketNo) {
+      if (
+        authUser?.role === "service_engineer" ||
+        authUser?.role === "staff"
+      ) {
+        navigate("/service-engineer/" + ticketNo);
+      } else {
+        navigate("/client/" + ticketNo);
+      }
+    } else if (ticketId) {
+      navigate("/admin/it-service-tickets/" + ticketId + "/view");
     }
 
-    updateNotificationMutation.mutate(notificationId);
+    if (notificationId) {
+      updateNotificationMutation.mutate(notificationId);
+    }
   }
 
   function navigateToHome() {
-    if (authUser?.role === "staff") {
+    if (
+      authUser?.role === "service_engineer" ||
+      authUser?.role === "staff"
+    ) {
       navigate("/service-engineer");
-    } else if (authUser?.role === "user") {
+    } else if (authUser?.role === "admin") {
+      navigate("/admin");
+    } else {
       navigate("/client");
     }
   }
 
-  function clearAllNotifications(userId: string) {
-    clearNotificationMutation.mutate(userId);
+  function clearAllNotifications() {
+    clearNotificationMutation.mutate();
   }
 
   return (
@@ -146,12 +162,12 @@ export default function UserLayout() {
                 {notifications && notifications.length > 0 ? (
                   notifications.map((notification) => (
                     <DropdownMenuItem
-                      key={notification.message}
+                      key={notification.id ?? notification._id ?? notification.message}
                       className="py-4 text-sm cursor-pointer"
                       onClick={() =>
                         redirectToTicket(
-                          notification._id,
-                          notification.serviceTicket,
+                          notification.id ?? notification._id,
+                          notification.ticketId ?? notification.serviceTicket,
                           notification.ticketNo
                         )
                       }
@@ -170,11 +186,7 @@ export default function UserLayout() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="py-4 text-sm cursor-pointer bg-gray-100"
-                      onClick={() =>
-                        clearAllNotifications(
-                          authUser ? String(authUser.id ?? authUser._id ?? "") : ""
-                        )
-                      }
+                      onClick={() => clearAllNotifications()}
                     >
                       <Trash />
                       <span className="font-medium">
