@@ -1,11 +1,12 @@
 import { api } from '@/lib/api-client';
 import { useQuery } from '@tanstack/react-query';
 import type { Designation } from '../types';
+import type { ApiResponse } from '@/types/api';
 
 export const designationsApi = {
   getAll: async (): Promise<Designation[]> => {
-    const { data } = await api.get('/designations');
-    return data;
+    const response = await api.get<ApiResponse<Designation[]>>('/designations');
+    return response.data?.data || [];
   },
 };
 

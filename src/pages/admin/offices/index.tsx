@@ -151,9 +151,9 @@ export default function AdminOfficesPage() {
         cell: ({ row }) => (
           <div className="flex justify-end">
             <DataTableRowActions
-              id={row.original._id}
+              id={String(row.original._id || row.original.id || "")}
               name={row.original.name}
-              updatePath={`/admin/offices/${row.original._id}/update`}
+              updatePath={`/admin/offices/${row.original._id || row.original.id}/update`}
               deleteMutation={deleteMutation}
             />
           </div>

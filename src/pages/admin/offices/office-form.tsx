@@ -93,7 +93,7 @@ export default function AdminOfficeForm() {
     if (isUpdate) {
       form.setValue("name", data ? data.name : "");
       form.setValue("alias", data ? (data.alias ? data.alias : "") : "");
-      form.setValue("officeType", data ? data.officeType : "");
+      form.setValue("officeType", data && data.officeType ? data.officeType : "");
     }
   }, [data]);
 
