@@ -52,34 +52,28 @@ export default function AdminClientsPage() {
   const dataQuery = useQuery({
     queryKey: clientQueryKey,
     queryFn: async () => {
-      let sortValue = "";
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
+      let data = { rows: [] as IClient[], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/clients/`;
-      url += `?page=${pagination.pageIndex + 1}`;
-      url += `&limit=${pagination.pageSize}`;
-      url += `&includes=all`;
-
-      if (sorting.length > 0) {
-        sorting.forEach((sort) => {
-          sortValue = sort.desc ? "-" + sort.id : sort.id;
-          url += `&sort=${sortValue}`;
-        });
-      }
+      const params: Record<string, any> = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      };
 
       if (columnFilters.length > 0) {
         columnFilters.forEach((filter) => {
           if (filter.value && filter.value !== " ") {
-            url += `&${filter.id}=${filter.value}`;
+            params[filter.id] = filter.value;
           }
         });
       }
 
-      await api.get(url).then((response) => {
-        data.rows = response.data?.results;
-        data.pageCount = response.data?.totalPages;
-        data.rowCount = response.data?.total;
-      });
+      const response = await api.get('/clients', { params });
+      const payload = response.data?.data;
+      const meta = response.data?.meta;
+
+      data.rows = Array.isArray(payload) ? payload : (response.data?.results || []);
+      data.pageCount = meta?.last_page || response.data?.totalPages || 1;
+      data.rowCount = meta?.total || response.data?.total || 0;
 
       return data;
     },
@@ -89,7 +83,7 @@ export default function AdminClientsPage() {
   const deleteMutation = useMutation({
     mutationKey: clientQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/clients/${id}`);
+      return await api.delete(`/clients/${id}`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: clientQueryKey });
@@ -131,12 +125,11 @@ export default function AdminClientsPage() {
           />
         ),
         cell: ({ row }) => {
-          const designation = row.getValue("designation") as IDesignation;
-          if (!designation) {
-            return null;
-          }
+          const client = row.original;
+          const designation = client.designation as IDesignation | undefined;
+          const title = designation?.name || designation?.title || (client.designationId ? `Designation #${client.designationId}` : "-");
           return (
-            <div className="flex w-full items-center">{designation.title}</div>
+            <div className="flex w-full items-center">{title}</div>
           );
         },
       },
@@ -151,29 +144,31 @@ export default function AdminClientsPage() {
           />
         ),
         cell: ({ row }) => {
-          const office = row.getValue("office") as IOffice;
-          if (!office) {
-            return null;
-          }
+          const client = row.original;
+          const office = client.office as IOffice | undefined;
+          const name = office?.name || office?.code || office?.alias || (client.officeId ? `Office #${client.officeId}` : "-");
           return (
             <div className="flex w-full items-center">
-              <span>{office.alias}</span>
+              <span>{name}</span>
             </div>
           );
         },
       },
       {
         id: "actions",
-        cell: ({ row }) => (
-          <div className="flex justify-end">
-            <DataTableRowActions
-              id={row.original._id}
-              name={row.original.firstName + " " + row.original.lastName}
-              updatePath={`/admin/clients/${row.original._id}/update`}
-              deleteMutation={deleteMutation}
-            />
-          </div>
-        ),
+        cell: ({ row }) => {
+          const clientId = String(row.original.id ?? row.original._id ?? "");
+          return (
+            <div className="flex justify-end">
+              <DataTableRowActions
+                id={clientId}
+                name={row.original.firstName + " " + row.original.lastName}
+                updatePath={`/admin/clients/${clientId}/update`}
+                deleteMutation={deleteMutation}
+              />
+            </div>
+          );
+        },
       },
     ],
     []
@@ -186,9 +181,6 @@ export default function AdminClientsPage() {
     manualSorting: true,
     manualPagination: true,
     manualFiltering: true,
-    // debugTable: true,
-    // debugHeaders: true,
-    // debugColumns: false,
     state: {
       sorting,
       pagination,

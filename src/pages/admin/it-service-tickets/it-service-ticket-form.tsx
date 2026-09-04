@@ -215,10 +215,10 @@ export default function AdminITServiceTicketForm() {
             : ""
           : ""
       );
-      form.setValue("client", client ? client._id : "");
+      form.setValue("client", client ? String(client.id ?? client._id ?? "") : "");
       form.setValue(
         "serviceEngineer",
-        serviceEngineer ? serviceEngineer._id : null
+        serviceEngineer ? String(serviceEngineer._id ?? "") : null
       );
     }
   }, [data, searchClient, searchUser]);
