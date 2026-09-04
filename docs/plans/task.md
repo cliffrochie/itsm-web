@@ -6,6 +6,6 @@
 | 4. Clients Domain Realignment | Done | Update schemas, combobox, admin clients page & form |
 | 5. Users Domain & User ComboBox Realignment | Done | Update schemas, combobox, admin users page & form |
 | 6. Service Tickets Domain Realignment (Admin Flow) | Done | Enums, types, queries/mutations, admin list/view/form |
-| 7. Service Engineer & Client Dashboard Realignment | Pending | Adapt engineer and client dashboard routes and feedback |
+| 7. Service Engineer & Client Dashboard Realignment | Done | Adapt engineer and client dashboard routes and feedback |
 | 8. Notifications & Socket.IO Real-Time Realignment | Pending | Real-time notifications with `socket.io-client` on port 5000 |
 | 9. Final Quality Gate & Verification | Pending | TypeScript build & lint checks |

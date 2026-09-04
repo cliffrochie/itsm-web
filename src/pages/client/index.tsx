@@ -24,25 +24,38 @@ export default function ClientPage() {
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([]);
 
   const { authUser } = useAuthUser();
+  const [clientId, setClientId] = useState<number | null>(null);
   const navigate = useNavigate();
-  const clientKey = ["clientRequestTracker", search];
+
+  useEffect(() => {
+    const userId = authUser?.id ?? (authUser as any)?._id;
+    if (userId) {
+      api
+        .get("/clients", { params: { userId, limit: 1 } })
+        .then((res) => {
+          const client = res.data?.data?.[0];
+          if (client) {
+            setClientId(Number(client.id ?? client._id));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [authUser]);
+
+  const clientKey = ["clientRequestTracker", search, clientId];
 
   const dataQuery = useQuery({
     queryKey: clientKey,
     queryFn: async () => {
-      let data: any[] = [];
-      let url = "";
+      const params: Record<string, any> = { limit: 100 };
       if (search) {
-        url = `/api/service-tickets/?noPage=true&ticketNo=${search}&createdBy=${authUser?._id}`;
-      } else {
-        url = `/api/service-tickets/requested`;
+        params.search = search;
       }
-
-      await api.get(url).then((response) => {
-        data = response.data;
-      });
-
-      return data;
+      if (clientId) {
+        params.clientId = clientId;
+      }
+      const response = await api.get("/service-tickets", { params });
+      return response.data?.data || response.data || [];
     },
     placeholderData: keepPreviousData,
   });
@@ -51,8 +64,6 @@ export default function ClientPage() {
     if (dataQuery.data) {
       setTickets(dataQuery.data);
     }
-
-    // console.log(dataQuery.data)
   }, [dataQuery.data]);
 
   return (

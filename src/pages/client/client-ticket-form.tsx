@@ -79,39 +79,48 @@ export default function ClientTicketForm() {
   useEffect(() => {
     if (authUser) {
       async function get() {
-        await api.get("/api/users/client-details").then((response) => {
-          console.log(response);
-          setClientSearch(response.data._id);
-        });
+        try {
+          const userId = authUser?.id ?? (authUser as any)?._id;
+          const response = await api.get("/clients", {
+            params: { userId, limit: 1 },
+          });
+          const client = response.data?.data?.[0];
+          if (client) {
+            setClientSearch(String(client.id ?? client._id));
+          }
+        } catch (e) {
+          console.error("Error fetching client details:", e);
+        }
       }
       get();
 
-      let fullName = authUser.firstName;
-      fullName += authUser.middleName
-        ? " " + authUser.middleName.charAt(0) + ". "
-        : " ";
-      fullName += authUser.lastName;
-      console.log(fullName);
-      setPreviousClient(fullName);
-
-      console.log(clientSearch);
+      let fullName = authUser.firstName || "";
+      if (authUser.middleName) {
+        fullName += " " + authUser.middleName.charAt(0) + ". ";
+      } else {
+        fullName += " ";
+      }
+      fullName += authUser.lastName || "";
+      setPreviousClient(fullName.trim());
     }
   }, [authUser]);
 
   const addClientMutation = useMutation({
-    mutationKey: ["rateServiceMutation"],
+    mutationKey: ["addClientMutation"],
     mutationFn: async (data: string) => {
-      console.log(data);
       const parsedData = JSON.parse(data);
       const body = {
         firstName: parsedData.firstName,
-        middleName: parsedData.middleName,
+        middleName: parsedData.middleName || null,
         lastName: parsedData.lastName,
-        extensionName: parsedData.extensionName,
-        designation: parsedData.designation,
-        office: parsedData.office,
+        extensionName: parsedData.extensionName || null,
+        designationId: parsedData.designation
+          ? Number(parsedData.designation)
+          : null,
+        officeId: parsedData.office ? Number(parsedData.office) : null,
+        userId: authUser?.id ? Number(authUser.id) : null,
       };
-      return await api.post(`/api/clients`, body);
+      return await api.post(`/clients`, body);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["", "clientComboBox"] });
@@ -131,11 +140,21 @@ export default function ClientTicketForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
     try {
-      const response = await api.post("/api/service-tickets", data);
-      if (response.status === 201) {
-        toast.success(`${response.data.ticketNo} is created successfully.`, {
+      const payload = {
+        title: data.title,
+        equipmentType: data.equipmentType,
+        taskType: data.taskType,
+        natureOfWork: data.natureOfWork,
+        clientId: Number(data.client),
+      };
+      const response = await api.post("/service-tickets", payload);
+      if (response.status === 201 || response.status === 200) {
+        const ticketNo =
+          response.data?.data?.ticketNo ||
+          response.data?.ticketNo ||
+          "Service ticket";
+        toast.success(`${ticketNo} is created successfully.`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
