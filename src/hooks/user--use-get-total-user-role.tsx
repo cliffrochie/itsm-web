@@ -15,12 +15,6 @@ interface ThisResponse {
   error?: object | string | undefined;
 }
 
-const queryParams = [
-  "totalSuperAdmin",
-  "totalAdmin",
-  "totalStaff",
-  "totalUser",
-];
 
 export default function useGetTotalUserRole(): ThisResponse {
   const [totalUserRoles, setTotalUserRoles] = useState<
@@ -29,20 +23,41 @@ export default function useGetTotalUserRole(): ThisResponse {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
 
-  let url = "/api/users/total-user-role/?total=true";
-  queryParams.forEach((a) => (url += `&${a}=true`));
-
-  // console.log(url)
-
   useEffect(() => {
     async function getTotalUserRoles() {
       try {
         setLoading(true);
 
-        const response = await api.get(url);
-        if (response.status === 200) {
-          setTotalUserRoles(response.data);
-        }
+        const [totalRes, adminRes, staffRes, userRes] = await Promise.allSettled([
+          api.get("/users?limit=1"),
+          api.get("/users?role=admin&limit=1"),
+          api.get("/users?role=staff&limit=1"),
+          api.get("/users?role=user&limit=1"),
+        ]);
+
+        const total =
+          totalRes.status === "fulfilled"
+            ? totalRes.value.data?.meta?.total ?? totalRes.value.data?.total ?? 0
+            : 0;
+        const totalAdmin =
+          adminRes.status === "fulfilled"
+            ? adminRes.value.data?.meta?.total ?? adminRes.value.data?.total ?? 0
+            : 0;
+        const totalStaff =
+          staffRes.status === "fulfilled"
+            ? staffRes.value.data?.meta?.total ?? staffRes.value.data?.total ?? 0
+            : 0;
+        const totalUser =
+          userRes.status === "fulfilled"
+            ? userRes.value.data?.meta?.total ?? userRes.value.data?.total ?? 0
+            : 0;
+
+        setTotalUserRoles({
+          total,
+          totalAdmin,
+          totalStaff,
+          totalUser,
+        });
       } catch (error) {
         setError(handleAxiosError(error));
       } finally {

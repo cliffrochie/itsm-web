@@ -1,4 +1,4 @@
-import { CircleUserRound, UsersRound, UserRoundPen } from "lucide-react";
+import { CircleUserRound, UsersRound, UserRoundPen, Wrench } from "lucide-react";
 
 export const roles = [
   {
@@ -10,6 +10,11 @@ export const roles = [
     value: "staff",
     label: "Staff",
     icon: CircleUserRound,
+  },
+  {
+    value: "service_engineer",
+    label: "Service Engineer",
+    icon: Wrench,
   },
   {
     value: "admin",

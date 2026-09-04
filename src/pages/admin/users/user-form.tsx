@@ -28,22 +28,24 @@ import {
 import { IUser } from "@/@types/user";
 
 const formSchema = z.object({
-  firstName: z.string().min(2),
-  middleName: z.string().nullable(),
-  lastName: z.string().min(2),
-  extensionName: z.string().nullable(),
-  username: z.string().min(4),
-  email: z.string().email(),
+  firstName: z.string().min(1, "First name is required"),
+  middleName: z.string().nullable().optional(),
+  lastName: z.string().min(1, "Last name is required"),
+  extensionName: z.string().nullable().optional(),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
   contactNo: z
     .string()
     .max(13)
     .regex(/^\d+$/, {
       message: "Must be a string containing only numbers",
     })
-    .nullable(),
-  password: z.string().nonempty(),
-  password2: z.string().nonempty(),
-  role: z.enum(["user", "staff", "admin"], {
+    .nullable()
+    .optional()
+    .or(z.literal("")),
+  password: z.string().optional(),
+  password2: z.string().optional(),
+  role: z.enum(["user", "staff", "admin", "service_engineer"], {
     message: "You need to select a user role.",
   }),
 });
@@ -80,11 +82,9 @@ export default function AdminUserForm() {
         role: "user",
         isActive: false,
       };
-      let url = `/api/users/${params.userId}`;
       if (params.userId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
+        const response = await api.get(`/users/${params.userId}`);
+        data = response.data?.data ?? response.data;
       }
       return data;
     },
@@ -133,21 +133,21 @@ export default function AdminUserForm() {
       if (isUpdate) {
         const updatedData = {
           firstName: data.firstName,
-          middleName: data.middleName,
+          middleName: data.middleName || null,
           lastName: data.lastName,
-          extensionName: data.extensionName,
+          extensionName: data.extensionName || null,
           username: data.username,
           email: data.email,
-          contactNo: data.contactNo,
+          contactNo: data.contactNo || null,
           role: data.role,
         };
 
         const response = await api.put(
-          `/api/users/${params.userId}`,
+          `/users/${params.userId}`,
           updatedData
         );
         if (response.status === 200) {
-          toast.success("User created successfully.", {
+          toast.success("User updated successfully.", {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -165,8 +165,34 @@ export default function AdminUserForm() {
           console.log(response.status);
         }
       } else {
-        const response = await api.post("/api/users/signup", data);
-        if (response.status === 201) {
+        if (!data.password || data.password.length < 6) {
+          form.setError("password", {
+            message: "Password must be at least 6 characters.",
+          });
+          return;
+        }
+        if (data.password !== data.password2) {
+          form.setError("password2", {
+            message: "Passwords do not match.",
+          });
+          return;
+        }
+
+        const newUserData = {
+          firstName: data.firstName,
+          middleName: data.middleName || null,
+          lastName: data.lastName,
+          extensionName: data.extensionName || null,
+          username: data.username,
+          email: data.email,
+          contactNo: data.contactNo || null,
+          password: data.password,
+          role: data.role,
+          isActive: true,
+        };
+
+        const response = await api.post("/users", newUserData);
+        if (response.status === 200 || response.status === 201) {
           toast.success("User created successfully.", {
             position: "top-right",
             autoClose: 5000,
@@ -188,9 +214,11 @@ export default function AdminUserForm() {
     } catch (e) {
       const err = await handleAxiosError(e);
       console.log(err);
-      let obj: any = {};
-      obj[err.key] = err.message;
-      setErrors(obj);
+      if (err?.key) {
+        let obj: any = {};
+        obj[err.key] = err.message;
+        setErrors(obj);
+      }
     }
   }
 
@@ -368,7 +396,7 @@ export default function AdminUserForm() {
                         <RadioGroup
                           onValueChange={field.onChange}
                           value={field.value}
-                          className="flex space-y-1 gap-9"
+                          className="flex flex-wrap space-y-1 gap-6"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
@@ -381,6 +409,12 @@ export default function AdminUserForm() {
                               <RadioGroupItem value="staff" />
                             </FormControl>
                             <FormLabel className="font-normal">Staff</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="service_engineer" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Service Engineer</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>

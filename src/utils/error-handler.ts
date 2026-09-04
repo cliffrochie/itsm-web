@@ -31,9 +31,16 @@ export function handleAxiosError(error: unknown): any {
           } else if (error.response.data.errors) {
             console.log(error.response.data.errors);
             const key = Object.keys(error.response.data.errors)[0];
+            const val = error.response.data.errors[key];
             let message = "";
-            if (error.response.data.errors[key].kind === "required") {
+            if (Array.isArray(val)) {
+              message = val[0];
+            } else if (typeof val === "string") {
+              message = val;
+            } else if (val?.kind === "required") {
               message = "This field is required.";
+            } else if (val?.message) {
+              message = val.message;
             }
             return { key: key, message: message };
           }

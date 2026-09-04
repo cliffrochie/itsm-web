@@ -47,33 +47,26 @@ export default function AdminUsersPage() {
   const dataQuery = useQuery({
     queryKey: userQueryKey,
     queryFn: async () => {
-      let sortValue = "";
       let data = { rows: [], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/users/`;
-      url += `?page=${pagination.pageIndex + 1}`;
-      url += `&limit=${pagination.pageSize}`;
-
-      if (sorting.length > 0) {
-        sorting.forEach((sort) => {
-          sortValue = sort.desc ? "-" + sort.id : sort.id;
-          url += `&sort=${sortValue}`;
-        });
-      }
+      const params: Record<string, any> = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      };
 
       if (columnFilters.length > 0) {
         columnFilters.forEach((filter) => {
           if (filter.value && filter.value !== " ") {
-            url += `&${filter.id}=${filter.value}`;
+            params[filter.id] = filter.value;
           }
         });
       }
 
-      await api.get(url).then((response) => {
-        data.rows = response.data?.results;
-        data.pageCount = response.data?.totalPages;
-        data.rowCount = response.data?.total;
-      });
+      const response = await api.get("/users", { params });
+      const envelope = response.data;
+      data.rows = envelope?.data ?? envelope?.results ?? [];
+      data.pageCount = envelope?.meta?.last_page ?? envelope?.totalPages ?? 1;
+      data.rowCount = envelope?.meta?.total ?? envelope?.total ?? 0;
 
       return data;
     },
@@ -83,7 +76,7 @@ export default function AdminUsersPage() {
   const deleteMutation = useMutation({
     mutationKey: userQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/users/${id}`);
+      return await api.delete(`/users/${id}`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: userQueryKey });
@@ -175,9 +168,9 @@ export default function AdminUsersPage() {
         cell: ({ row }) => (
           <div className="flex justify-end">
             <DataTableRowActions
-              id={row.original._id}
+              id={String(row.original.id ?? row.original._id)}
               name={row.original.username}
-              updatePath={`/admin/users/${row.original._id}/update`}
+              updatePath={`/admin/users/${row.original.id ?? row.original._id}/update`}
               deleteMutation={deleteMutation}
             />
           </div>

@@ -292,7 +292,7 @@ export default function ITServiceTicketView() {
 
     if (dataQuery.data?.serviceEngineer) {
       const obj = dataQuery.data.serviceEngineer as IUser;
-      setServiceEngineerId(obj._id);
+      setServiceEngineerId(String(obj.id ?? obj._id ?? ""));
       setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${
           obj.middleName
@@ -304,7 +304,7 @@ export default function ITServiceTicketView() {
 
     if (dataQuery.data?.createdBy) {
       const obj = dataQuery.data.createdBy as IUser;
-      setServiceEngineerId(obj._id);
+      setServiceEngineerId(String(obj.id ?? obj._id ?? ""));
       setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
         ${
           obj.middleName

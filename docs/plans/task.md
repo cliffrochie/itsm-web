@@ -4,7 +4,7 @@
 | 2. Auth Domain & User Roles Realignment | Done | Update `login`, `get-current-user`, `logout`, roles, `LoginForm` |
 | 3. Reference Data Realignment (Offices & Designations) | Done | Update schemas, API calls, and comboboxes |
 | 4. Clients Domain Realignment | Done | Update schemas, combobox, admin clients page & form |
-| 5. Users Domain & User ComboBox Realignment | Pending | Update schemas, combobox, admin users page & form |
+| 5. Users Domain & User ComboBox Realignment | Done | Update schemas, combobox, admin users page & form |
 | 6. Service Tickets Domain Realignment (Admin Flow) | Pending | Enums, types, queries/mutations, admin list/view/form |
 | 7. Service Engineer & Client Dashboard Realignment | Pending | Adapt engineer and client dashboard routes and feedback |
 | 8. Notifications & Socket.IO Real-Time Realignment | Pending | Real-time notifications with `socket.io-client` on port 5000 |

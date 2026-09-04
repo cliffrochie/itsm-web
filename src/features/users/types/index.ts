@@ -8,6 +8,7 @@ export interface UserFilterParams {
   sort?: string;
   search?: string;
   role?: UserRole;
+  isActive?: boolean;
   noPage?: boolean;
 }
 

@@ -171,7 +171,9 @@ export default function UserLayout() {
                     <DropdownMenuItem
                       className="py-4 text-sm cursor-pointer bg-gray-100"
                       onClick={() =>
-                        clearAllNotifications(authUser ? authUser._id : "")
+                        clearAllNotifications(
+                          authUser ? String(authUser.id ?? authUser._id ?? "") : ""
+                        )
                       }
                     >
                       <Trash />

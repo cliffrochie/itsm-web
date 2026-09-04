@@ -10,32 +10,54 @@ import { toast } from 'sonner';
 
 export const usersApi = {
   getAll: async (params?: UserFilterParams): Promise<PaginatedUsers | User[]> => {
-    const { data } = await api.get('/users', { params });
-    return data;
+    const response = await api.get('/users', { params });
+    const envelope = response.data;
+    if (envelope && Array.isArray(envelope.data)) {
+      if (envelope.meta) {
+        return {
+          rows: envelope.data,
+          pageCount: envelope.meta.last_page ?? 1,
+          rowCount: envelope.meta.total ?? envelope.data.length,
+        };
+      }
+      return envelope.data;
+    }
+    return envelope;
   },
 
-  getById: async (id: string): Promise<User> => {
-    const { data } = await api.get(`/users/${id}`);
-    return data;
+  getById: async (id: string | number): Promise<User> => {
+    const response = await api.get(`/users/${id}`);
+    return response.data?.data ?? response.data;
   },
 
   create: async (payload: Partial<User>): Promise<User> => {
-    const { data } = await api.post('/users', payload);
-    return data;
+    const response = await api.post('/users', payload);
+    return response.data?.data ?? response.data;
   },
 
   update: async ({
     id,
     payload,
   }: {
-    id: string;
+    id: string | number;
     payload: Partial<User>;
   }): Promise<User> => {
-    const { data } = await api.put(`/users/${id}`, payload);
-    return data;
+    const response = await api.put(`/users/${id}`, payload);
+    return response.data?.data ?? response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  toggleStatus: async ({
+    id,
+    isActive,
+  }: {
+    id: string | number;
+    isActive: boolean;
+  }): Promise<User> => {
+    const response = await api.patch(`/users/${id}/status`, { isActive });
+    return response.data?.data ?? response.data;
+  },
+
+  delete: async (id: string | number): Promise<void> => {
     await api.delete(`/users/${id}`);
   },
 };
@@ -48,7 +70,7 @@ export const useUsers = (params?: UserFilterParams) => {
   });
 };
 
-export const useUser = (id: string) => {
+export const useUser = (id: string | number) => {
   return useQuery({
     queryKey: ['users', id],
     queryFn: () => usersApi.getById(id),
