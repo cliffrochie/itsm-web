@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import UserComboBox from "@/components/comboboxes/user-combobox";
+import { UserComboBox } from "@/features/users";
 import { Textarea } from "@/components/ui/textarea";
 
 interface IUpdateStatusDialogProps {

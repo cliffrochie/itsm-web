@@ -1,14 +1,12 @@
 import { useState, useMemo } from "react";
-import { ContactRound } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 import {
   useQuery,
   keepPreviousData,
-  useQueryClient,
   useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
-
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,18 +20,15 @@ import { Button } from "@/components/ui/button";
 
 import api from "@/hooks/use-api";
 
-import { ClientDataTable } from "@/components/data-tables/client--data-table";
-import { DataTableColumnHeader } from "@/components/data-tables/client--data-table-column-header";
-
+import { UserDataTable, UserDataTableColumnHeader } from "@/features/users";
+import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
 import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
-import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 
-import { IClient } from "@/@types/client";
-import { IDesignation } from "@/@types/designation";
-import { IOffice } from "@/@types/office";
+import { roles } from "@/data/user-roles";
+import { IUser } from "@/@types/user";
 
-export default function AdminClientsPage() {
+export default function AdminUsersPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -45,15 +40,12 @@ export default function AdminClientsPage() {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const defaultData = useMemo(() => [], []);
 
-  const clientQueryKey = ["clients", pagination, sorting, columnFilters];
+  const userQueryKey = ["users", pagination, sorting, columnFilters];
 
   const dataQuery = useQuery({
-    queryKey: clientQueryKey,
+    queryKey: userQueryKey,
     queryFn: async () => {
-      const data = { rows: [] as IClient[], pageCount: 0, rowCount: 0 };
-
       const params: Record<string, unknown> = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
@@ -67,108 +59,119 @@ export default function AdminClientsPage() {
         });
       }
 
-      const response = await api.get('/clients', { params });
-      const payload = response.data?.data;
-      const meta = response.data?.meta;
-
-      data.rows = Array.isArray(payload) ? payload : (response.data?.results || []);
-      data.pageCount = meta?.last_page || response.data?.totalPages || 1;
-      data.rowCount = meta?.total || response.data?.total || 0;
-
-      return data;
+      const response = await api.get("/users", { params });
+      const envelope = response.data;
+      return {
+        rows: envelope?.data ?? envelope?.results ?? [],
+        pageCount: envelope?.meta?.last_page ?? envelope?.totalPages ?? 1,
+        rowCount: envelope?.meta?.total ?? envelope?.total ?? 0,
+      };
     },
     placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
-    mutationKey: clientQueryKey,
+    mutationKey: userQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/clients/${id}`);
+      return await api.delete(`/users/${id}`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: clientQueryKey });
+      queryClient.invalidateQueries({ queryKey: userQueryKey });
     },
   });
 
-  const columns: ColumnDef<IClient>[] = useMemo<ColumnDef<IClient>[]>(
+  const defaultData = useMemo(() => [], []);
+
+  const columns: ColumnDef<IUser>[] = useMemo<ColumnDef<IUser>[]>(
     () => [
+      {
+        accessorKey: "username",
+        header: ({ column, table }) => (
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="username"
+            title="Username"
+          />
+        ),
+        sortingFn: "alphanumeric",
+      },
+      {
+        accessorKey: "email",
+        header: ({ column, table }) => (
+          <UserDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="email"
+            title="Email"
+          />
+        ),
+        sortingFn: "alphanumeric",
+      },
       {
         accessorKey: "firstName",
         header: ({ column, table }) => (
-          <DataTableColumnHeader
+          <UserDataTableColumnHeader
             table={table}
             column={column}
             accessorKey="firstName"
-            title="First name"
+            title="First Name"
           />
         ),
+        sortingFn: "alphanumeric",
       },
       {
         accessorKey: "lastName",
         header: ({ column, table }) => (
-          <DataTableColumnHeader
+          <UserDataTableColumnHeader
             table={table}
             column={column}
             accessorKey="lastName"
-            title="Last name"
+            title="Last Name"
           />
         ),
+        sortingFn: "alphanumeric",
       },
       {
-        accessorKey: "designation",
+        accessorKey: "role",
         header: ({ column, table }) => (
-          <DataTableColumnHeader
+          <UserDataTableColumnHeader
             table={table}
             column={column}
-            accessorKey="designation"
-            title="Position title"
+            accessorKey="role"
+            title="Role"
           />
         ),
         cell: ({ row }) => {
-          const client = row.original;
-          const designation = client.designation as IDesignation | undefined;
-          const title = designation?.name || designation?.title || (client.designationId ? `Designation #${client.designationId}` : "-");
-          return (
-            <div className="flex w-full items-center">{title}</div>
+          const role = roles.find(
+            (role) => role.value === row.getValue("role")
           );
-        },
-      },
-      {
-        accessorKey: "office",
-        header: ({ column, table }) => (
-          <DataTableColumnHeader
-            table={table}
-            column={column}
-            accessorKey="office"
-            title="Office"
-          />
-        ),
-        cell: ({ row }) => {
-          const client = row.original;
-          const office = client.office as IOffice | undefined;
-          const name = office?.name || office?.code || office?.alias || (client.officeId ? `Office #${client.officeId}` : "-");
+          if (!role) {
+            return null;
+          }
           return (
-            <div className="flex w-full items-center">
-              <span>{name}</span>
+            <div className="flex items-center">
+              {role.icon && (
+                <role.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{role.label}</span>
             </div>
           );
         },
+        sortingFn: "alphanumeric",
       },
       {
         id: "actions",
-        cell: ({ row }) => {
-          const clientId = String(row.original.id ?? row.original._id ?? "");
-          return (
-            <div className="flex justify-end">
-              <DataTableRowActions
-                id={clientId}
-                name={row.original.firstName + " " + row.original.lastName}
-                updatePath={`/admin/clients/${clientId}/update`}
-                deleteMutation={deleteMutation}
-              />
-            </div>
-          );
-        },
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <DataTableRowActions
+              id={String(row.original.id ?? row.original._id)}
+              name={row.original.username}
+              updatePath={`/admin/users/${row.original.id ?? row.original._id}/update`}
+              deleteMutation={deleteMutation}
+            />
+          </div>
+        ),
       },
     ],
     [deleteMutation]
@@ -181,6 +184,9 @@ export default function AdminClientsPage() {
     manualSorting: true,
     manualPagination: true,
     manualFiltering: true,
+    // debugTable: true,
+    // debugHeaders: true,
+    // debugColumns: false,
     state: {
       sorting,
       pagination,
@@ -198,21 +204,21 @@ export default function AdminClientsPage() {
 
   return (
     <section>
-      <h3 className="text-xl font-semibold">Clients</h3>
+      <h3 className="text-xl font-semibold">Users</h3>
       <div className="py-5">
         <div className="flex justify-start gap-2">
           <Button
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate("/admin/clients/create")}
+            onClick={() => navigate("/admin/users/create")}
           >
-            <ContactRound />
-            Create Client
+            <UserRoundPlus />
+            Create User
           </Button>
           <DataTableViewOptions table={table} />
         </div>
-        <ClientDataTable table={table} totalColumns={columns.length} />
+        <UserDataTable table={table} totalColumns={columns.length} />
         <DataTablePagination table={table} />
       </div>
     </section>

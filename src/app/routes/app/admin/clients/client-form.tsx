@@ -7,8 +7,8 @@ import { z } from "zod";
 
 import api from "@/hooks/use-api";
 import { handleAxiosError } from "@/utils/error-handler";
-import DesignationComboBox from "@/components/comboboxes/designation-combobox";
-import OfficeComboBox from "@/components/comboboxes/office-combobox";
+import { DesignationComboBox } from "@/features/designations";
+import { OfficeComboBox } from "@/features/offices";
 
 import { useQuery } from "@tanstack/react-query";
 

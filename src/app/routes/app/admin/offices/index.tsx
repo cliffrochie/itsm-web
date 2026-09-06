@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
-import { Briefcase } from "lucide-react";
+import { HousePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 import {
   useQuery,
-  keepPreviousData,
-  useQueryClient,
   useMutation,
+  useQueryClient,
+  keepPreviousData,
 } from "@tanstack/react-query";
 
 import {
@@ -21,16 +22,16 @@ import { Button } from "@/components/ui/button";
 
 import api from "@/hooks/use-api";
 
-import { DesignationDataTable } from "@/components/data-tables/designation--data-table";
-import { DataTableColumnHeader } from "@/components/data-tables/designation--data-table-column-header";
+import { OfficeDataTable, OfficeDataTableColumnHeader } from "@/features/offices";
 
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
 import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 
-import { IDesignation } from "@/@types/designation";
+import { officeTypes } from "@/data/office-types";
+import { IOffice } from "@/@types/office";
 
-export default function AdminDesignationsPage() {
+export default function AdminOfficesPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -44,22 +45,18 @@ export default function AdminDesignationsPage() {
   const queryClient = useQueryClient();
   const defaultData = useMemo(() => [], []);
 
-  const designationQueryKey = [
-    "designations",
-    pagination,
-    sorting,
-    columnFilters,
-  ];
+  const officeQueryKey = ["offices", pagination, sorting, columnFilters];
 
   const dataQuery = useQuery({
-    queryKey: designationQueryKey,
+    queryKey: officeQueryKey,
     queryFn: async () => {
       let sortValue = "";
       const data = { rows: [], pageCount: 0, rowCount: 0 };
 
-      let url = `/api/designations/`;
+      let url = `/api/offices/`;
       url += `?page=${pagination.pageIndex + 1}`;
       url += `&limit=${pagination.pageSize}`;
+      url += `&includes=parentOffice`;
 
       if (sorting.length > 0) {
         sorting.forEach((sort) => {
@@ -88,27 +85,65 @@ export default function AdminDesignationsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationKey: designationQueryKey,
+    mutationKey: officeQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/designations/${id}`);
+      return await api.delete(`/api/offices/${id}`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: designationQueryKey });
+      queryClient.invalidateQueries({ queryKey: officeQueryKey });
     },
   });
 
-  const columns: ColumnDef<IDesignation>[] = useMemo<ColumnDef<IDesignation>[]>(
+  const columns: ColumnDef<IOffice>[] = useMemo<ColumnDef<IOffice>[]>(
     () => [
       {
-        accessorKey: "title",
+        accessorKey: "name",
         header: ({ column, table }) => (
-          <DataTableColumnHeader
+          <OfficeDataTableColumnHeader
             table={table}
             column={column}
-            accessorKey="title"
-            title="Position title"
+            accessorKey="name"
+            title="Name"
           />
         ),
+      },
+      {
+        accessorKey: "alias",
+        header: ({ column, table }) => (
+          <OfficeDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="alias"
+            title="Alias"
+          />
+        ),
+      },
+      {
+        accessorKey: "officeType",
+        header: ({ column, table }) => (
+          <OfficeDataTableColumnHeader
+            table={table}
+            column={column}
+            accessorKey="officeType"
+            title="Office Type"
+          />
+        ),
+        cell: ({ row }) => {
+          const officeType = officeTypes.find(
+            (officeType) => officeType.value === row.getValue("officeType")
+          );
+          if (!officeType) {
+            return null;
+          }
+          return (
+            <div className="flex items-center">
+              {officeType.icon && (
+                <officeType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              )}
+              <span>{officeType.label}</span>
+            </div>
+          );
+        },
       },
       {
         id: "actions",
@@ -116,8 +151,8 @@ export default function AdminDesignationsPage() {
           <div className="flex justify-end">
             <DataTableRowActions
               id={String(row.original._id || row.original.id || "")}
-              name={row.original.name || row.original.title}
-              updatePath={`/admin/designations/${row.original._id || row.original.id}/update`}
+              name={row.original.name}
+              updatePath={`/admin/offices/${row.original._id || row.original.id}/update`}
               deleteMutation={deleteMutation}
             />
           </div>
@@ -154,21 +189,21 @@ export default function AdminDesignationsPage() {
 
   return (
     <section>
-      <h3 className="text-xl font-semibold">Designations</h3>
+      <h3 className="text-xl font-semibold">Offices</h3>
       <div className="py-5">
         <div className="flex justify-start gap-2">
           <Button
             variant="outline"
             size="sm"
             className="h-8 flex"
-            onClick={() => navigate("/admin/designations/create")}
+            onClick={() => navigate("/admin/offices/create")}
           >
-            <Briefcase />
-            Create Designation
+            <HousePlus />
+            Create Office
           </Button>
           <DataTableViewOptions table={table} />
         </div>
-        <DesignationDataTable table={table} totalColumns={columns.length} />
+        <OfficeDataTable table={table} totalColumns={columns.length} />
         <DataTablePagination table={table} />
       </div>
     </section>

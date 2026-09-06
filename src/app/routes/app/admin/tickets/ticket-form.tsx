@@ -35,8 +35,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import UserComboBox from "@/components/comboboxes/user-combobox";
-import ClientComboBox from "@/components/comboboxes/client-combobox";
+import { UserComboBox } from "@/features/users";
+import { ClientComboBox } from "@/features/clients";
 
 import { IServiceTicket } from "@/@types/service-ticket";
 import { taskTypes } from "@/data/task-types";

@@ -10,8 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import DesignationComboBox from "@/components/comboboxes/designation-combobox";
-import OfficeComboBox from "@/components/comboboxes/office-combobox";
+import { DesignationComboBox } from "@/features/designations";
+import { OfficeComboBox } from "@/features/offices";
 
 interface ThisInterface {
   dialogOpen: boolean;

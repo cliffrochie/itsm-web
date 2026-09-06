@@ -21,11 +21,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import UpdateStatusDialog from "@/components/dialogs/it-service-ticket--update-status-dialog";
-import AssignServiceEngineerDialog from "@/components/dialogs/it-service-ticket--assign-service-engineer-dialog";
-import EscalateServiceDialog from "@/components/dialogs/it-service-ticket--escalate-service-dialog";
-import CloseTicketConfirmationDialog from "@/components/dialogs/it-service-ticket--close-ticket-confirmation-dialog";
-import ITSMFormDialog from "@/components/dialogs/it-service-ticket--itsm-form-dialog";
+import {
+  UpdateStatusDialog,
+  AssignServiceEngineerDialog,
+  EscalateServiceDialog,
+  CloseTicketConfirmationDialog,
+  ITSMFormDialog,
+} from "@/features/tickets";
 import { Slide, toast } from "react-toastify";
 import { IOffice } from "@/@types/office";
 

@@ -22,8 +22,8 @@ import useGetTotalTaskType from "@/hooks/it-service-ticket--use-get-total-task-t
 import useGetTotalEquipmentType from "@/hooks/it-service-ticket--use-get-total-equipment-type";
 import useGetTotalUserRole from "@/hooks/user--use-get-total-user-role";
 import api from "@/hooks/use-api";
-import DataListDialog, { DashboardTicketItem } from "@/components/dialogs/dashboard--data-list-dialog";
-import UserListDialog, { DashboardUserItem } from "@/components/dialogs/dashboard--user-list-dialog";
+import DataListDialog, { DashboardTicketItem } from "@/components/dialogs/dashboard-data-list-dialog";
+import UserListDialog, { DashboardUserItem } from "@/components/dialogs/dashboard-user-list-dialog";
 
 interface TotalServiceStatus {
   totalTickets: number;

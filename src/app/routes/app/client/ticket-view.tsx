@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { IServiceTicketHistory } from "@/@types/service-ticket-history";
 import { Button } from "@/components/ui/button";
-import RateServiceDialog from "@/components/dialogs/client--rate-service-dialog";
+import { RateServiceDialog } from "@/features/tickets";
 import { Slide, toast } from "react-toastify";
 
 export default function ClientTicketView() {

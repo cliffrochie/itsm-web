@@ -5,37 +5,37 @@ import { ProtectedRoute } from '@/lib/auth-guard';
 
 const DashboardLayout = lazy(() => import('@/components/layouts/dashboard-layout'));
 
-// Pages
-const HomePage = lazy(() => import('@/pages'));
-const AboutPage = lazy(() => import('@/pages/about/index'));
+// Public & Core Routes
+const HomePage = lazy(() => import('@/app/routes/home'));
+const AboutPage = lazy(() => import('@/app/routes/about'));
 const LoginPage = lazy(() => import('@/app/routes/auth/login'));
 const RegisterPage = lazy(() => import('@/app/routes/auth/register'));
 const UnauthorizedPage = lazy(() => import('@/app/routes/unauthorized'));
 const NotFoundPage = lazy(() => import('@/app/routes/not-found'));
-const UserProfile = lazy(() => import('@/pages/user-profile'));
+const UserProfile = lazy(() => import('@/app/routes/app/profile'));
 
-// Admin Pages
-const AdminPage = lazy(() => import('@/pages/admin'));
-const AdminITServiceTicketsPage = lazy(() => import('@/pages/admin/it-service-tickets'));
-const AdminITServiceTicketForm = lazy(() => import('@/pages/admin/it-service-tickets/it-service-ticket-form'));
-const ITServiceTicketView = lazy(() => import('@/pages/admin/it-service-tickets/it-service-ticket-view'));
-const AdminClientsPage = lazy(() => import('@/pages/admin/clients'));
-const AdminClientForm = lazy(() => import('@/pages/admin/clients/client-form'));
-const AdminUsersPage = lazy(() => import('@/pages/admin/users'));
-const AdminUserForm = lazy(() => import('@/pages/admin/users/user-form'));
-const AdminDesignationsPage = lazy(() => import('@/pages/admin/designations'));
-const AdminDesignationForm = lazy(() => import('@/pages/admin/designations/designation-form'));
-const AdminOfficesPage = lazy(() => import('@/pages/admin/offices'));
-const AdminOfficeForm = lazy(() => import('@/pages/admin/offices/office-form'));
+// Admin Routes
+const AdminPage = lazy(() => import('@/app/routes/app/admin/dashboard'));
+const AdminITServiceTicketsPage = lazy(() => import('@/app/routes/app/admin/tickets'));
+const AdminITServiceTicketForm = lazy(() => import('@/app/routes/app/admin/tickets/ticket-form'));
+const ITServiceTicketView = lazy(() => import('@/app/routes/app/admin/tickets/ticket-view'));
+const AdminClientsPage = lazy(() => import('@/app/routes/app/admin/clients'));
+const AdminClientForm = lazy(() => import('@/app/routes/app/admin/clients/client-form'));
+const AdminUsersPage = lazy(() => import('@/app/routes/app/admin/users'));
+const AdminUserForm = lazy(() => import('@/app/routes/app/admin/users/user-form'));
+const AdminDesignationsPage = lazy(() => import('@/app/routes/app/admin/designations'));
+const AdminDesignationForm = lazy(() => import('@/app/routes/app/admin/designations/designation-form'));
+const AdminOfficesPage = lazy(() => import('@/app/routes/app/admin/offices'));
+const AdminOfficeForm = lazy(() => import('@/app/routes/app/admin/offices/office-form'));
 
-// Staff / Service Engineer Pages
-const ServiceEngineerPage = lazy(() => import('@/pages/service-engineer'));
-const ServiceEngineerITServiceTicket = lazy(() => import('@/pages/service-engineer/it-service-ticket'));
+// Staff / Service Engineer Routes
+const ServiceEngineerPage = lazy(() => import('@/app/routes/app/service-engineer/dashboard'));
+const ServiceEngineerITServiceTicket = lazy(() => import('@/app/routes/app/service-engineer/ticket-view'));
 
-// Client Pages
-const ClientPage = lazy(() => import('@/pages/client'));
-const ClientTicketForm = lazy(() => import('@/pages/client/client-ticket-form'));
-const ClientTicketView = lazy(() => import('@/pages/client/client-ticket-view'));
+// Client Routes
+const ClientPage = lazy(() => import('@/app/routes/app/client/dashboard'));
+const ClientTicketForm = lazy(() => import('@/app/routes/app/client/ticket-form'));
+const ClientTicketView = lazy(() => import('@/app/routes/app/client/ticket-view'));
 
 const LoadingFallback = () => (
   <div className="flex h-screen w-full items-center justify-center">
