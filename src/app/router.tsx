@@ -2,6 +2,7 @@
 import { Suspense, lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@/lib/auth-guard';
+import { MainErrorFallback } from '@/components/errors';
 
 const DashboardLayout = lazy(() => import('@/components/layouts/dashboard-layout'));
 
@@ -90,6 +91,7 @@ export const router = createBrowserRouter([
   // Authenticated Admin routes
   {
     path: '/admin',
+    errorElement: <MainErrorFallback />,
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
         <Suspense fallback={<LoadingFallback />}>
@@ -248,6 +250,7 @@ export const router = createBrowserRouter([
   // Authenticated Staff / Service Engineer routes
   {
     path: '/service-engineer',
+    errorElement: <MainErrorFallback />,
     element: (
       <ProtectedRoute allowedRoles={['staff', 'admin']}>
         <Suspense fallback={<LoadingFallback />}>
@@ -286,6 +289,7 @@ export const router = createBrowserRouter([
   // Authenticated Client routes
   {
     path: '/client',
+    errorElement: <MainErrorFallback />,
     element: (
       <ProtectedRoute allowedRoles={['user', 'admin']}>
         <Suspense fallback={<LoadingFallback />}>

@@ -75,6 +75,11 @@ export const usersApi = {
   delete: async (id: string | number): Promise<void> => {
     await api.delete(`/users/${id}`);
   },
+
+  resetPassword: async (id: string | number): Promise<{ temporaryPassword: string }> => {
+    const response = await api.post(`/users/${id}/reset-password`);
+    return response.data?.data ?? response.data;
+  },
 };
 
 export const useUsers = (params?: UserFilterParams) => {
@@ -157,4 +162,18 @@ export const useDeleteUser = () => {
     },
   });
 };
+
+export const useResetUserPassword = () => {
+  return useMutation({
+    mutationFn: (id: string | number) => usersApi.resetPassword(id),
+    onError: (err: unknown) => {
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Failed to reset password.';
+      toast.error(message);
+    },
+  });
+};
+
 
