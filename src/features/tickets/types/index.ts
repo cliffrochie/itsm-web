@@ -71,6 +71,13 @@ export interface ServiceTicket {
   updatedAt?: Date | string;
 }
 
+export type PublicHistory = Omit<IServiceTicketHistory, 'notes'> & { notes?: string | null };
+
+export type PublicTicket = Omit<ServiceTicket, 'adminRemarks'> & {
+  adminRemarks?: string | null;
+  histories?: PublicHistory[];
+};
+
 export interface TicketFilterParams {
   page?: number;
   limit?: number;

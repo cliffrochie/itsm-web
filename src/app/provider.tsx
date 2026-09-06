@@ -3,6 +3,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/stores/authStore';
+import { ErrorBoundary } from '@/components/errors';
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -20,9 +21,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <Toaster position="top-right" richColors closeButton />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <Toaster position="top-right" richColors closeButton />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
