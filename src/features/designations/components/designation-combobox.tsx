@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppComboBox } from "@/components/comboboxes/app-combobox";
 import { useDesignations } from "@/features/designations";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,21 @@ export default function DesignationComboBox({
   const [search, setSearch] = useState("");
 
   const { data: designations = [] } = useDesignations();
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+
+  useEffect(() => {
+    if (defaultValue && designations.length > 0) {
+      const match = designations.find((d) => String(d.id) === String(defaultValue));
+      if (match) {
+        setLabel(match.name || (match as { title?: string }).title || "");
+      }
+    } else if (!defaultValue) {
+      setLabel(previousValue || "");
+    }
+  }, [defaultValue, designations, previousValue]);
 
   const items = designations
     .filter((designation) => {

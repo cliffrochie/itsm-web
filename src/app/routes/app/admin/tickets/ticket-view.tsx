@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon, Circle, Star } from "lucide-react";
 import { priorities } from "@/data/priority";
-import { serviceStatuses } from "@/data/service-status";
+import { getServiceStatus } from "@/data/service-status";
 import { taskTypes } from "@/data/task-types";
 import { equipmentTypes } from "@/data/equipment-types";
 import { IClient } from "@/@types/client";
@@ -242,9 +242,7 @@ export default function ITServiceTicketView() {
     }
 
     if (dataQuery.data?.serviceStatus) {
-      const obj = serviceStatuses.find(
-        (s) => s.value == dataQuery.data?.serviceStatus
-      );
+      const obj = getServiceStatus(dataQuery.data.serviceStatus);
       if (obj) {
         setServiceStatusIcon(() => obj.icon);
       }
@@ -679,7 +677,9 @@ export default function ITServiceTicketView() {
           id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           selectedServiceStatus={
-            dataQuery.data ? dataQuery.data.serviceStatus : ""
+            dataQuery.data
+              ? (getServiceStatus(dataQuery.data.serviceStatus)?.value ?? dataQuery.data.serviceStatus)
+              : ""
           }
           updateMutation={updateStatusDialogMutation}
         />

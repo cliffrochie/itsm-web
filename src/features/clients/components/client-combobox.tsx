@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/comboboxes/app-combobox";
 import { clientsApi } from "@/features/clients";
@@ -25,6 +25,10 @@ export default function ClientComboBox({
   const [label, setLabel] = useState("");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+
   const { data } = useQuery({
     queryKey: ["clientComboBox", search],
     queryFn: async () => {
@@ -35,6 +39,17 @@ export default function ClientComboBox({
       }));
     },
   });
+
+  useEffect(() => {
+    if (defaultValue && data && data.length > 0) {
+      const match = data.find((c) => String(c.value) === String(defaultValue));
+      if (match) {
+        setLabel(match.label);
+      }
+    } else if (!defaultValue) {
+      setLabel(previousValue || "");
+    }
+  }, [defaultValue, data, previousValue]);
 
   return (
     <AppComboBox

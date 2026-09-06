@@ -22,11 +22,6 @@ export const serviceStatuses = [
     icon: Loader,
   },
   {
-    value: "in progress",
-    label: "In Progress",
-    icon: Loader,
-  },
-  {
     value: "resolved",
     label: "Resolved",
     icon: Check,
@@ -41,18 +36,16 @@ export const serviceStatuses = [
     label: "Cancelled",
     icon: RefreshCwOff,
   },
-  {
-    value: "canceled",
-    label: "Canceled",
-    icon: RefreshCwOff,
-  },
+];
+
+export const legacyServiceStatuses = [
   {
     value: "assigned",
     label: "Assigned",
     icon: CircleUser,
   },
   {
-    value: "on hold",
+    value: "on_hold",
     label: "On Hold",
     icon: CirclePause,
   },
@@ -67,3 +60,17 @@ export const serviceStatuses = [
     icon: RefreshCw,
   },
 ];
+
+export const getServiceStatus = (status?: string | null) => {
+  if (!status) return undefined;
+  const normalized =
+    status === "in progress"
+      ? "in_progress"
+      : status === "canceled"
+      ? "cancelled"
+      : status;
+  return (
+    serviceStatuses.find((s) => s.value === normalized) ||
+    legacyServiceStatuses.find((s) => s.value === status)
+  );
+};

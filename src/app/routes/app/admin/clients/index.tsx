@@ -31,6 +31,8 @@ import { DataTablePagination } from "@/components/data-tables/data-table-paginat
 import { IClient } from "@/@types/client";
 import { IDesignation } from "@/@types/designation";
 import { IOffice } from "@/@types/office";
+import { useDesignations } from "@/features/designations";
+import { useOffices } from "@/features/offices";
 
 export default function AdminClientsPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -45,6 +47,9 @@ export default function AdminClientsPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const defaultData = useMemo(() => [], []);
+
+  const { data: designations = [] } = useDesignations();
+  const { data: offices = [] } = useOffices();
 
   const clientQueryKey = ["clients", pagination, sorting, columnFilters];
 
@@ -125,8 +130,15 @@ export default function AdminClientsPage() {
         ),
         cell: ({ row }) => {
           const client = row.original;
-          const designation = client.designation as IDesignation | undefined;
-          const title = designation?.name || designation?.title || (client.designationId ? `Designation #${client.designationId}` : "-");
+          const designationObj =
+            client.designation && typeof client.designation === "object"
+              ? (client.designation as IDesignation)
+              : designations.find((d) => d.id === client.designationId);
+          const title =
+            designationObj?.name ||
+            (designationObj as { title?: string } | undefined)?.title ||
+            (typeof client.designation === "string" ? client.designation : "") ||
+            (client.designationId ? `Designation #${client.designationId}` : "-");
           return (
             <div className="flex w-full items-center">{title}</div>
           );
@@ -144,8 +156,16 @@ export default function AdminClientsPage() {
         ),
         cell: ({ row }) => {
           const client = row.original;
-          const office = client.office as IOffice | undefined;
-          const name = office?.name || office?.code || office?.alias || (client.officeId ? `Office #${client.officeId}` : "-");
+          const officeObj =
+            client.office && typeof client.office === "object"
+              ? (client.office as IOffice)
+              : offices.find((o) => o.id === client.officeId);
+          const name =
+            officeObj?.name ||
+            officeObj?.code ||
+            officeObj?.alias ||
+            (typeof client.office === "string" ? client.office : "") ||
+            (client.officeId ? `Office #${client.officeId}` : "-");
           return (
             <div className="flex w-full items-center">
               <span>{name}</span>
@@ -170,7 +190,7 @@ export default function AdminClientsPage() {
         },
       },
     ],
-    [deleteMutation]
+    [deleteMutation, designations, offices]
   );
 
   const table = useReactTable({

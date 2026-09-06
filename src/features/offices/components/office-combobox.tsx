@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppComboBox } from "@/components/comboboxes/app-combobox";
 import { useOffices } from "@/features/offices";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,21 @@ export default function OfficeComboBox({
   const [search, setSearch] = useState("");
 
   const { data: offices = [] } = useOffices();
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+
+  useEffect(() => {
+    if (defaultValue && offices.length > 0) {
+      const match = offices.find((o) => String(o.id) === String(defaultValue));
+      if (match) {
+        setLabel(match.code ? `${match.code} - ${match.name}` : match.name);
+      }
+    } else if (!defaultValue) {
+      setLabel(previousValue || "");
+    }
+  }, [defaultValue, offices, previousValue]);
 
   const items = offices
     .filter((office) => {

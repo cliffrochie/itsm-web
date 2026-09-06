@@ -25,7 +25,7 @@ import { DataTableViewOptions } from "@/components/data-tables/data-table-view-o
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 import { isClientInterface } from "@/@types/client";
 import { isUserInterface } from "@/@types/user";
-import { serviceStatuses } from "@/data/service-status";
+import { getServiceStatus } from "@/data/service-status";
 import { priorities } from "@/data/priority";
 import { capitalizeFirstLetter } from "@/utils";
 
@@ -125,12 +125,10 @@ export default function AdminITServiceTicketsPage() {
           />
         ),
         cell: ({ row }) => {
-          const serviceStatus = serviceStatuses.find(
-            (serviceStatus) =>
-              serviceStatus.value === row.getValue("serviceStatus")
-          );
+          const rawStatus = row.getValue("serviceStatus") as string;
+          const serviceStatus = getServiceStatus(rawStatus);
           if (!serviceStatus) {
-            return null;
+            return rawStatus ? <span>{rawStatus}</span> : null;
           }
           return (
             <div className="flex items-center">

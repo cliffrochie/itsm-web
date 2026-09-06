@@ -122,10 +122,10 @@ export default function AdminPage() {
       const statusMap: Record<string, string> = {
         Opened: "open",
         Assigned: "assigned",
-        "In-Progress": "in progress",
+        "In-Progress": "in_progress",
         "On-Hold": "on hold",
         Escalated: "escalated",
-        Canceled: "canceled",
+        Canceled: "cancelled",
         "Re-Opened": "reopened",
         Resolved: "resolved",
         Closed: "closed",
