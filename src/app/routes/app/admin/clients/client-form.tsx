@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { handleAxiosError } from "@/utils/error-handler";
 import { DesignationComboBox } from "@/features/designations";
 import { OfficeComboBox } from "@/features/offices";

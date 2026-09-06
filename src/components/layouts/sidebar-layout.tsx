@@ -26,9 +26,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useGetAuthUser from "@/hooks/user--use-auth-user";
+import { useAuthStore } from "@/stores/authStore";
 import type { INotification } from "@/@types/notification";
-import api from "@/lib/api-client";
+import { api } from "@/lib/api-client";
+import { notificationKeys } from "@/features/notifications";
 import { Info, Trash } from "lucide-react";
 import { connectSocket } from "@/lib/socket";
 import { toast } from "sonner";
@@ -41,17 +42,17 @@ export default function SidebarLayout({
   setLinks: Dispatch<SetStateAction<INavLink[]>>;
 }) {
   const [notifications, setNotifications] = useState<INotification[]>([]);
-  const { authUser } = useGetAuthUser();
+  const authUser = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const queryKey = ["notifications", authUser?.id];
+  const queryKey = notificationKeys.list(authUser?.id);
 
   useEffect(() => {
     const userId = authUser?.id;
     if (userId) {
       const socket = connectSocket(userId);
       const handleNewNotification = (notification: { message?: string }) => {
-        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        queryClient.invalidateQueries({ queryKey: notificationKeys.all });
         toast.info(notification.message || "New notification received");
       };
       socket.on("notification:new", handleNewNotification);
@@ -81,7 +82,7 @@ export default function SidebarLayout({
       await api.patch(`/notifications/${data}/read`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 
@@ -91,7 +92,7 @@ export default function SidebarLayout({
       await api.patch(`/notifications/read-all`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 

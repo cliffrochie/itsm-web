@@ -2,6 +2,8 @@ import { api } from '@/lib/api-client';
 import { useQuery } from '@tanstack/react-query';
 import type { Office } from '../types';
 import type { ApiResponse } from '@/types/api';
+import { officeKeys } from './query-keys';
+export * from './query-keys';
 
 export const officesApi = {
   getAll: async (): Promise<Office[]> => {
@@ -12,7 +14,8 @@ export const officesApi = {
 
 export const useOffices = () => {
   return useQuery({
-    queryKey: ['offices'],
+    queryKey: officeKeys.lists(),
     queryFn: () => officesApi.getAll(),
   });
 };
+

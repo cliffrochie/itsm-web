@@ -10,7 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { Slide, toast } from "react-toastify";
 
 export default function ProfilePage() {

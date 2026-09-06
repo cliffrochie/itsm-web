@@ -6,6 +6,8 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import type { Notification } from '../types';
+import { notificationKeys } from './query-keys';
+export * from './query-keys';
 
 export const notificationsApi = {
   getAll: async (): Promise<Notification[]> => {
@@ -35,7 +37,7 @@ export const notificationsApi = {
 
 export const useNotifications = (userId?: string | number) => {
   return useQuery({
-    queryKey: ['notifications', userId],
+    queryKey: notificationKeys.list(userId),
     queryFn: () => notificationsApi.getByUserId(userId),
     enabled: Boolean(userId),
     placeholderData: keepPreviousData,
@@ -48,7 +50,7 @@ export const useMarkNotificationAsRead = () => {
   return useMutation({
     mutationFn: (id: string | number) => notificationsApi.markAsRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 };
@@ -59,7 +61,8 @@ export const useClearNotifications = () => {
   return useMutation({
     mutationFn: () => notificationsApi.clearAll(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 };
+

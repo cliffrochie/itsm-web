@@ -93,3 +93,37 @@ export interface PaginatedTickets {
   rowCount: number;
 }
 
+export interface TotalServiceStatusData {
+  totalTickets: number;
+  totalOpenedTickets: number;
+  totalAssignedTickets: number;
+  totalInProgressTickets: number;
+  totalOnHoldTickets: number;
+  totalEscalatedTickets: number;
+  totalCanceledTickets: number;
+  totalReOpenedTickets: number;
+  totalResolvedTickets: number;
+  totalClosedTickets: number;
+}
+
+export interface TotalTaskTypeData {
+  incident: number;
+  serviceRequest: number;
+  maintenance: number;
+  consultation: number;
+  accessibility: number;
+}
+
+export interface TotalEquipmentTypeData {
+  computer: number;
+  softwareApplication: number;
+  printer: number;
+  scanner: number;
+  phone: number;
+  network: number;
+  others: number;
+}
+
+export type IServiceTicket = ServiceTicket;
+
+

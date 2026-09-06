@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ticket, Users } from "lucide-react";
 import {
   BarChart,
@@ -11,58 +11,20 @@ import {
 import {
   Card,
   CardContent,
-  // CardDescription,
-  // CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 
-import useGetTotalServiceStatus from "@/hooks/it-service-ticket--use-get-total-service-status";
-import useGetTotalTaskType from "@/hooks/it-service-ticket--use-get-total-task-type";
-import useGetTotalEquipmentType from "@/hooks/it-service-ticket--use-get-total-equipment-type";
-import useGetTotalUserRole from "@/hooks/user--use-get-total-user-role";
-import api from "@/hooks/use-api";
+import {
+  useTotalServiceStatus,
+  useTotalTaskType,
+  useTotalEquipmentType,
+} from "@/features/tickets/api";
+import { useTotalUserRoles } from "@/features/users/api";
+import { useClients } from "@/features/clients/api";
+import { api } from "@/lib/api-client";
 import DataListDialog, { DashboardTicketItem } from "@/components/dialogs/dashboard-data-list-dialog";
 import UserListDialog, { DashboardUserItem } from "@/components/dialogs/dashboard-user-list-dialog";
-
-interface TotalServiceStatus {
-  totalTickets: number;
-  totalOpenedTickets: number;
-  totalInProgressTickets: number;
-  totalOnHoldTickets: number;
-  totalEscalatedTickets: number;
-  totalCanceledTickets: number;
-  totalReOpenedTickets: number;
-  totalResolvedTickets: number;
-  totalClosedTickets: number;
-}
-
-interface TotalTaskType {
-  totalTickets: number;
-  totalIncident: number;
-  totalServiceRequest: number;
-  totalAssetRequest: number;
-  totalMaintenance: number;
-  totalConsultation: number;
-  totalAccessibility: number;
-}
-
-interface EquipmentType {
-  totalTickets: number;
-  totalComputer: number;
-  totalPrinter: number;
-  totalMobileDevice: number;
-  totalNetworkRelated: number;
-  totalSoftwareApplication: number;
-  totalOthers: number;
-}
-
-interface UserRole {
-  total: number;
-  totalAdmin: number;
-  totalStaff: number;
-  totalUser: number;
-}
 
 function extractArray<T>(resData: unknown): T[] {
   if (!resData || typeof resData !== "object") return [];
@@ -74,7 +36,7 @@ function extractArray<T>(resData: unknown): T[] {
 }
 
 export default function AdminPage() {
-  const { totalServiceStatuses } = useGetTotalServiceStatus();
+  const { data: totalServiceStatuses } = useTotalServiceStatus();
   let serviceStatusesData = [
     { keyName: "totalOpenedTickets", name: "Opened", total: 0 },
     { keyName: "totalAssignedTickets", name: "Assigned", total: 0 },
@@ -90,11 +52,11 @@ export default function AdminPage() {
     serviceStatusesData = serviceStatusesData.map((item) => ({
       ...item,
       total:
-        totalServiceStatuses[item.keyName as keyof TotalServiceStatus] || 0,
+        (totalServiceStatuses as unknown as Record<string, number>)[item.keyName] || 0,
     }));
   }
 
-  const { totalTaskTypes } = useGetTotalTaskType();
+  const { data: totalTaskTypes } = useTotalTaskType();
   let taskTypesData = [
     { keyName: "totalIncident", name: "Incident", total: 0 },
     { keyName: "totalServiceRequest", name: "Service Request", total: 0 },
@@ -106,11 +68,11 @@ export default function AdminPage() {
   if (totalTaskTypes) {
     taskTypesData = taskTypesData.map((item) => ({
       ...item,
-      total: totalTaskTypes[item.keyName as keyof TotalTaskType] || 0,
+      total: (totalTaskTypes as unknown as Record<string, number>)[item.keyName] || 0,
     }));
   }
 
-  const { totalEquipmentTypes } = useGetTotalEquipmentType();
+  const { data: totalEquipmentTypes } = useTotalEquipmentType();
   let equipmentTypesData = [
     { keyName: "totalComputer", name: "Computer", total: 0 },
     { keyName: "totalPrinter", name: "Printer", total: 0 },
@@ -127,11 +89,11 @@ export default function AdminPage() {
   if (totalEquipmentTypes) {
     equipmentTypesData = equipmentTypesData.map((item) => ({
       ...item,
-      total: totalEquipmentTypes[item.keyName as keyof EquipmentType] || 0,
+      total: (totalEquipmentTypes as unknown as Record<string, number>)[item.keyName] || 0,
     }));
   }
 
-  const { totalUserRoles } = useGetTotalUserRole();
+  const { data: totalUserRoles } = useTotalUserRoles();
   let userRolesData = [
     { keyName: "totalAdmin", name: "Admin", total: 0 },
     { keyName: "totalStaff", name: "Service Engineer", total: 0 },
@@ -140,9 +102,12 @@ export default function AdminPage() {
   if (totalUserRoles) {
     userRolesData = userRolesData.map((item) => ({
       ...item,
-      total: totalUserRoles[item.keyName as keyof UserRole] || 0,
+      total: (totalUserRoles as unknown as Record<string, number>)[item.keyName] || 0,
     }));
   }
+
+  const { data: clientsData } = useClients();
+  const totalClient = clientsData?.rowCount ?? 0;
 
   const [dataListDialog, setDataListDialog] = useState(false);
   const [userListDialog, setUserListDialog] = useState(false);
@@ -151,28 +116,6 @@ export default function AdminPage() {
   const [dialogTitle, setDialogTitle] = useState("");
   const [selectedData, setSelectedData] = useState<DashboardTicketItem[]>([]);
   const [selectedUserData, setSelectedUserData] = useState<DashboardUserItem[]>([]);
-  const [totalClient, setTotalClient] = useState(0);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function getTotalClients() {
-      try {
-        const result = await api.get("/api/clients");
-        if (isMounted) {
-          setTotalClient(result.data?.total ?? result.data?.meta?.total ?? 0);
-        }
-      } catch (error: unknown) {
-        console.log(error);
-      }
-    }
-
-    getTotalClients();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   async function handleServiceStatusPopulationClick(data: { name: string }) {
     try {
@@ -290,7 +233,7 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {totalUserRoles?.total || 0}
+              {totalUserRoles?.total || totalUserRoles?.totalUsers || 0}
             </div>
           </CardContent>
         </Card>

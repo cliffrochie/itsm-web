@@ -31,11 +31,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import { ClientComboBox, AddClientDialog } from "@/features/clients";
 import { useNavigate } from "react-router-dom";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { handleAxiosError } from "@/utils/error-handler";
 import { Slide, toast } from "react-toastify";
 import { formatParagraph } from "@/utils";
-import useAuthUser from "@/hooks/user--use-auth-user";
+import { useAuthStore } from "@/stores/authStore";
 import { Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -49,7 +49,7 @@ const formSchema = z.object({
 
 export default function ClientTicketForm() {
   const navigate = useNavigate();
-  const { authUser } = useAuthUser();
+  const authUser = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
 
   const [clientSearch, setClientSearch] = useState("");

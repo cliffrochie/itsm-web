@@ -7,3 +7,6 @@ export interface Office {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+
+export type IOffice = Office;
+

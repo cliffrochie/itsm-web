@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/comboboxes/app-combobox";
 // import { IDesignation } from '@/@types/designation'
 import { IUser } from "@/@types/user";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
 export default function UserComboBox({

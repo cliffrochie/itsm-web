@@ -11,14 +11,15 @@ import { formatDate } from "@/utils";
 
 import { capitalizeFirstLetter } from "@/utils";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import useGetAssignedServiceTickets from "@/hooks/service-engineer--use-get-assigned-service-tickets";
-import useGetClosedServiceTickets from "@/hooks/service-engineer--use-get-closed-service-tickets";
+import { useAssignedTickets, useClosedTickets } from "@/features/tickets/api";
+import { useAuthStore } from "@/stores/authStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ServiceEngineerPage() {
   const navigate = useNavigate();
-  const { assignedTickets } = useGetAssignedServiceTickets();
-  const { closedTickets } = useGetClosedServiceTickets();
+  const user = useAuthStore((state) => state.user);
+  const { data: assignedTickets } = useAssignedTickets(user?.id);
+  const { data: closedTickets } = useClosedTickets(user?.id);
 
   return (
     <div className="grid gap-4">
