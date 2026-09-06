@@ -50,7 +50,9 @@ export default function UpdateStatusAssignedTicketDialog({
           <p className="text-md">
             Change to{" "}
             <span className="font-semibold text-blue-600">
-              {capitalizeFirstLetter(newValue as string)}
+              {newValue === "in_progress"
+                ? "In Progress"
+                : capitalizeFirstLetter(newValue as string)}
             </span>
             ?
           </p>

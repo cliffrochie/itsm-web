@@ -404,13 +404,14 @@ export default function ServiceEngineerITServiceTicket() {
             <Button
               variant="outline"
               type="submit"
-              {...((serviceTicket?.serviceStatus === "in progress" ||
+              {...((serviceTicket?.serviceStatus === "in_progress" ||
+                serviceTicket?.serviceStatus === "in progress" ||
                 serviceTicket?.serviceStatus === "closed") && {
                 disabled: true,
               })}
               onClick={() => {
                 setUpdateStatusAssignedTicketDialogOpen(true);
-                setServiceStatusValue("in progress");
+                setServiceStatusValue("in_progress");
               }}
             >
               In-progress

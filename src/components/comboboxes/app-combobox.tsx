@@ -110,11 +110,10 @@ export function AppComboBox({
                   key={item.value}
                   value={item.value}
                   keywords={[item.label]}
-                  onSelect={(value) => {
-                    onSelect(value, item.label);
+                  onSelect={() => {
+                    onSelect(item.value, item.label);
                     setOpen(false);
                   }}
-                  disabled={value === item.value}
                 >
                   <Check
                     className={cn(

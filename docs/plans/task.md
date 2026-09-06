@@ -9,3 +9,4 @@
 | 7. Service Engineer & Client Dashboard Realignment | Done | Adapt engineer and client dashboard routes and feedback |
 | 8. Notifications & Socket.IO Real-Time Realignment | Done | Real-time notifications with `socket.io-client` on port 5000 |
 | 9. Final Quality Gate & Verification | Done | TypeScript build & lint checks |
+| 10. Fix Client Designation & Office Update Persistence | Done | Fix combobox sync, cache invalidation, table resolution, and backend relation hydration |

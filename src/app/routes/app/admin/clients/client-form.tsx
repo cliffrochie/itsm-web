@@ -10,7 +10,7 @@ import { handleAxiosError } from "@/utils/error-handler";
 import { DesignationComboBox } from "@/features/designations";
 import { OfficeComboBox } from "@/features/offices";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ export default function AdminClientForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
+  const queryClient = useQueryClient();
   const [searchDesignation, setSearchDesignation] = useState("");
   const [searchOffice, setSearchOffice] = useState("");
   const [previousDesignation, setPreviousDesignation] = useState("");
@@ -95,22 +96,18 @@ export default function AdminClientForm() {
         : office?.name || office?.alias || "";
       const designationLabel = designation?.name || designation?.title || "";
 
-      if (officeLabel) setPreviousOffice(officeLabel);
-      if (designationLabel) setPreviousDesignation(designationLabel);
+      setPreviousOffice(officeLabel);
+      setPreviousDesignation(designationLabel);
 
-      if (data.officeId) setSearchOffice(String(data.officeId));
-      if (data.designationId) setSearchDesignation(String(data.designationId));
+      setSearchOffice(data.officeId ? String(data.officeId) : "");
+      setSearchDesignation(data.designationId ? String(data.designationId) : "");
     }
   }, [data, isUpdate, form]);
 
   async function onSubmit(d: z.infer<typeof formSchema>) {
     try {
-      const officeId = searchOffice
-        ? Number(searchOffice)
-        : data?.officeId || null;
-      const designationId = searchDesignation
-        ? Number(searchDesignation)
-        : data?.designationId || null;
+      const officeId = searchOffice ? Number(searchOffice) : null;
+      const designationId = searchDesignation ? Number(searchDesignation) : null;
 
       const payload = {
         firstName: d.firstName.trim().toUpperCase(),
@@ -129,6 +126,12 @@ export default function AdminClientForm() {
         const id = data?.id ?? data?._id ?? params.clientId;
         const response = await api.put(`/clients/${id}`, payload);
         if (response.status === 200) {
+          await queryClient.invalidateQueries({ queryKey: ["clients"] });
+          if (params.clientId) {
+            await queryClient.invalidateQueries({
+              queryKey: ["clientForm", params.clientId],
+            });
+          }
           toast.success(
             `${payload.firstName} ${payload.lastName} updated successfully.`
           );
@@ -137,6 +140,7 @@ export default function AdminClientForm() {
       } else {
         const response = await api.post(`/clients`, payload);
         if (response.status === 200 || response.status === 201) {
+          await queryClient.invalidateQueries({ queryKey: ["clients"] });
           toast.success(
             `${payload.firstName} ${payload.lastName} created successfully.`
           );

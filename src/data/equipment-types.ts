@@ -25,7 +25,7 @@ export const equipmentTypes = [
     icon: FileScan,
   },
   {
-    value: "mobile device",
+    value: "mobile_device",
     label: "Mobile Device",
     icon: TabletSmartphone,
   },
@@ -35,7 +35,7 @@ export const equipmentTypes = [
     icon: Network,
   },
   {
-    value: "software application",
+    value: "software_application",
     label: "Software Application",
     icon: AppWindow,
   },
