@@ -2,21 +2,24 @@ export function isNumeric(value: string) {
   return /^-?\d+$/.test(value);
 }
 
-export function capitalizeFirstLetter(val: string) {
+export function capitalizeFirstLetter(val?: string | null) {
+  if (!val || typeof val !== "string") return "";
   return val
     .split(" ") // Split the sentence into an array of words
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
     .join(" ");
 }
 
-export function capitalizeFirstLetterKebab(val: string) {
+export function capitalizeFirstLetterKebab(val?: string | null) {
+  if (!val || typeof val !== "string") return "";
   return val
     .split("-") // Split the sentence into an array of words
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
     .join(" ");
 }
 
-export function formatParagraph(val: string) {
+export function formatParagraph(val?: string | null) {
+  if (!val || typeof val !== "string") return "";
   return val.replace(/(?:^|\.\s+)([a-z])/g, (match, char) =>
     match.replace(char, char.toUpperCase())
   );

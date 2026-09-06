@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -27,7 +27,7 @@ export const LoginForm = () => {
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      identifier: '',
       password: '',
     },
   });
@@ -44,7 +44,7 @@ export const LoginForm = () => {
 
       if (user?.role === 'admin') {
         navigate('/admin');
-      } else if (user?.role === 'staff') {
+      } else if (user?.role === 'service_engineer' || user?.role === 'staff') {
         navigate('/service-engineer');
       } else {
         navigate('/client');
@@ -87,13 +87,13 @@ export const LoginForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="username"
+              name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Username or Email</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter your username"
+                      placeholder="Enter your username or email"
                       autoComplete="username"
                       disabled={isLoading}
                       {...field}
@@ -131,13 +131,7 @@ export const LoginForm = () => {
         </Form>
 
         <div className="text-center text-sm text-muted-foreground mt-6">
-          Don't have an account?{' '}
-          <Link
-            to="/auth/register"
-            className="text-primary font-medium hover:underline"
-          >
-            Sign up
-          </Link>
+          Need an account? Contact your system administrator.
         </div>
       </CardContent>
     </Card>

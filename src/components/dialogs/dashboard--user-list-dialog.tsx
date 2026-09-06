@@ -14,13 +14,23 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { capitalizeFirstLetter } from "@/utils";
 import { formatDate } from "@/utils";
 
+export interface DashboardUserItem {
+  _id?: string;
+  id?: string | number;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
 interface IProps {
   dialogOpen: boolean;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   id?: string;
   title: string;
   name?: string;
-  data: any[];
+  data: DashboardUserItem[];
 }
 
 export default function UserListDialog({
@@ -66,7 +76,7 @@ export default function UserListDialog({
                     <TableCell className="font-medium p-5 custom-md:w-48 text-right">
                       <span className="text-gray-500">
                         {user.createdAt
-                          ? formatDate(user.createdAt)
+                          ? formatDate(new Date(user.createdAt))
                           : undefined}
                       </span>
                     </TableCell>

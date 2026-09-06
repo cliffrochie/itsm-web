@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { serviceStatuses } from "@/data/service-status";
-import { UseMutationResult } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -20,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AxiosResponse } from "axios";
 
 interface IUpdateStatusDialogProps {
   dialogOpen: boolean;
@@ -28,12 +26,9 @@ interface IUpdateStatusDialogProps {
   id?: string;
   name?: string;
   selectedServiceStatus?: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function UpdateStatusDialog({

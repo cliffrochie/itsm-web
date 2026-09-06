@@ -24,25 +24,38 @@ export default function ClientPage() {
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([]);
 
   const { authUser } = useAuthUser();
+  const [clientId, setClientId] = useState<number | null>(null);
   const navigate = useNavigate();
-  const clientKey = ["clientRequestTracker", search];
+
+  useEffect(() => {
+    const userId = authUser?.id ?? (authUser as { _id?: string | number })?._id;
+    if (userId) {
+      api
+        .get("/clients", { params: { userId, limit: 1 } })
+        .then((res) => {
+          const client = res.data?.data?.[0];
+          if (client) {
+            setClientId(Number(client.id ?? client._id));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [authUser]);
+
+  const clientKey = ["clientRequestTracker", search, clientId];
 
   const dataQuery = useQuery({
     queryKey: clientKey,
     queryFn: async () => {
-      let data: any[] = [];
-      let url = "";
+      const params: Record<string, unknown> = { limit: 100 };
       if (search) {
-        url = `/api/service-tickets/?noPage=true&ticketNo=${search}&createdBy=${authUser?._id}`;
-      } else {
-        url = `/api/service-tickets/requested`;
+        params.search = search;
       }
-
-      await api.get(url).then((response) => {
-        data = response.data;
-      });
-
-      return data;
+      if (clientId) {
+        params.clientId = clientId;
+      }
+      const response = await api.get("/service-tickets", { params });
+      return response.data?.data || response.data || [];
     },
     placeholderData: keepPreviousData,
   });
@@ -51,8 +64,6 @@ export default function ClientPage() {
     if (dataQuery.data) {
       setTickets(dataQuery.data);
     }
-
-    // console.log(dataQuery.data)
   }, [dataQuery.data]);
 
   return (
@@ -95,7 +106,7 @@ export default function ClientPage() {
                   {tickets.length > 0 ? (
                     tickets.map((ticket) => (
                       <TableRow
-                        key={ticket._id}
+                        key={ticket.id ?? ticket._id}
                         className="cursor-pointer"
                         onClick={() => navigate("/client/" + ticket.ticketNo)}
                       >
@@ -115,7 +126,7 @@ export default function ClientPage() {
                         <TableCell className="font-medium p-5 custom-md:w-48">
                           <span className="text-gray-500 hidden custom-md:block text-right">
                             {ticket.createdAt
-                              ? formatDate(ticket.createdAt)
+                              ? formatDate(new Date(ticket.createdAt))
                               : undefined}
                           </span>
                         </TableCell>

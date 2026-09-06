@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { UseMutationResult } from "@tanstack/react-query";
 import { capitalizeFirstLetter } from "@/utils";
 import {
   Select,
@@ -21,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AxiosResponse } from "axios";
 import UserComboBox from "@/components/comboboxes/user-combobox";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -34,12 +32,9 @@ interface IUpdateStatusDialogProps {
   currentServiceEngineer: string;
   currentPriorityLevel: string;
   excludeUser: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function EscalateServiceDialog({
@@ -122,6 +117,7 @@ export default function EscalateServiceDialog({
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

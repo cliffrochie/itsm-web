@@ -47,35 +47,26 @@ export default function AdminUsersPage() {
   const dataQuery = useQuery({
     queryKey: userQueryKey,
     queryFn: async () => {
-      let sortValue = "";
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
-
-      let url = `/api/users/`;
-      url += `?page=${pagination.pageIndex + 1}`;
-      url += `&limit=${pagination.pageSize}`;
-
-      if (sorting.length > 0) {
-        sorting.forEach((sort) => {
-          sortValue = sort.desc ? "-" + sort.id : sort.id;
-          url += `&sort=${sortValue}`;
-        });
-      }
+      const params: Record<string, unknown> = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      };
 
       if (columnFilters.length > 0) {
         columnFilters.forEach((filter) => {
           if (filter.value && filter.value !== " ") {
-            url += `&${filter.id}=${filter.value}`;
+            params[filter.id] = filter.value;
           }
         });
       }
 
-      await api.get(url).then((response) => {
-        data.rows = response.data?.results;
-        data.pageCount = response.data?.totalPages;
-        data.rowCount = response.data?.total;
-      });
-
-      return data;
+      const response = await api.get("/users", { params });
+      const envelope = response.data;
+      return {
+        rows: envelope?.data ?? envelope?.results ?? [],
+        pageCount: envelope?.meta?.last_page ?? envelope?.totalPages ?? 1,
+        rowCount: envelope?.meta?.total ?? envelope?.total ?? 0,
+      };
     },
     placeholderData: keepPreviousData,
   });
@@ -83,7 +74,7 @@ export default function AdminUsersPage() {
   const deleteMutation = useMutation({
     mutationKey: userQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/users/${id}`);
+      return await api.delete(`/users/${id}`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: userQueryKey });
@@ -96,7 +87,7 @@ export default function AdminUsersPage() {
     () => [
       {
         accessorKey: "username",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -108,7 +99,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "email",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -120,7 +111,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "firstName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -132,7 +123,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "lastName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -144,7 +135,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "role",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -175,16 +166,16 @@ export default function AdminUsersPage() {
         cell: ({ row }) => (
           <div className="flex justify-end">
             <DataTableRowActions
-              id={row.original._id}
+              id={String(row.original.id ?? row.original._id)}
               name={row.original.username}
-              updatePath={`/admin/users/${row.original._id}/update`}
+              updatePath={`/admin/users/${row.original.id ?? row.original._id}/update`}
               deleteMutation={deleteMutation}
             />
           </div>
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

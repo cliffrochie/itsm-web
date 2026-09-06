@@ -1,6 +1,8 @@
 export interface Designation {
-  _id: string;
+  id: number;
+  _id?: string;
   name: string;
+  title?: string;
   code?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;

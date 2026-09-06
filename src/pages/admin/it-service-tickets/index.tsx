@@ -53,44 +53,34 @@ export default function AdminITServiceTicketsPage() {
   const dataQuery = useQuery({
     queryKey: serviceTicketQueryKey,
     queryFn: async () => {
-      let sortValue = "";
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
-
-      let url = `/api/service-tickets/`;
-      url += `?page=${pagination.pageIndex + 1}`;
-      url += `&limit=${pagination.pageSize}`;
-      url += `&includes=all`;
-
-      if (sorting.length > 0) {
-        sorting.forEach((sort) => {
-          sortValue = sort.desc ? "-" + sort.id : sort.id;
-          url += `&sort=${sortValue}`;
-        });
-      }
+      const params: Record<string, unknown> = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+      };
 
       if (columnFilters.length > 0) {
         columnFilters.forEach((filter) => {
           if (filter.value && filter.value !== " ") {
-            url += `&${filter.id}=${filter.value}`;
+            params[filter.id] = filter.value;
           }
         });
       }
 
-      await api.get(url).then((response) => {
-        data.rows = response.data?.results;
-        data.pageCount = response.data?.totalPages;
-        data.rowCount = response.data?.total;
-      });
-
-      return data;
+      const response = await api.get("/service-tickets", { params });
+      const envelope = response.data;
+      return {
+        rows: envelope?.data ?? envelope?.results ?? [],
+        pageCount: envelope?.meta?.last_page ?? envelope?.totalPages ?? 1,
+        rowCount: envelope?.meta?.total ?? envelope?.total ?? 0,
+      };
     },
     placeholderData: keepPreviousData,
   });
 
-  useMutation({
+  const deleteMutation = useMutation({
     mutationKey: serviceTicketQueryKey,
     mutationFn: async (id: string) => {
-      return await api.delete(`/api/service-tickets/${id}`);
+      return await api.delete(`/service-tickets/${id}`);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: serviceTicketQueryKey });
@@ -105,7 +95,7 @@ export default function AdminITServiceTicketsPage() {
     () => [
       {
         accessorKey: "ticketNo",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -116,7 +106,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "title",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -127,7 +117,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "serviceStatus",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -155,7 +145,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "priority",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -183,7 +173,7 @@ export default function AdminITServiceTicketsPage() {
 
       {
         accessorKey: "client",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -214,7 +204,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "serviceEngineer",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -243,7 +233,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "createdAt",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -276,16 +266,17 @@ export default function AdminITServiceTicketsPage() {
         cell: ({ row }) => (
           <div className="flex justify-end">
             <DataTableRowActions
-              id={row.original._id}
+              id={String(row.original.id ?? row.original._id)}
               name={row.original.ticketNo}
-              viewPath={`/admin/it-service-tickets/${row.original._id}/view`}
-              updatePath={`/admin/it-service-tickets/${row.original._id}/update`}
+              viewPath={`/admin/it-service-tickets/${row.original.id ?? row.original._id}/view`}
+              updatePath={`/admin/it-service-tickets/${row.original.id ?? row.original._id}/update`}
+              deleteMutation={deleteMutation}
             />
           </div>
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

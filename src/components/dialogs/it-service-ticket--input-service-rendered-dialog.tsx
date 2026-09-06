@@ -12,21 +12,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { UseMutationResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-
 interface IInputServiceRendered {
   dialogOpen: boolean;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   id?: string;
   currentValue?: string;
   name?: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function InputServiceRenderDialog({
@@ -45,7 +39,7 @@ export default function InputServiceRenderDialog({
     if (currentValue) {
       setServiceRendered(currentValue);
     }
-  }, [dialogOpen]);
+  }, [dialogOpen, currentValue]);
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

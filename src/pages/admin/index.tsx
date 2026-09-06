@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ticket, Users } from "lucide-react";
 import {
   BarChart,
@@ -22,8 +22,8 @@ import useGetTotalTaskType from "@/hooks/it-service-ticket--use-get-total-task-t
 import useGetTotalEquipmentType from "@/hooks/it-service-ticket--use-get-total-equipment-type";
 import useGetTotalUserRole from "@/hooks/user--use-get-total-user-role";
 import api from "@/hooks/use-api";
-import DataListDialog from "@/components/dialogs/dashboard--data-list-dialog";
-import UserListDialog from "@/components/dialogs/dashboard--user-list-dialog";
+import DataListDialog, { DashboardTicketItem } from "@/components/dialogs/dashboard--data-list-dialog";
+import UserListDialog, { DashboardUserItem } from "@/components/dialogs/dashboard--user-list-dialog";
 
 interface TotalServiceStatus {
   totalTickets: number;
@@ -62,6 +62,15 @@ interface UserRole {
   totalAdmin: number;
   totalStaff: number;
   totalUser: number;
+}
+
+function extractArray<T>(resData: unknown): T[] {
+  if (!resData || typeof resData !== "object") return [];
+  const obj = resData as Record<string, unknown>;
+  if (Array.isArray(obj.data)) return obj.data as T[];
+  if (Array.isArray(obj.results)) return obj.results as T[];
+  if (Array.isArray(resData)) return resData as T[];
+  return [];
 }
 
 export default function AdminPage() {
@@ -140,295 +149,116 @@ export default function AdminPage() {
   const [selectedId, setSelectedId] = useState("");
   const [selectedName, setSelectedName] = useState("");
   const [dialogTitle, setDialogTitle] = useState("");
-  const [selectedData, setSelectedData] = useState<any[]>([]);
+  const [selectedData, setSelectedData] = useState<DashboardTicketItem[]>([]);
+  const [selectedUserData, setSelectedUserData] = useState<DashboardUserItem[]>([]);
   const [totalClient, setTotalClient] = useState(0);
 
-  async function getTotalClients() {
-    try {
-      const result = await api.get("/api/clients");
-      setTotalClient(result.data.total);
-    } catch (error: any) {
-      console.log(error);
-    }
-  }
-  getTotalClients();
+  useEffect(() => {
+    let isMounted = true;
 
-  async function handleServiceStatusPopulationClick(data: any) {
-    try {
-      switch (data.name) {
-        case "Opened":
-          const openedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=open&sort=-createdBy`
-          );
-          console.log(openedTickets);
-          setDialogTitle("Opened Tickets");
-          setSelectedId(openedTickets.data.results._id);
-          setSelectedName(openedTickets.data.results.ticketNo);
-          setSelectedData(openedTickets.data.results);
-          console.log(openedTickets.data.results._id);
-          break;
-        case "Assigned":
-          const assignedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=assigned&sort=-createdBy`
-          );
-          setDialogTitle("Assigned Tickets");
-          setSelectedId(assignedTickets.data.results._id);
-          setSelectedName(assignedTickets.data.results.ticketNo);
-          setSelectedData(assignedTickets.data.results);
-          console.log(assignedTickets);
-          break;
-        case "In-Progress":
-          const inProgressTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=in progress&sort=-createdBy`
-          );
-          setDataListDialog(true);
-          setDialogTitle("In-Progress Tickets");
-          setSelectedId(inProgressTickets.data.results._id);
-          setSelectedName(inProgressTickets.data.results.ticketNo);
-          setSelectedData(inProgressTickets.data.results);
-          console.log(inProgressTickets);
-          break;
-        case "On-Hold":
-          const onHoldTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=on hold&sort=-createdBy`
-          );
-          setDialogTitle("On-Hold Tickets");
-          setSelectedId(onHoldTickets.data.results._id);
-          setSelectedName(onHoldTickets.data.results.ticketNo);
-          setSelectedData(onHoldTickets.data.results);
-          console.log(onHoldTickets);
-          break;
-        case "Escalated":
-          const escalatedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=escalated&sort=-createdBy`
-          );
-          setDialogTitle("Escalated Tickets");
-          setSelectedId(escalatedTickets.data.results._id);
-          setSelectedName(escalatedTickets.data.results.ticketNo);
-          setSelectedData(escalatedTickets.data.results);
-          console.log(escalatedTickets);
-          break;
-        case "Canceled":
-          const canceledTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=canceled&sort=-createdBy`
-          );
-          setDialogTitle("Canceled Tickets");
-          setSelectedId(canceledTickets.data._id);
-          setSelectedName(canceledTickets.data.ticketNo);
-          setSelectedData(canceledTickets.data);
-          console.log(canceledTickets);
-          break;
-        case "Re-Opened":
-          const reOpenedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=reopened&sort=-createdBy`
-          );
-          setDialogTitle("Re-Opened Tickets");
-          setSelectedId(reOpenedTickets.data.results._id);
-          setSelectedName(reOpenedTickets.data.results.ticketNo);
-          setSelectedData(reOpenedTickets.data.results);
-          console.log(reOpenedTickets);
-          break;
-        case "Resolved":
-          const resolvedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=resolved&sort=-createdBy`
-          );
-          setDialogTitle("Resolved Tickets");
-          setSelectedId(resolvedTickets.data.results._id);
-          setSelectedName(resolvedTickets.data.results.ticketNo);
-          setSelectedData(resolvedTickets.data.results);
-          console.log(resolvedTickets);
-          break;
-        case "Closed":
-          const closedTickets = await api.get(
-            `/api/service-tickets/?serviceStatus=closed&sort=-createdBy`
-          );
-          setDialogTitle("Closed Tickets");
-          setSelectedId(closedTickets.data.results._id);
-          setSelectedName(closedTickets.data.results.ticketNo);
-          setSelectedData(closedTickets.data.results);
-          console.log(closedTickets);
-          break;
-        default:
-          break;
+    async function getTotalClients() {
+      try {
+        const result = await api.get("/api/clients");
+        if (isMounted) {
+          setTotalClient(result.data?.total ?? result.data?.meta?.total ?? 0);
+        }
+      } catch (error: unknown) {
+        console.log(error);
       }
-    } catch (error: any) {
+    }
+
+    getTotalClients();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  async function handleServiceStatusPopulationClick(data: { name: string }) {
+    try {
+      const statusMap: Record<string, string> = {
+        Opened: "open",
+        Assigned: "assigned",
+        "In-Progress": "in progress",
+        "On-Hold": "on hold",
+        Escalated: "escalated",
+        Canceled: "canceled",
+        "Re-Opened": "reopened",
+        Resolved: "resolved",
+        Closed: "closed",
+      };
+
+      const statusQuery = statusMap[data.name];
+      if (statusQuery) {
+        const response = await api.get(
+          `/api/service-tickets/?serviceStatus=${encodeURIComponent(statusQuery)}&sort=-createdBy`
+        );
+        const rows = extractArray<DashboardTicketItem>(response.data);
+        setDialogTitle(`${data.name} Tickets`);
+        setSelectedId(rows[0]?._id ? String(rows[0]._id) : "");
+        setSelectedName(rows[0]?.ticketNo || "");
+        setSelectedData(rows);
+      }
+    } catch (error: unknown) {
       console.log(error);
     } finally {
       setDataListDialog(true);
     }
   }
 
-  async function handleTaskTypePopulationClick(data: any) {
+  async function handleTaskTypePopulationClick(data: { name: string }) {
     try {
-      switch (data.name) {
-        case "Incident":
-          const incedentTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=incident`
-          );
-          setDialogTitle("Incident Tasks");
-          setSelectedId(incedentTickets.data._id);
-          setSelectedName(incedentTickets.data.ticketNo);
-          setSelectedData(incedentTickets.data);
-          break;
-        case "Service Request":
-          const serviceRequestTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=service request`
-          );
-          setDialogTitle("Service Request Tasks");
-          setSelectedId(serviceRequestTickets.data._id);
-          setSelectedName(serviceRequestTickets.data.ticketNo);
-          setSelectedData(serviceRequestTickets.data);
-          break;
-        case "Asset Request":
-          const assetRequestTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=asset request`
-          );
-          setDialogTitle("Asset Request Tasks");
-          setSelectedId(assetRequestTickets.data._id);
-          setSelectedName(assetRequestTickets.data.ticketNo);
-          setSelectedData(assetRequestTickets.data);
-          break;
-        case "Maintenance":
-          const maintenanceTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=maintenance`
-          );
-          setDialogTitle("Maintenance Tasks");
-          setSelectedId(maintenanceTickets.data._id);
-          setSelectedName(maintenanceTickets.data.ticketNo);
-          setSelectedData(maintenanceTickets.data);
-          break;
-        case "Consultation":
-          const consultationTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=consultation`
-          );
-          setDialogTitle("Consultation Tasks");
-          setSelectedId(consultationTickets.data._id);
-          setSelectedName(consultationTickets.data.ticketNo);
-          setSelectedData(consultationTickets.data);
-          break;
-        case "Accessibility":
-          const accessibilityTickets = await api.get(
-            `/api/service-tickets?noPage=true&taskType=accessibility`
-          );
-          setDialogTitle("Accessibility Tasks");
-          setSelectedId(accessibilityTickets.data._id);
-          setSelectedName(accessibilityTickets.data.ticketNo);
-          setSelectedData(accessibilityTickets.data);
-          break;
-        default:
-          break;
-      }
-    } catch (error: any) {
+      const response = await api.get(
+        `/api/service-tickets?noPage=true&taskType=${encodeURIComponent(data.name.toLowerCase())}`
+      );
+      const rows = extractArray<DashboardTicketItem>(response.data);
+      setDialogTitle(`${data.name} Tasks`);
+      setSelectedId(rows[0]?._id ? String(rows[0]._id) : "");
+      setSelectedName(rows[0]?.ticketNo || "");
+      setSelectedData(rows);
+    } catch (error: unknown) {
       console.log(error);
     } finally {
       setDataListDialog(true);
     }
   }
 
-  async function handleEquipmentTypePopulationClick(data: any) {
+  async function handleEquipmentTypePopulationClick(data: { name: string }) {
     try {
-      switch (data.name) {
-        case "Computer":
-          const computerEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=computer`
-          );
-          setDialogTitle("Computer Equipment Type");
-          setSelectedId(computerEquipment.data._id);
-          setSelectedName(computerEquipment.data.ticketNo);
-          setSelectedData(computerEquipment.data);
-          break;
-        case "Printer":
-          const printerEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=printer`
-          );
-          setDialogTitle("Printer Equipment Type");
-          setSelectedId(printerEquipment.data._id);
-          setSelectedName(printerEquipment.data.ticketNo);
-          setSelectedData(printerEquipment.data);
-          break;
-        case "Scanner":
-          const scannerEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=scanner`
-          );
-          setDialogTitle("Scanner Equipment Type");
-          setSelectedId(scannerEquipment.data._id);
-          setSelectedName(scannerEquipment.data.ticketNo);
-          setSelectedData(scannerEquipment.data);
-          break;
-        case "Mobile Device":
-          const mobileDeviceEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=mobile device`
-          );
-          setDialogTitle("Printer Equipment Type");
-          setSelectedId(mobileDeviceEquipment.data._id);
-          setSelectedName(mobileDeviceEquipment.data.ticketNo);
-          setSelectedData(mobileDeviceEquipment.data);
-          break;
-        case "Network Related":
-          const networkRelatedEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=network related`
-          );
-          setDialogTitle("Network Related Equipment Type");
-          setSelectedId(networkRelatedEquipment.data._id);
-          setSelectedName(networkRelatedEquipment.data.ticketNo);
-          setSelectedData(networkRelatedEquipment.data);
-          break;
-        case "Software Application":
-          const softwareApplicationEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=software application`
-          );
-          setDialogTitle("Software Application Equipment Type");
-          setSelectedId(softwareApplicationEquipment.data._id);
-          setSelectedName(softwareApplicationEquipment.data.ticketNo);
-          setSelectedData(softwareApplicationEquipment.data);
-          break;
-        case "Others":
-          const othersEquipment = await api.get(
-            `/api/service-tickets?noPage=true&equipmentType=software application`
-          );
-          setDialogTitle("Others Equipment Type");
-          setSelectedId(othersEquipment.data._id);
-          setSelectedName(othersEquipment.data.ticketNo);
-          setSelectedData(othersEquipment.data);
-          break;
-        default:
-          break;
-      }
-    } catch (error: any) {
+      const eqType = data.name === "Others" ? "software application" : data.name.toLowerCase();
+      const response = await api.get(
+        `/api/service-tickets?noPage=true&equipmentType=${encodeURIComponent(eqType)}`
+      );
+      const rows = extractArray<DashboardTicketItem>(response.data);
+      setDialogTitle(`${data.name} Equipment Type`);
+      setSelectedId(rows[0]?._id ? String(rows[0]._id) : "");
+      setSelectedName(rows[0]?.ticketNo || "");
+      setSelectedData(rows);
+    } catch (error: unknown) {
       console.log(error);
     } finally {
       setDataListDialog(true);
     }
   }
 
-  async function handleUserRolePopulationClick(data: any) {
+  async function handleUserRolePopulationClick(data: { name: string }) {
     try {
-      switch (data.name) {
-        case "Admin":
-          const adminUsers = await api.get(`/api/users?role=admin&noPage=true`);
-          setDialogTitle("Admin Roles");
-          setSelectedId(adminUsers.data._id);
-          setSelectedName(adminUsers.data.lastName);
-          setSelectedData(adminUsers.data);
-          break;
-        case "Service Engineer":
-          const staffUsers = await api.get(`/api/users?role=staff&noPage=true`);
-          setDialogTitle("Service Engineer Roles");
-          setSelectedId(staffUsers.data._id);
-          setSelectedName(staffUsers.data.lastName);
-          setSelectedData(staffUsers.data);
-          break;
-        case "Client":
-          const userUsers = await api.get(`/api/users?role=user&noPage=true`);
-          setDialogTitle("Client Roles");
-          setSelectedId(userUsers.data._id);
-          setSelectedName(userUsers.data.lastName);
-          setSelectedData(userUsers.data);
-          break;
-        default:
-          break;
+      const roleMap: Record<string, string> = {
+        Admin: "admin",
+        "Service Engineer": "staff",
+        Client: "user",
+      };
+
+      const roleQuery = roleMap[data.name];
+      if (roleQuery) {
+        const response = await api.get(`/api/users?role=${roleQuery}&noPage=true`);
+        const rows = extractArray<DashboardUserItem>(response.data);
+        setDialogTitle(`${data.name} Roles`);
+        setSelectedId(rows[0]?._id ? String(rows[0]._id) : "");
+        setSelectedName(rows[0]?.lastName || "");
+        setSelectedUserData(rows);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
     } finally {
       setUserListDialog(true);
@@ -610,7 +440,7 @@ export default function AdminPage() {
         title={dialogTitle}
         id={selectedId}
         name={selectedName}
-        data={selectedData}
+        data={selectedUserData}
       />
     </section>
   );

@@ -1,51 +1,55 @@
 import { IUser } from "./user";
 import { IClient } from "./client";
+import { IServiceTicketHistory } from "./service-ticket-history";
+
+export type ServiceTicketStatus =
+  | "open"
+  | "in_progress"
+  | "resolved"
+  | "closed"
+  | "cancelled"
+  | "assigned"
+  | "in progress"
+  | "on hold"
+  | "escalated"
+  | "canceled"
+  | "reopened"
+  | "";
+
+export type ServiceTicketPriority =
+  | "low"
+  | "medium"
+  | "high"
+  | "urgent"
+  | "";
 
 export interface IServiceTicket {
-  _id: string;
+  id?: number;
+  _id?: string;
   ticketNo: string;
-  taskType:
-    | ""
-    | "incident"
-    | "service request"
-    | "maintenance"
-    | "consultation"
-    | "accessibility";
+  taskType: string;
   title: string;
-  natureOfWork: string;
-  serialNo?: string;
-  equipmentType:
-    | ""
-    | "computer"
-    | "software application"
-    | "printer"
-    | "scanner"
-    | "phone"
-    | "network"
-    | "others";
-  equipmentTypeOthers?: string;
-  defectsFound?: string;
-  serviceRendered?: string;
-  serviceStatus?:
-    | ""
-    | "open"
-    | "assigned"
-    | "in progress"
-    | "on hold"
-    | "escalated"
-    | "canceled"
-    | "reopened"
-    | "resolved"
-    | "closed";
-  priority: "" | "low" | "medium" | "high";
-  remarks?: string;
-  adminRemarks?: string;
-  rating?: "" | "n" | "s" | "vs" | "d" | "vd";
-  ratingComment?: string;
-  serviceEngineer: IUser | string | null;
-  client: IClient | string | null;
+  natureOfWork?: string | null;
+  serialNo?: string | null;
+  equipmentType?: string | null;
+  equipmentTypeOthers?: string | null;
+  defectsFound?: string | null;
+  serviceRendered?: string | null;
+  serviceStatus?: ServiceTicketStatus;
+  priority: ServiceTicketPriority;
+  remarks?: string | null;
+  adminRemarks?: string | null;
+  rating?: number | string | null;
+  ratingComment?: string | null;
+  clientId?: number | null;
+  serviceEngineerId?: number | null;
+  createdById?: number | null;
+  updatedById?: number | null;
+  serviceEngineer?: IUser | string | null;
+  client?: IClient | string | null;
   createdBy?: IUser | string | null;
   updatedBy?: IUser | string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  histories?: IServiceTicketHistory[];
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }

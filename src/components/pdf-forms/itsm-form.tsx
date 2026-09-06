@@ -16,6 +16,7 @@ import Cambria from '@/assets/fonts/Cambria.ttf'
 import CambriaBold from '@/assets/fonts/Cambria-Bold.ttf'
 import CambriaItalic from '@/assets/fonts/Cambria-Italic.ttf'
 import { capitalizeFirstLetter } from "@/utils";
+import { IServiceTicket } from "@/@types/service-ticket";
 
 Font.register({
   family: 'Trajan-Pro-Bold',
@@ -49,13 +50,14 @@ Font.register({
 
 
 
-export default function ITSMForm({data}: { data: any }) {
-
-  const problemTitle = data.title ? data.title : ''
-  const problemDescription = data.natureOfWork ? data.netureOfWork : ''
-  const clientDesignation = data.client ? data.client.designation ? data.client.designation.title ? data.client.designation.title  : '' : '' : ''
-  const clientOffice = data.client ? data.client.office ? data.client.office.alias ? data.client.office.alias : '' : '' : ''
-  const timestamp = new Date(data.createdAt)
+export default function ITSMForm({ data }: { data: IServiceTicket }) {
+  const problemTitle = data.title ? data.title : "";
+  const problemDescription = data.natureOfWork ? data.natureOfWork : "";
+  const client = data.client && typeof data.client === "object" ? data.client : null;
+  const serviceEngineer = data.serviceEngineer && typeof data.serviceEngineer === "object" ? data.serviceEngineer : null;
+  const clientDesignation = (typeof client?.designation === "object" ? client.designation?.title : client?.designation) || "";
+  const clientOffice = (typeof client?.office === "object" ? client.office?.alias : client?.office) || "";
+  const timestamp = data.createdAt ? new Date(data.createdAt) : new Date();
   const dateCreated = new Intl.DateTimeFormat('en-US', {
     month: 'long',
     day: '2-digit',
@@ -95,9 +97,9 @@ export default function ITSMForm({data}: { data: any }) {
             <View style={{flexDirection: 'row'}}>
               <Text style={{...styles.fontCambria, marginRight: '8px'}}>Client Name:</Text>
               <Text style={{...styles.fontCambria, }}>
-                {capitalizeFirstLetter(data.client.firstName)} 
-                {data.client.middleName ? ' '+ capitalizeFirstLetter(data.client.middleName.charAt(0)) + '. ' : ' '} 
-                {capitalizeFirstLetter(data.client.lastName)}
+                {client ? capitalizeFirstLetter(client.firstName) : ""} 
+                {client?.middleName ? ' '+ capitalizeFirstLetter(client.middleName.charAt(0)) + '. ' : ' '} 
+                {client ? capitalizeFirstLetter(client.lastName) : ""}
               </Text>
             </View>
           </View>
@@ -311,9 +313,9 @@ export default function ITSMForm({data}: { data: any }) {
                     <Text style={{...styles.fontCambria, marginRight: '5px'}}>Name & Signature:</Text>
                     <View style={{flexDirection: 'row', width: '133.5px', justifyContent: 'center'}}>
                       <Text style={{...styles.fontCambria,}}>
-                        {capitalizeFirstLetter(data.serviceEngineer.firstName)} 
-                        {data.serviceEngineer.middleName ? ' '+ capitalizeFirstLetter(data.serviceEngineer.middleName.charAt(0)) + '. ' : ' '} 
-                        {capitalizeFirstLetter(data.serviceEngineer.lastName)}
+                        {serviceEngineer ? capitalizeFirstLetter(serviceEngineer.firstName) : ""} 
+                        {serviceEngineer?.middleName ? ' '+ capitalizeFirstLetter(serviceEngineer.middleName.charAt(0)) + '. ' : ' '} 
+                        {serviceEngineer ? capitalizeFirstLetter(serviceEngineer.lastName) : ""}
                       </Text>
                     </View>
                   </View>
@@ -331,9 +333,9 @@ export default function ITSMForm({data}: { data: any }) {
                     <Text style={{...styles.fontCambria, marginRight: '8px',}}>Signature:</Text>
                     <View style={{flexDirection: 'row', width: '186px', justifyContent: 'center',}}>
                       <Text style={{...styles.fontCambria,}}>
-                        {capitalizeFirstLetter(data.client.firstName)} 
-                        {data.client.middleName ? ' '+ capitalizeFirstLetter(data.client.middleName.charAt(0)) + '. ' : ' '} 
-                        {capitalizeFirstLetter(data.client.lastName)}
+                        {client ? capitalizeFirstLetter(client.firstName) : ""} 
+                        {client?.middleName ? ' '+ capitalizeFirstLetter(client.middleName.charAt(0)) + '. ' : ' '} 
+                        {client ? capitalizeFirstLetter(client.lastName) : ""}
                       </Text>
                     </View>
                   </View>

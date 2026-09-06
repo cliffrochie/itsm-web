@@ -17,14 +17,39 @@ export const serviceStatuses = [
     icon: LockOpen,
   },
   {
-    value: "assigned",
-    label: "Assigned",
-    icon: CircleUser,
+    value: "in_progress",
+    label: "In Progress",
+    icon: Loader,
   },
   {
     value: "in progress",
     label: "In Progress",
     icon: Loader,
+  },
+  {
+    value: "resolved",
+    label: "Resolved",
+    icon: Check,
+  },
+  {
+    value: "closed",
+    label: "Closed",
+    icon: Lock,
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+    icon: RefreshCwOff,
+  },
+  {
+    value: "canceled",
+    label: "Canceled",
+    icon: RefreshCwOff,
+  },
+  {
+    value: "assigned",
+    label: "Assigned",
+    icon: CircleUser,
   },
   {
     value: "on hold",
@@ -37,23 +62,8 @@ export const serviceStatuses = [
     icon: TrendingUp,
   },
   {
-    value: "canceled",
-    label: "Canceled",
-    icon: RefreshCwOff,
-  },
-  {
     value: "reopened",
     label: "Reopened",
     icon: RefreshCw,
-  },
-  {
-    value: "resolved",
-    label: "Resolved",
-    icon: Check,
-  },
-  {
-    value: "closed",
-    label: "Closed",
-    icon: Lock,
   },
 ];

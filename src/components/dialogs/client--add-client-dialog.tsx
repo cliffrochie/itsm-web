@@ -13,19 +13,13 @@ import { Input } from "@/components/ui/input";
 import DesignationComboBox from "@/components/comboboxes/designation-combobox";
 import OfficeComboBox from "@/components/comboboxes/office-combobox";
 
-import { UseMutationResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-
 interface ThisInterface {
   dialogOpen: boolean;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   name?: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function AddClientDialog({

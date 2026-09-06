@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useParams } from "react-router";
 
@@ -44,38 +44,9 @@ export default function AdminOfficeForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  const currentPath = location.pathname.split("/");
 
-  const [errors, setErrors] = useState<any>(null);
-
-  let isUpdate = false;
-
-  let title = "";
-  if (currentPath[currentPath.length - 1] === "create") {
-    title = "Create";
-  } else if (currentPath[currentPath.length - 1] === "update") {
-    title = "Update";
-    isUpdate = true;
-  }
-
-  const { data } = useQuery({
-    queryKey: ["officeForm"],
-    queryFn: async () => {
-      let data: IOffice = {
-        _id: "",
-        name: "",
-        alias: "",
-        officeType: "",
-      };
-      let url = `/api/offices/${params.officeId}`;
-      if (params.officeId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
-      }
-      return data;
-    },
-  });
+  const isUpdate = location.pathname.endsWith("/update");
+  const title = isUpdate ? "Update" : "Create";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -86,16 +57,32 @@ export default function AdminOfficeForm() {
     },
   });
 
-  useEffect(() => {
-    let officeType = officeTypes.find((e) => e.value === data?.officeType);
-    console.log(officeType);
+  const { data } = useQuery({
+    queryKey: ["officeForm", params.officeId],
+    queryFn: async () => {
+      let data: IOffice = {
+        _id: "",
+        name: "",
+        alias: "",
+        officeType: "",
+      };
+      const url = `/api/offices/${params.officeId}`;
+      if (params.officeId) {
+        await api.get(url).then((response) => {
+          data = response.data?.data ?? response.data;
+        });
+      }
+      return data;
+    },
+  });
 
-    if (isUpdate) {
-      form.setValue("name", data ? data.name : "");
-      form.setValue("alias", data ? (data.alias ? data.alias : "") : "");
-      form.setValue("officeType", data ? data.officeType : "");
+  useEffect(() => {
+    if (isUpdate && data) {
+      form.setValue("name", data.name || "");
+      form.setValue("alias", data.alias || "");
+      form.setValue("officeType", data.officeType || "");
     }
-  }, [data]);
+  }, [data, isUpdate, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     // console.log(data)
@@ -142,10 +129,17 @@ export default function AdminOfficeForm() {
         }
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      let obj: any = {};
-      obj[err.key] = err.message;
-      setErrors(obj);
+      const err = handleAxiosError(e);
+      if (err) {
+        if (["name", "alias", "officeType"].includes(err.key)) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
+      }
     }
   }
 
@@ -165,13 +159,13 @@ export default function AdminOfficeForm() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={errors?.name ? "text-red-500" : ""}>
+                    <FormLabel>
                       Office Name
                     </FormLabel>
                     <FormControl>
                       <Input {...field} className="h-7" />
                     </FormControl>
-                    <FormMessage>{errors?.name}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

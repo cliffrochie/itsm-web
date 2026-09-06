@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ToastContainer, Slide } from "react-toastify";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import {
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import DropdownUser from "@/components/app-dropdown-user";
-import { INavLink } from "@/@types/nav-link";
+import type { INavLink } from "@/@types/nav-link";
 import { Button } from "@/components/ui/button";
 import {
   keepPreviousData,
@@ -28,9 +27,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useGetAuthUser from "@/hooks/user--use-auth-user";
-import { INotification } from "@/@types/notification";
-import api from "@/hooks/use-api";
+import type { INotification } from "@/@types/notification";
+import api from "@/lib/api-client";
 import { Info, Trash } from "lucide-react";
+import { connectSocket } from "@/lib/socket";
+import { toast } from "sonner";
 
 export default function SidebarLayout({
   links,
@@ -39,85 +40,96 @@ export default function SidebarLayout({
   links: INavLink[];
   setLinks: Dispatch<SetStateAction<INavLink[]>>;
 }) {
-  const [notifications, setNotifications] = useState<INotification[] | []>([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const { authUser } = useGetAuthUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const queryKey = ["notifications", authUser];
+  const queryKey = ["notifications", authUser?.id];
+
+  useEffect(() => {
+    const userId = authUser?.id;
+    if (userId) {
+      const socket = connectSocket(userId);
+      const handleNewNotification = (notification: { message?: string }) => {
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        toast.info(notification.message || "New notification received");
+      };
+      socket.on("notification:new", handleNewNotification);
+      return () => {
+        socket.off("notification:new", handleNewNotification);
+      };
+    }
+  }, [authUser, queryClient]);
 
   const dq = useQuery({
     queryKey,
     queryFn: async () => {
-      let data: INotification[] = [];
-      let url = "";
-      if (authUser) {
-        url = `/api/notifications?userId=${authUser._id}&noPage=true&sort=-createdAt&isRead=false`;
-      }
-
-      await api.get(url).then((response) => {
-        data = response.data;
+      if (!authUser) return [];
+      const response = await api.get("/notifications", {
+        params: { limit: 50 },
       });
-
-      return data;
+      const list: INotification[] =
+        response.data?.data || response.data || [];
+      return list.filter((n) => !n.isRead);
     },
     placeholderData: keepPreviousData,
   });
 
   const updateNotificationMutation = useMutation({
     mutationKey: ["updateNotificationMutation"],
-    mutationFn: async (data: string) => {
-      await api.put(`/api/notifications/${data}/read`).then((response) => {
-        if (response.status === 200) {
-          console.log("read");
-        }
-      });
+    mutationFn: async (data: string | number) => {
+      await api.patch(`/notifications/${data}/read`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
   const clearNotificationMutation = useMutation({
     mutationKey: ["clearNotificationMutation"],
-    mutationFn: async (data: string) => {
-      await api
-        .put(`/api/notifications/clear-user-notifications/${data}`)
-        .then((response) => {
-          if (response.status === 200) {
-            console.log("clear all notifications");
-          }
-        });
+    mutationFn: async () => {
+      await api.patch(`/notifications/read-all`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
   function redirectToTicket(
-    notificationId: string,
-    serviceTicketId: string,
-    ticketNo: string
+    notificationId?: string | number,
+    ticketId?: string | number | null,
+    ticketNo?: string
   ) {
-    if (authUser?.role === "admin") {
-      navigate("/admin/it-service-tickets/" + serviceTicketId + "/view", {
+    if (ticketId && authUser?.role === "admin") {
+      navigate("/admin/it-service-tickets/" + ticketId + "/view", {
         replace: true,
       });
-    } else if (authUser?.role === "staff") {
-      navigate("/service-engineer/" + ticketNo, { replace: true });
-    } else {
-      navigate("/client/" + ticketNo, { replace: true });
+    } else if (ticketNo) {
+      if (
+        authUser?.role === "service_engineer" ||
+        authUser?.role === "staff"
+      ) {
+        navigate("/service-engineer/" + ticketNo, { replace: true });
+      } else {
+        navigate("/client/" + ticketNo, { replace: true });
+      }
+    } else if (ticketId) {
+      navigate("/admin/it-service-tickets/" + ticketId + "/view", {
+        replace: true,
+      });
     }
 
-    updateNotificationMutation.mutate(notificationId);
+    if (notificationId) {
+      updateNotificationMutation.mutate(notificationId);
+    }
   }
 
-  function clearAllNotifications(userId: string) {
-    clearNotificationMutation.mutate(userId);
+  function clearAllNotifications() {
+    clearNotificationMutation.mutate();
   }
 
   useEffect(() => {
     if (dq.data) {
-      console.log(dq.data);
       setNotifications(dq.data);
     }
   }, [dq.data]);
@@ -149,12 +161,12 @@ export default function SidebarLayout({
                   {notifications && notifications.length > 0 ? (
                     notifications.map((notification) => (
                       <DropdownMenuItem
-                        key={notification.message}
+                        key={notification.id ?? notification.message}
                         className="py-4 text-sm cursor-pointer"
                         onClick={() =>
                           redirectToTicket(
-                            notification._id,
-                            notification.serviceTicket,
+                            notification.id,
+                            notification.ticketId,
                             notification.ticketNo
                           )
                         }
@@ -173,9 +185,7 @@ export default function SidebarLayout({
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="py-4 text-sm cursor-pointer bg-gray-100"
-                        onClick={() =>
-                          clearAllNotifications(authUser ? authUser._id : "")
-                        }
+                        onClick={() => clearAllNotifications()}
                       >
                         <Trash />
                         <span className="font-medium">
@@ -193,20 +203,7 @@ export default function SidebarLayout({
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <main>
-            <Outlet /> {/* Render child routes */}
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick={false}
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-              transition={Slide}
-            />
+            <Outlet />
           </main>
         </div>
       </SidebarInset>

@@ -69,18 +69,16 @@ export function DataTableColumnHeader<TData, TValue>({
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-1 mb-2">
-        {true && (
-          <Input
-            placeholder={"Filter " + title.toLowerCase() + ".."}
-            className="h-6 text-nowrap p-1"
-            value={
-              (table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn(accessorKey)?.setFilterValue(event.target.value)
-            }
-          />
-        )}
+        <Input
+          placeholder={"Filter " + title.toLowerCase() + ".."}
+          className="h-6 text-nowrap p-1"
+          value={
+            (table.getColumn(accessorKey)?.getFilterValue() as string) ?? ""
+          }
+          onChange={(event) =>
+            table.getColumn(accessorKey)?.setFilterValue(event.target.value)
+          }
+        />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import OfficeComboBox from "@/components/comboboxes/office-combobox";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { toast, Slide } from "react-toastify";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,12 +30,12 @@ import { IOffice } from "@/@types/office";
 import { IDesignation } from "@/@types/designation";
 
 const formSchema = z.object({
-  firstName: z.string({ required_error: "First name is required" }).min(2),
-  middleName: z.string().nullable(),
-  lastName: z.string({ required_error: "Last name is required" }).min(2),
-  extensionName: z.string(),
-  designation: z.string({ required_error: "Designation is required" }),
-  office: z.string({ required_error: "Office is required" }),
+  firstName: z.string().min(1, { message: "First name is required" }),
+  middleName: z.string().nullable().optional(),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  extensionName: z.string().nullable().optional(),
+  contactNo: z.string().nullable().optional(),
+  email: z.string().email({ message: "Invalid email address" }).nullable().optional().or(z.literal("")),
 });
 
 export default function AdminClientForm() {
@@ -46,70 +46,25 @@ export default function AdminClientForm() {
   const [searchOffice, setSearchOffice] = useState("");
   const [previousDesignation, setPreviousDesignation] = useState("");
   const [previousOffice, setPreviousOffice] = useState("");
-  const [errors, setErrors] = useState<any>(null);
   const currentPath = location.pathname.split("/");
 
   let isUpdate = false;
 
-  let title = "";
-  if (currentPath[currentPath.length - 1] === "create") {
-    title = "Create";
-  } else if (currentPath[currentPath.length - 1] === "update") {
+  let title = "Create";
+  if (currentPath[currentPath.length - 1] === "update") {
     title = "Update";
     isUpdate = true;
   }
 
-  const { data } = useQuery({
-    queryKey: ["clientForm"],
+  const { data } = useQuery<IClient | null>({
+    queryKey: ["clientForm", params.clientId],
     queryFn: async () => {
-      let data: IClient = {
-        _id: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        extensionName: "",
-        office: "",
-        designation: "",
-      };
-      let url = `/api/clients/${params.clientId}/?includes=all`;
-      if (params.clientId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
-      }
-      return data;
+      if (!params.clientId) return null;
+      const response = await api.get(`/clients/${params.clientId}`);
+      return response.data?.data ?? response.data;
     },
+    enabled: Boolean(params.clientId),
   });
-
-  useEffect(() => {
-    if (isUpdate && data) {
-      form.setValue("firstName", data ? data.firstName : "");
-      form.setValue("middleName", data ? data.middleName || "" : "");
-      form.setValue("lastName", data ? data.lastName : "");
-      form.setValue("extensionName", data ? data.extensionName || "" : "");
-
-      let office = null;
-      if (data && data.office) {
-        office = data.office as IOffice;
-      }
-
-      let designation = null;
-      if (data && data.designation) {
-        designation = data.designation as IDesignation;
-      }
-
-      setPreviousOffice(
-        office ? (office.alias !== undefined ? office.alias || "" : "") : ""
-      );
-      setPreviousDesignation(
-        designation
-          ? designation.title !== undefined
-            ? designation.title || ""
-            : ""
-          : ""
-      );
-    }
-  }, [data, searchOffice, searchDesignation]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -118,101 +73,99 @@ export default function AdminClientForm() {
       middleName: "",
       lastName: "",
       extensionName: "",
-      designation: "",
-      office: "",
+      contactNo: "",
+      email: "",
     },
   });
 
+  useEffect(() => {
+    if (isUpdate && data) {
+      form.setValue("firstName", data.firstName || "");
+      form.setValue("middleName", data.middleName || "");
+      form.setValue("lastName", data.lastName || "");
+      form.setValue("extensionName", data.extensionName || "");
+      form.setValue("contactNo", data.contactNo || "");
+      form.setValue("email", data.email || "");
+
+      const office = data.office as IOffice | undefined;
+      const designation = data.designation as IDesignation | undefined;
+
+      const officeLabel = office?.code
+        ? `${office.code} - ${office.name}`
+        : office?.name || office?.alias || "";
+      const designationLabel = designation?.name || designation?.title || "";
+
+      if (officeLabel) setPreviousOffice(officeLabel);
+      if (designationLabel) setPreviousDesignation(designationLabel);
+
+      if (data.officeId) setSearchOffice(String(data.officeId));
+      if (data.designationId) setSearchDesignation(String(data.designationId));
+    }
+  }, [data, isUpdate, form]);
+
   async function onSubmit(d: z.infer<typeof formSchema>) {
     try {
-      let office = searchOffice;
-      let designation = searchDesignation;
+      const officeId = searchOffice
+        ? Number(searchOffice)
+        : data?.officeId || null;
+      const designationId = searchDesignation
+        ? Number(searchDesignation)
+        : data?.designationId || null;
 
-      if (isUpdate && !searchOffice) {
-        let xOffice = null;
-        if (data && data.office) {
-          xOffice = data.office as IOffice;
-        }
-        office = xOffice
-          ? xOffice._id !== undefined
-            ? xOffice._id || ""
-            : ""
-          : "";
-      }
-
-      if (isUpdate && !searchDesignation) {
-        let xDesignation = null;
-        if (data && data.designation) {
-          xDesignation = data.designation as IDesignation;
-        }
-        designation = xDesignation
-          ? xDesignation._id !== undefined
-            ? xDesignation._id || ""
-            : ""
-          : "";
-      }
-
-      const newData: z.infer<typeof formSchema> = {
-        ...d,
-        office,
-        designation,
+      const payload = {
+        firstName: d.firstName.trim().toUpperCase(),
+        middleName: d.middleName?.trim() ? d.middleName.trim().toUpperCase() : null,
+        lastName: d.lastName.trim().toUpperCase(),
+        extensionName: d.extensionName?.trim()
+          ? d.extensionName.trim().toUpperCase()
+          : null,
+        contactNo: d.contactNo || null,
+        email: d.email ? d.email.trim().toLowerCase() : null,
+        officeId,
+        designationId,
       };
 
       if (isUpdate) {
-        const response = await api.put(
-          `/api/clients/${data ? data._id : ""}`,
-          newData
-        );
+        const id = data?.id ?? data?._id ?? params.clientId;
+        const response = await api.put(`/clients/${id}`, payload);
         if (response.status === 200) {
           toast.success(
-            `${newData.firstName} ${newData.lastName} is updated successfully.`,
-            {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              transition: Slide,
-              className: "text-sm",
-            }
+            `${payload.firstName} ${payload.lastName} updated successfully.`
           );
-
           navigate("/admin/clients");
-        } else {
-          console.log(response.status);
         }
       } else {
-        const response = await api.post(`/api/clients/`, newData);
-        if (response.status === 201) {
+        const response = await api.post(`/clients`, payload);
+        if (response.status === 200 || response.status === 201) {
           toast.success(
-            `${newData.firstName} ${newData.lastName} is created successfully.`,
-            {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: false,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              transition: Slide,
-              className: "text-sm",
-            }
+            `${payload.firstName} ${payload.lastName} created successfully.`
           );
-
           navigate("/admin/clients");
-        } else {
-          console.log(response.status);
         }
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      let obj: any = {};
-      obj[err.errors.key] = err.message;
-      setErrors(obj);
+      const err = handleAxiosError(e);
+      if (err) {
+        if (
+          [
+            "firstName",
+            "middleName",
+            "lastName",
+            "extensionName",
+            "contactNo",
+            "email",
+          ].includes(err.key)
+        ) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
+      } else {
+        toast.error("Operation failed.");
+      }
     }
   }
 
@@ -232,11 +185,7 @@ export default function AdminClientForm() {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.firstName ? "text-red-500" : ""}
-                    >
-                      First Name
-                    </FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -244,7 +193,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.firstName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -253,11 +202,7 @@ export default function AdminClientForm() {
                 name="middleName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.middleName ? "text-red-500" : ""}
-                    >
-                      Middle Name
-                    </FormLabel>
+                    <FormLabel>Middle Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -265,7 +210,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.middleName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -274,11 +219,7 @@ export default function AdminClientForm() {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.lastName ? "text-red-500" : ""}
-                    >
-                      Last Name
-                    </FormLabel>
+                    <FormLabel>Last Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -286,7 +227,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.lastName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -295,23 +236,61 @@ export default function AdminClientForm() {
                 name="extensionName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.extensionName ? "text-red-500" : ""}
-                    >
-                      Ext. Name
-                    </FormLabel>
+                    <FormLabel>Ext. Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        value={field.value.toUpperCase() || ""}
+                        value={field.value?.toUpperCase() || ""}
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.extensionName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
+            <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        type="email"
+                        placeholder="client@agency.gov.ph"
+                        className="h-7"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contactNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact No.</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="09123456789"
+                        className="h-7"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div className="grid grid-cols-1 gap-2">
                 <span className="text-sm font-medium">Designation</span>

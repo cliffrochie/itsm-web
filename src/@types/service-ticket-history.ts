@@ -1,12 +1,17 @@
 export interface IServiceTicketHistory {
-  _id: string;
-  serviceTicket: string;
-  date: string;
+  id?: number;
+  _id?: string;
+  serviceTicketId?: number;
+  serviceTicket?: string;
+  date?: string;
   time?: string;
-  details: string;
-  remarks?: string;
+  action?: string;
+  notes?: string | null;
+  details?: string;
+  remarks?: string | null;
+  performedById?: number | null;
   createdBy?: string;
   updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }

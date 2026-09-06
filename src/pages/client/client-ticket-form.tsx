@@ -53,7 +53,6 @@ export default function ClientTicketForm() {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
 
-  const [errors, setErrors] = useState<any>(null);
   const [clientSearch, setClientSearch] = useState("");
   const [previousClient, setPreviousClient] = useState("");
   const [addClientDialogOpen, setAddClientDialogOpen] = useState(false);
@@ -74,44 +73,53 @@ export default function ClientTicketForm() {
       console.log(clientSearch);
       form.setValue("client", clientSearch);
     }
-  }, [clientSearch]);
+  }, [clientSearch, form]);
 
   useEffect(() => {
     if (authUser) {
       async function get() {
-        await api.get("/api/users/client-details").then((response) => {
-          console.log(response);
-          setClientSearch(response.data._id);
-        });
+        try {
+          const userId = authUser?.id ?? (authUser as { _id?: string | number })?._id;
+          const response = await api.get("/clients", {
+            params: { userId, limit: 1 },
+          });
+          const client = response.data?.data?.[0];
+          if (client) {
+            setClientSearch(String(client.id ?? client._id));
+          }
+        } catch (e) {
+          console.error("Error fetching client details:", e);
+        }
       }
       get();
 
-      let fullName = authUser.firstName;
-      fullName += authUser.middleName
-        ? " " + authUser.middleName.charAt(0) + ". "
-        : " ";
-      fullName += authUser.lastName;
-      console.log(fullName);
-      setPreviousClient(fullName);
-
-      console.log(clientSearch);
+      let fullName = authUser.firstName || "";
+      if (authUser.middleName) {
+        fullName += " " + authUser.middleName.charAt(0) + ". ";
+      } else {
+        fullName += " ";
+      }
+      fullName += authUser.lastName || "";
+      setPreviousClient(fullName.trim());
     }
   }, [authUser]);
 
   const addClientMutation = useMutation({
-    mutationKey: ["rateServiceMutation"],
+    mutationKey: ["addClientMutation"],
     mutationFn: async (data: string) => {
-      console.log(data);
       const parsedData = JSON.parse(data);
       const body = {
         firstName: parsedData.firstName,
-        middleName: parsedData.middleName,
+        middleName: parsedData.middleName || null,
         lastName: parsedData.lastName,
-        extensionName: parsedData.extensionName,
-        designation: parsedData.designation,
-        office: parsedData.office,
+        extensionName: parsedData.extensionName || null,
+        designationId: parsedData.designation
+          ? Number(parsedData.designation)
+          : null,
+        officeId: parsedData.office ? Number(parsedData.office) : null,
+        userId: authUser?.id ? Number(authUser.id) : null,
       };
-      return await api.post(`/api/clients`, body);
+      return await api.post(`/clients`, body);
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["", "clientComboBox"] });
@@ -131,11 +139,21 @@ export default function ClientTicketForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
     try {
-      const response = await api.post("/api/service-tickets", data);
-      if (response.status === 201) {
-        toast.success(`${response.data.ticketNo} is created successfully.`, {
+      const payload = {
+        title: data.title,
+        equipmentType: data.equipmentType,
+        taskType: data.taskType,
+        natureOfWork: data.natureOfWork,
+        clientId: Number(data.client),
+      };
+      const response = await api.post("/service-tickets", payload);
+      if (response.status === 201 || response.status === 200) {
+        const ticketNo =
+          response.data?.data?.ticketNo ||
+          response.data?.ticketNo ||
+          "Service ticket";
+        toast.success(`${ticketNo} is created successfully.`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -164,10 +182,25 @@ export default function ClientTicketForm() {
         });
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      let obj: any = {};
-      obj[err.key] = err.message;
-      setErrors(obj);
+      const err = handleAxiosError(e);
+      if (err) {
+        if (
+          [
+            "title",
+            "equipmentType",
+            "taskType",
+            "natureOfWork",
+            "client",
+          ].includes(err.key)
+        ) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
+      }
     }
   }
 
@@ -197,11 +230,7 @@ export default function ClientTicketForm() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className={errors?.title ? "text-red-500" : ""}
-                        >
-                          What is your concern?
-                        </FormLabel>
+                        <FormLabel>What is your concern?</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -211,7 +240,7 @@ export default function ClientTicketForm() {
                             }}
                           />
                         </FormControl>
-                        <FormMessage>{errors?.title}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -280,9 +309,7 @@ export default function ClientTicketForm() {
                     name="natureOfWork"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className={errors?.natureOfWork ? "text-red-500" : ""}
-                        >
+                        <FormLabel>
                           Please provide additional information about your
                           concern that may help our IT personnel.
                         </FormLabel>
@@ -297,7 +324,7 @@ export default function ClientTicketForm() {
                             }}
                           />
                         </FormControl>
-                        <FormMessage>{errors?.natureOfWork}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -333,7 +360,7 @@ export default function ClientTicketForm() {
                             <Plus />
                           </Button>
                         </div>
-                        <FormMessage>{errors?.client}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

@@ -1,7 +1,7 @@
 import type { AuthUser } from '@/types/auth';
 
 export interface LoginCredentials {
-  username: string;
+  identifier: string;
   password: string;
 }
 

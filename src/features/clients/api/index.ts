@@ -6,36 +6,42 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import type { Client, ClientFilterParams, PaginatedClients } from '../types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api';
 import { toast } from 'sonner';
 
 export const clientsApi = {
-  getAll: async (params?: ClientFilterParams): Promise<PaginatedClients | Client[]> => {
-    const { data } = await api.get('/clients', { params });
-    return data;
+  getAll: async (params?: ClientFilterParams): Promise<PaginatedClients> => {
+    const response = await api.get<PaginatedResponse<Client>>('/clients', { params });
+    return {
+      rows: response.data?.data || [],
+      pageCount: response.data?.meta?.last_page || 1,
+      rowCount: response.data?.meta?.total || 0,
+      meta: response.data?.meta,
+    };
   },
 
-  getById: async (id: string): Promise<Client> => {
-    const { data } = await api.get(`/clients/${id}`);
-    return data;
+  getById: async (id: number | string): Promise<Client> => {
+    const response = await api.get<ApiResponse<Client>>(`/clients/${id}`);
+    return response.data?.data;
   },
 
   create: async (payload: Partial<Client>): Promise<Client> => {
-    const { data } = await api.post('/clients', payload);
-    return data;
+    const response = await api.post<ApiResponse<Client>>('/clients', payload);
+    return response.data?.data;
   },
 
   update: async ({
     id,
     payload,
   }: {
-    id: string;
+    id: number | string;
     payload: Partial<Client>;
   }): Promise<Client> => {
-    const { data } = await api.put(`/clients/${id}`, payload);
-    return data;
+    const response = await api.put<ApiResponse<Client>>(`/clients/${id}`, payload);
+    return response.data?.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: number | string): Promise<void> => {
     await api.delete(`/clients/${id}`);
   },
 };
@@ -48,7 +54,7 @@ export const useClients = (params?: ClientFilterParams) => {
   });
 };
 
-export const useClient = (id: string) => {
+export const useClient = (id: number | string) => {
   return useQuery({
     queryKey: ['clients', id],
     queryFn: () => clientsApi.getById(id),

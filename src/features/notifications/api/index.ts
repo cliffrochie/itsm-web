@@ -8,26 +8,35 @@ import {
 import type { Notification } from '../types';
 
 export const notificationsApi = {
-  getByUserId: async (userId: string): Promise<Notification[]> => {
-    const { data } = await api.get(
-      `/notifications?userId=${userId}&noPage=true&sort=-createdAt&isRead=false`,
-    );
-    return data;
+  getAll: async (): Promise<Notification[]> => {
+    const response = await api.get('/notifications', {
+      params: { limit: 50 },
+    });
+    return response.data?.data || response.data || [];
   },
 
-  markAsRead: async (id: string): Promise<void> => {
-    await api.put(`/notifications/${id}/read`);
+  getByUserId: async (userId?: string | number): Promise<Notification[]> => {
+    const params: Record<string, unknown> = { limit: 50 };
+    if (userId) {
+      params.userId = userId;
+    }
+    const response = await api.get('/notifications', { params });
+    return response.data?.data || response.data || [];
   },
 
-  clearAll: async (userId: string): Promise<void> => {
-    await api.put(`/notifications/clear-user-notifications/${userId}`);
+  markAsRead: async (id: string | number): Promise<void> => {
+    await api.patch(`/notifications/${id}/read`);
+  },
+
+  clearAll: async (): Promise<void> => {
+    await api.patch('/notifications/read-all');
   },
 };
 
-export const useNotifications = (userId?: string) => {
+export const useNotifications = (userId?: string | number) => {
   return useQuery({
     queryKey: ['notifications', userId],
-    queryFn: () => (userId ? notificationsApi.getByUserId(userId) : Promise.resolve([])),
+    queryFn: () => notificationsApi.getByUserId(userId),
     enabled: Boolean(userId),
     placeholderData: keepPreviousData,
   });
@@ -37,7 +46,7 @@ export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: notificationsApi.markAsRead,
+    mutationFn: (id: string | number) => notificationsApi.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -48,7 +57,7 @@ export const useClearNotifications = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: notificationsApi.clearAll,
+    mutationFn: () => notificationsApi.clearAll(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },

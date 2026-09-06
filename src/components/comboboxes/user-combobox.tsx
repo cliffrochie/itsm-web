@@ -26,29 +26,36 @@ export default function UserComboBox({
   const { data } = useQuery({
     queryKey: [search, "userComboBox"],
     queryFn: async () => {
-      let data: { value: string; label: string }[] = [];
-
-      let userUrl = `/api/users/?noPage=true&personnel=true&fullName=${search}`;
-      if (excludeUser) {
-        userUrl += `&exclude=${excludeUser}`;
-      }
-      const userResponse = await api.get<IUser[]>(userUrl);
-
-      userResponse.data.map((user) => {
-        if (user.firstName) {
-          data.push({
-            value: user._id,
-            label:
-              user.firstName +
-              " " +
-              (user.middleName ? user.middleName[0] + ". " : "") +
-              user.lastName +
-              (user.extensionName ? user.extensionName : ""),
-          });
-        }
+      const response = await api.get("/users", {
+        params: {
+          role: "service_engineer",
+          search: search || undefined,
+          limit: 50,
+        },
       });
 
-      return data;
+      const envelope = response.data;
+      const users: IUser[] = Array.isArray(envelope?.data)
+        ? envelope.data
+        : Array.isArray(envelope)
+        ? envelope
+        : [];
+
+      const filteredUsers = excludeUser
+        ? users.filter((u) => String(u.id ?? u._id) !== String(excludeUser))
+        : users;
+
+      return filteredUsers.map((user) => ({
+        value: String(user.id ?? user._id),
+        label: [
+          user.firstName,
+          user.middleName ? `${user.middleName[0]}.` : "",
+          user.lastName,
+          user.extensionName || "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+      }));
     },
   });
 

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AppComboBox } from "@/components/comboboxes/app-combobox";
-// import { IDesignation } from '@/@types/designation'
-import { IClient } from "@/@types/client";
-import api from "@/hooks/use-api";
+import { clientsApi } from "@/features/clients";
 import { cn } from "@/lib/utils";
 
 export default function ClientComboBox({
@@ -28,29 +26,13 @@ export default function ClientComboBox({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: [search, "clientComboBox"],
+    queryKey: ["clientComboBox", search],
     queryFn: async () => {
-      let data: { value: string; label: string }[] = [];
-
-      let clientUrl = `/api/clients/?noPage=true&fullName=${search}`;
-
-      const clientResponse = await api.get<IClient[]>(clientUrl);
-
-      clientResponse.data.map((client) => {
-        if (client.firstName) {
-          data.push({
-            value: client._id,
-            label:
-              client.firstName +
-              " " +
-              (client.middleName ? client.middleName[0] + ". " : "") +
-              client.lastName +
-              (client.extensionName ? client.extensionName : ""),
-          });
-        }
-      });
-
-      return data;
+      const result = await clientsApi.getAll({ search, limit: 50 });
+      return result.rows.map((client) => ({
+        value: String(client.id ?? client._id),
+        label: `${client.firstName} ${client.middleName ? client.middleName[0] + ". " : ""}${client.lastName}${client.extensionName ? " " + client.extensionName : ""}`,
+      }));
     },
   });
 
@@ -66,10 +48,8 @@ export default function ClientComboBox({
         onValueChange(value);
       }}
       onSearchChange={setSearch}
-      searchPlaceholder={
-        searchPlaceholder ? searchPlaceholder : "Search client..."
-      }
-      noResultsMsg={noResultsMsg ? noResultsMsg : "No client found"}
+      searchPlaceholder={searchPlaceholder || "Search client..."}
+      noResultsMsg={noResultsMsg || "No client found"}
       selectItemMsg={previousValue || selectItemMsg || "Select a client"}
     />
   );

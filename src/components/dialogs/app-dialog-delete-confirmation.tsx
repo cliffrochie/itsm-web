@@ -1,6 +1,4 @@
 import { Dispatch, SetStateAction } from "react";
-import { UseMutationResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,12 +16,9 @@ interface IDialogConfirmation {
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   name: string;
   id: string;
-  deleteMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  deleteMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function AppDialogDeleteConfirmation({

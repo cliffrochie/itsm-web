@@ -7,51 +7,50 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/contexts/auth-context";
-import api from "@/hooks/use-api";
+import { useAuthStore } from "@/stores/authStore";
+import { logout } from "@/features/auth/api/logout";
 import { useNavigate } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/utils";
 
 export default function DropdownUser() {
   const navigate = useNavigate();
-  const { user, handleLogout } = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   async function handleLogoutButton() {
     try {
-      const response = await api.post("/api/users/signout");
-      if (response.status === 200) {
-        handleLogout();
-        navigate("/");
-      }
+      await logout();
     } catch (error) {
       console.error(error);
+    } finally {
+      navigate("/auth/login");
     }
   }
 
-  async function handleProfileButton() {
-    try {
-      if (user && user.role === "admin") {
-        navigate("/admin/user-profile");
-      } else if (user && user.role === "staff") {
-        navigate("/service-engineer/user-profile");
-      } else if (user && user.role === "user") {
-        navigate("/client/user-profile");
-      }
-    } catch (error) {
-      console.error(error);
+  function handleProfileButton() {
+    if (!user) return;
+    if (user.role === "admin") {
+      navigate("/admin/user-profile");
+    } else if (user.role === "staff" || user.role === "service_engineer") {
+      navigate("/service-engineer/user-profile");
+    } else if (user.role === "user") {
+      navigate("/client/user-profile");
     }
   }
+
+  const displayName = user
+    ? [user.firstName, user.lastName]
+        .filter(Boolean)
+        .map((n) => capitalizeFirstLetter(n))
+        .join(" ") ||
+      user.username ||
+      user.email ||
+      "User"
+    : "User";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
-        <Button variant="ghost">
-          {user
-            ? capitalizeFirstLetter(user.firstName) +
-              " " +
-              capitalizeFirstLetter(user.lastName)
-            : "User"}
-        </Button>
+        <Button variant="ghost">{displayName}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>

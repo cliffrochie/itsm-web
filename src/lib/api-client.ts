@@ -20,6 +20,13 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  // Normalize legacy url prefixes that include "/api/" or "/api/v1/"
+  if (config.url?.startsWith('/api/v1/')) {
+    config.url = config.url.slice('/api/v1'.length);
+  } else if (config.url?.startsWith('/api/')) {
+    config.url = config.url.slice('/api'.length);
+  }
+
   return config;
 });
 

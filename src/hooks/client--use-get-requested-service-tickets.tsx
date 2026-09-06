@@ -16,7 +16,7 @@ export default function useGetRequestedServiceTicket(): ThisResponse {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
 
-  let url = "/api/service-tickets/requested";
+  const url = "/api/service-tickets/requested";
 
   useEffect(() => {
     async function get() {

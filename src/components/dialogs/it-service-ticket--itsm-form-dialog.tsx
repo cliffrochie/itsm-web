@@ -10,13 +10,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ITSMForm from "@/components/pdf-forms/itsm-form";
+import { IServiceTicket } from "@/@types/service-ticket";
 
 interface IUpdateStatusDialogProps {
   dialogOpen: boolean;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   id: string;
   name: string;
-  data: any;
+  data?: IServiceTicket | null;
 }
 
 export default function ITSMFormDialog({
@@ -25,8 +26,6 @@ export default function ITSMFormDialog({
   name,
   data,
 }: IUpdateStatusDialogProps) {
-  console.log(data);
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -41,7 +40,7 @@ export default function ITSMFormDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-3">
-          <ITSMForm data={data} />
+          {data ? <ITSMForm data={data} /> : null}
         </div>
         <DialogFooter>
           <Button

@@ -54,47 +54,52 @@ export default function ClientTicketView() {
   useQuery({
     queryKey: queryKey,
     queryFn: async () => {
-      let url = `/api/service-tickets/?ticketNo=${params.ticketNo}&includes=all`;
-      await api.get(url).then((response) => {
-        if (response.data.results.length > 0) {
-          setServiceTicket(response.data.results[0]);
-          return 1;
-        }
+      const response = await api.get(`/service-tickets`, {
+        params: { search: params.ticketNo, limit: 1 },
       });
+      const list = response.data?.data || response.data || [];
+      if (list.length > 0) {
+        const ticketId = list[0].id ?? list[0]._id;
+        const detailRes = await api.get(`/service-tickets/${ticketId}`);
+        const fullTicket = detailRes.data?.data || detailRes.data;
+        setServiceTicket(fullTicket);
+        return 1;
+      }
       return 0;
     },
     placeholderData: keepPreviousData,
   });
 
-  const serviceTicketHistoryQuery = useQuery({
-    queryKey: ["serviceTicketHistory", serviceTicket, params.ticketNo],
+  const serviceTicketHistoryQuery = useQuery<IServiceTicketHistory[]>({
+    queryKey: ["serviceTicketHistory", serviceTicket?.id, serviceTicket?._id],
     queryFn: async () => {
-      let result: IServiceTicketHistory[] = [];
-      if (serviceTicket) {
-        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${
-          serviceTicket._id ? serviceTicket._id : undefined
-        }`;
-        await api.get(url).then((response) => {
-          result = response.data;
-        });
+      if (serviceTicket?.histories) {
+        return serviceTicket.histories;
       }
-      return result;
+      return [];
     },
+    enabled: Boolean(serviceTicket),
   });
 
   const rateServiceMutation = useMutation({
     mutationKey: ["rateServiceMutation"],
     mutationFn: async (data: string) => {
-      console.log(data);
       const parsedData = JSON.parse(data);
-      const body = {
-        rating: parsedData.rating,
-        ratingComment: parsedData.ratingComment,
+      const ratingMap: Record<string, number> = {
+        vs: 5,
+        s: 4,
+        n: 3,
+        d: 2,
+        vd: 1,
       };
-      return await api.patch(
-        `/api/service-tickets/${parsedData.id}/set-rating`,
-        body
-      );
+      const numericRating =
+        typeof parsedData.rating === "number"
+          ? parsedData.rating
+          : ratingMap[parsedData.rating] || Number(parsedData.rating) || 3;
+      return await api.post(`/service-tickets/${parsedData.id}/feedback`, {
+        rating: numericRating,
+        ratingComment: parsedData.ratingComment || null,
+      });
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
@@ -144,50 +149,126 @@ export default function ClientTicketView() {
       }
     }
 
-    if (serviceTicket?.client) {
+    if (serviceTicket?.client && typeof serviceTicket.client === "object") {
       const obj = serviceTicket.client as IClient;
-      setClientFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
+      setClientFullName(
+        [
+          capitalizeFirstLetter(obj.firstName),
           obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)} 
-        ${
-          obj.extensionName
-            ? String(capitalizeFirstLetter(obj.extensionName))
-            : ""
-        }`);
+            ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.`
+            : "",
+          capitalizeFirstLetter(obj.lastName),
+          obj.extensionName ? capitalizeFirstLetter(obj.extensionName) : "",
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
 
-      if (obj.office) {
-        api.get(`/api/offices/${obj.office}`).then((response) => {
-          if (response.status === 200) {
-            setOfficeName(response.data.name);
-          }
+      const officeObj = obj.office;
+      if (officeObj) {
+        const officeId = typeof officeObj === "object" ? (officeObj.id ?? officeObj._id) : officeObj;
+        api.get(`/offices/${officeId}`).then((response) => {
+          const off = response.data?.data ?? response.data;
+          setOfficeName(off?.code || off?.alias || off?.name || "");
         });
       }
+    } else if (serviceTicket?.clientId) {
+      api.get(`/clients/${serviceTicket.clientId}`).then((response) => {
+        const client: IClient = response.data?.data ?? response.data;
+        if (client) {
+          setClientFullName(
+            [
+              capitalizeFirstLetter(client.firstName),
+              client.middleName
+                ? `${capitalizeFirstLetter(client.middleName).charAt(0)}.`
+                : "",
+              capitalizeFirstLetter(client.lastName),
+              client.extensionName
+                ? capitalizeFirstLetter(client.extensionName)
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" ")
+          );
+
+          if (client.officeId) {
+            api.get(`/offices/${client.officeId}`).then((offRes) => {
+              const off = offRes.data?.data ?? offRes.data;
+              setOfficeName(off?.code || off?.alias || off?.name || "");
+            });
+          }
+        }
+      });
     }
 
-    if (serviceTicket?.serviceEngineer) {
+    if (
+      serviceTicket?.serviceEngineer &&
+      typeof serviceTicket.serviceEngineer === "object"
+    ) {
       const obj = serviceTicket.serviceEngineer as IUser;
-      setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
+      setServiceEngineerFullName(
+        [
+          capitalizeFirstLetter(obj.firstName),
           obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)}`);
+            ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.`
+            : "",
+          capitalizeFirstLetter(obj.lastName),
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
+    } else if (serviceTicket?.serviceEngineerId) {
+      api.get(`/users/${serviceTicket.serviceEngineerId}`).then((uRes) => {
+        const u = uRes.data?.data ?? uRes.data;
+        if (u) {
+          setServiceEngineerFullName(
+            [
+              capitalizeFirstLetter(u.firstName),
+              u.middleName
+                ? `${capitalizeFirstLetter(u.middleName).charAt(0)}.`
+                : "",
+              capitalizeFirstLetter(u.lastName),
+            ]
+              .filter(Boolean)
+              .join(" ")
+          );
+        }
+      });
     }
 
-    if (serviceTicket?.createdBy) {
+    if (
+      serviceTicket?.createdBy &&
+      typeof serviceTicket.createdBy === "object"
+    ) {
       const obj = serviceTicket.createdBy as IUser;
-      setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
+      setCreatedByFullName(
+        [
+          capitalizeFirstLetter(obj.firstName),
           obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)}`);
+            ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.`
+            : "",
+          capitalizeFirstLetter(obj.lastName),
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
+    } else if (serviceTicket?.createdById) {
+      api.get(`/users/${serviceTicket.createdById}`).then((uRes) => {
+        const u = uRes.data?.data ?? uRes.data;
+        if (u) {
+          setCreatedByFullName(
+            [
+              capitalizeFirstLetter(u.firstName),
+              u.middleName
+                ? `${capitalizeFirstLetter(u.middleName).charAt(0)}.`
+                : "",
+              capitalizeFirstLetter(u.lastName),
+            ]
+              .filter(Boolean)
+              .join(" ")
+          );
+        }
+      });
     }
 
     console.log(serviceTicket?.serviceStatus);
@@ -325,7 +406,7 @@ export default function ClientTicketView() {
                         <EquipmentTypeIcon size={16} />
                         <span className="text-sm">
                           {serviceTicket
-                            ? capitalizeFirstLetter(serviceTicket.equipmentType)
+                            ? capitalizeFirstLetter(serviceTicket.equipmentType || "")
                             : ""}
                         </span>
                       </div>
@@ -449,7 +530,7 @@ export default function ClientTicketView() {
       <RateServiceDialog
         dialogOpen={rateServiceDialog}
         setDialogOpen={setRateServiceDialog}
-        id={serviceTicket ? serviceTicket._id : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}
         serviceEngineerName={serviceEngineerFullName}
         updateMutation={rateServiceMutation}

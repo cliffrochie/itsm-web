@@ -21,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IServiceTicketHistory } from "@/@types/service-ticket-history";
 import UpdateStatusDialog from "@/components/dialogs/it-service-ticket--update-status-dialog";
 import AssignServiceEngineerDialog from "@/components/dialogs/it-service-ticket--assign-service-engineer-dialog";
 import EscalateServiceDialog from "@/components/dialogs/it-service-ticket--escalate-service-dialog";
@@ -77,30 +76,23 @@ export default function ITServiceTicketView() {
         serviceEngineer: null,
         client: null,
       };
-      let url = `/api/service-tickets/${params.serviceTicketId}/?includes=all`;
       if (params.serviceTicketId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
+        const response = await api.get(`/service-tickets/${params.serviceTicketId}`);
+        data = response.data?.data ?? response.data;
       }
       return data;
     },
   });
 
   const serviceTicketHistoryQuery = useQuery({
-    queryKey: ["serviceTicketHistory", dataQuery.data],
+    queryKey: ["serviceTicketHistory", dataQuery.data?.id, dataQuery.data?._id],
     queryFn: async () => {
-      let result: IServiceTicketHistory[] = [];
-      if (dataQuery.data) {
-        let url = `/api/service-ticket-histories/?noPage=true&sort=-createdAt&serviceTicket=${
-          dataQuery.data._id ? dataQuery.data._id : undefined
-        }`;
-        await api.get(url).then((response) => {
-          result = response.data;
-        });
+      if (dataQuery.data?.histories) {
+        return dataQuery.data.histories;
       }
-      return result;
+      return [];
     },
+    enabled: Boolean(dataQuery.data),
   });
 
   const updateStatusDialogMutation = useMutation({
@@ -108,8 +100,8 @@ export default function ITServiceTicketView() {
     mutationFn: async (data: string) => {
       const parsedData = JSON.parse(data);
       return await api.patch(
-        `/api/service-tickets/${parsedData.id}/update-service-status`,
-        { serviceStatus: parsedData.serviceStatus }
+        `/service-tickets/${parsedData.id}/status`,
+        { serviceStatus: parsedData.serviceStatus, notes: "Status updated" }
       );
     },
     onSuccess: async () => {
@@ -133,14 +125,18 @@ export default function ITServiceTicketView() {
     mutationKey: ["assignServiceEngineerDialogMutation"],
     mutationFn: async (data: string) => {
       const parsedData = JSON.parse(data);
-      const body = {
-        serviceEngineer: parsedData.serviceEngineer,
-        priority: parsedData.priority,
-        adminRemarks: parsedData.adminRemarks,
-      };
+      if (parsedData.priority) {
+        await api.put(`/service-tickets/${parsedData.id}`, {
+          priority: parsedData.priority,
+          adminRemarks: parsedData.adminRemarks || null,
+        });
+      }
       return await api.patch(
-        `/api/service-tickets/${parsedData.id}/assign-service-engineer`,
-        body
+        `/service-tickets/${parsedData.id}/assign`,
+        {
+          serviceEngineerId: Number(parsedData.serviceEngineer),
+          notes: parsedData.adminRemarks || "Service engineer assigned",
+        }
       );
     },
     onSuccess: async () => {
@@ -163,17 +159,17 @@ export default function ITServiceTicketView() {
   const escalateServiceDialogMutation = useMutation({
     mutationKey: ["escalateServiceDialogMutation"],
     mutationFn: async (data: string) => {
-      console.log(data);
       const parsedData = JSON.parse(data);
-      const body = {
-        serviceEngineer: parsedData.serviceEngineer,
-        priority: parsedData.priority,
-        adminRemarks: parsedData.adminRemarks,
-      };
-      return await api.patch(
-        `/api/service-tickets/${parsedData.id}/escalate-service`,
-        body
-      );
+      if (parsedData.serviceEngineer) {
+        await api.patch(`/service-tickets/${parsedData.id}/assign`, {
+          serviceEngineerId: Number(parsedData.serviceEngineer),
+          notes: parsedData.adminRemarks || "Escalated and reassigned",
+        });
+      }
+      return await api.put(`/service-tickets/${parsedData.id}`, {
+        priority: parsedData.priority || "urgent",
+        adminRemarks: parsedData.adminRemarks || null,
+      });
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
@@ -195,15 +191,16 @@ export default function ITServiceTicketView() {
   const closeTicketDialogMutation = useMutation({
     mutationKey: ["closeTicketDialogMutation"],
     mutationFn: async (data: string) => {
-      console.log("close ticket");
       const parsedData = JSON.parse(data);
       return await api.patch(
-        `/api/service-tickets/${parsedData.id}/close-ticket`,
-        {}
+        `/service-tickets/${parsedData.id}/status`,
+        {
+          serviceStatus: "closed",
+          notes: "Ticket closed",
+        }
       );
     },
     onSuccess: async () => {
-      console.log("successfully closed");
       queryClient.invalidateQueries({ queryKey: ["serviceTicketView"] });
       toast.success(`IT Service is closed successfully.`, {
         position: "top-right",
@@ -267,54 +264,83 @@ export default function ITServiceTicketView() {
       }
     }
 
-    if (dataQuery.data?.client) {
+    if (dataQuery.data?.client && typeof dataQuery.data.client === "object") {
       const obj = dataQuery.data.client as IClient;
-      const officeObj = obj.office ? (obj.office as IOffice) : "";
-      setClientFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
-          obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)} 
-        ${
-          obj.extensionName
-            ? String(capitalizeFirstLetter(obj.extensionName))
-            : ""
-        }`);
+      setClientFullName([
+        capitalizeFirstLetter(obj.firstName),
+        obj.middleName ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.` : "",
+        capitalizeFirstLetter(obj.lastName),
+        obj.extensionName ? capitalizeFirstLetter(obj.extensionName) : "",
+      ].filter(Boolean).join(" "));
 
+      const officeObj = obj.office ? (obj.office as IOffice) : "";
       if (officeObj) {
-        api.get(`/api/offices/${officeObj._id}`).then((response) => {
-          setOfficeName(response.data.alias);
+        api.get(`/offices/${officeObj.id ?? officeObj._id}`).then((response) => {
+          setOfficeName(response.data?.data?.code || response.data?.data?.alias || response.data?.alias || "");
         });
       }
+    } else if (dataQuery.data?.clientId) {
+      api.get(`/clients/${dataQuery.data.clientId}`).then(async (response) => {
+        const client: IClient = response.data?.data ?? response.data;
+        if (client) {
+          setClientFullName([
+            capitalizeFirstLetter(client.firstName),
+            client.middleName ? `${capitalizeFirstLetter(client.middleName).charAt(0)}.` : "",
+            capitalizeFirstLetter(client.lastName),
+            client.extensionName ? capitalizeFirstLetter(client.extensionName) : "",
+          ].filter(Boolean).join(" "));
+
+          if (client.officeId) {
+            api.get(`/offices/${client.officeId}`).then((offRes) => {
+              const off = offRes.data?.data ?? offRes.data;
+              setOfficeName(off?.code || off?.name || "");
+            });
+          }
+        }
+      });
     }
 
-    if (dataQuery.data?.serviceEngineer) {
+    if (dataQuery.data?.serviceEngineer && typeof dataQuery.data.serviceEngineer === "object") {
       const obj = dataQuery.data.serviceEngineer as IUser;
-      setServiceEngineerId(obj._id);
-      setServiceEngineerFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
-          obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)}`);
+      setServiceEngineerId(String(obj.id ?? obj._id ?? ""));
+      setServiceEngineerFullName([
+        capitalizeFirstLetter(obj.firstName),
+        obj.middleName ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.` : "",
+        capitalizeFirstLetter(obj.lastName),
+      ].filter(Boolean).join(" "));
+    } else if (dataQuery.data?.serviceEngineerId) {
+      setServiceEngineerId(String(dataQuery.data.serviceEngineerId));
+      api.get(`/users/${dataQuery.data.serviceEngineerId}`).then((uRes) => {
+        const u = uRes.data?.data ?? uRes.data;
+        if (u) {
+          setServiceEngineerFullName([
+            capitalizeFirstLetter(u.firstName),
+            u.middleName ? `${capitalizeFirstLetter(u.middleName).charAt(0)}.` : "",
+            capitalizeFirstLetter(u.lastName),
+          ].filter(Boolean).join(" "));
+        }
+      });
     }
 
-    if (dataQuery.data?.createdBy) {
+    if (dataQuery.data?.createdBy && typeof dataQuery.data.createdBy === "object") {
       const obj = dataQuery.data.createdBy as IUser;
-      setServiceEngineerId(obj._id);
-      setCreatedByFullName(`${capitalizeFirstLetter(obj.firstName)} 
-        ${
-          obj.middleName
-            ? String(capitalizeFirstLetter(obj.middleName)).charAt(0) + "."
-            : ""
-        } 
-        ${capitalizeFirstLetter(obj.lastName)}`);
+      setCreatedByFullName([
+        capitalizeFirstLetter(obj.firstName),
+        obj.middleName ? `${capitalizeFirstLetter(obj.middleName).charAt(0)}.` : "",
+        capitalizeFirstLetter(obj.lastName),
+      ].filter(Boolean).join(" "));
+    } else if (dataQuery.data?.createdById) {
+      api.get(`/users/${dataQuery.data.createdById}`).then((uRes) => {
+        const u = uRes.data?.data ?? uRes.data;
+        if (u) {
+          setCreatedByFullName([
+            capitalizeFirstLetter(u.firstName),
+            u.middleName ? `${capitalizeFirstLetter(u.middleName).charAt(0)}.` : "",
+            capitalizeFirstLetter(u.lastName),
+          ].filter(Boolean).join(" "));
+        }
+      });
     }
-
-    // console.log(dataQuery.data)
   }, [dataQuery.data]);
 
   return (
@@ -486,7 +512,7 @@ export default function ITServiceTicketView() {
                     <EquipmentTypeIcon size={16} />
                     <span className="text-sm">
                       {dataQuery.data
-                        ? capitalizeFirstLetter(dataQuery.data.equipmentType)
+                        ? capitalizeFirstLetter(dataQuery.data.equipmentType || "")
                         : ""}
                     </span>
                   </div>
@@ -498,7 +524,7 @@ export default function ITServiceTicketView() {
                     <TaskTypeIcon size={16} />
                     <span className="text-sm">
                       {dataQuery.data
-                        ? capitalizeFirstLetter(dataQuery.data.taskType)
+                        ? capitalizeFirstLetter(dataQuery.data.taskType || "")
                         : ""}
                     </span>
                   </div>
@@ -611,13 +637,35 @@ export default function ITServiceTicketView() {
                 </TableHeader>
                 <TableBody>
                   {serviceTicketHistoryQuery.data &&
-                    serviceTicketHistoryQuery.data.map((history) => (
-                      <TableRow key={history._id}>
-                        <TableCell>{history.date}</TableCell>
-                        <TableCell>{history.time}</TableCell>
-                        <TableCell>{history.details}</TableCell>
-                      </TableRow>
-                    ))}
+                    serviceTicketHistoryQuery.data.map((history, idx) => {
+                      const dt = history.createdAt ? new Date(history.createdAt) : null;
+                      const dateStr =
+                        history.date ||
+                        (dt
+                          ? dt.toLocaleDateString("en-US", {
+                              timeZone: "Asia/Singapore",
+                            })
+                          : "");
+                      const timeStr =
+                        history.time ||
+                        (dt
+                          ? dt.toLocaleTimeString("en-US", {
+                              timeZone: "Asia/Singapore",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "");
+                      const detailStr =
+                        history.details ||
+                        [history.action, history.notes].filter(Boolean).join(": ");
+                      return (
+                        <TableRow key={history.id ?? history._id ?? idx}>
+                          <TableCell>{dateStr}</TableCell>
+                          <TableCell>{timeStr}</TableCell>
+                          <TableCell>{detailStr}</TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </div>
@@ -626,7 +674,7 @@ export default function ITServiceTicketView() {
         <UpdateStatusDialog
           dialogOpen={updateServiceStatusDialogOpen}
           setDialogOpen={setUpdateServiceStatusDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           selectedServiceStatus={
             dataQuery.data ? dataQuery.data.serviceStatus : ""
@@ -636,16 +684,16 @@ export default function ITServiceTicketView() {
         <AssignServiceEngineerDialog
           dialogOpen={assignServiceEngineerDialogOpen}
           setDialogOpen={setAssignServiceEngineerDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           updateMutation={assignServiceEngineerDialogMutation}
         />
         <EscalateServiceDialog
           dialogOpen={escalateServiceDialogOpen}
           setDialogOpen={setEscalateServiceDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
-          adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks : ""}
+          adminRemarks={dataQuery.data ? dataQuery.data.adminRemarks || "" : ""}
           currentServiceEngineer={serviceEngineerFullName}
           currentPriorityLevel={dataQuery.data ? dataQuery.data.priority : ""}
           excludeUser={serviceEngineerId}
@@ -654,16 +702,16 @@ export default function ITServiceTicketView() {
         <CloseTicketConfirmationDialog
           dialogOpen={closeTicketDialogOpen}
           setDialogOpen={setCloseTicketDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
           updateMutation={closeTicketDialogMutation}
         />
         <ITSMFormDialog
           dialogOpen={ITSMFormDialogOpen}
           setDialogOpen={setITSMFormDialogOpen}
-          id={dataQuery.data && dataQuery.data._id ? dataQuery.data._id : ""}
+          id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
-          data={dataQuery.data ? dataQuery.data : {}}
+          data={dataQuery.data ?? null}
         />
       </div>
     </section>

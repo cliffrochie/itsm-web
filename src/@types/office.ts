@@ -1,9 +1,11 @@
 export interface IOffice {
-  _id: string;
+  id?: number;
+  _id?: string;
   name: string;
+  code?: string;
   alias?: string;
   parentOffice?: string | IOffice;
-  officeType:
+  officeType?:
     | ""
     | "unit"
     | "section"
@@ -14,6 +16,6 @@ export interface IOffice {
     | "regional office";
   createdBy?: string;
   updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
