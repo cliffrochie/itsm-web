@@ -71,6 +71,13 @@ export interface ServiceTicket {
   updatedAt?: Date | string;
 }
 
+export type PublicHistory = Omit<IServiceTicketHistory, 'notes'> & { notes?: string | null };
+
+export type PublicTicket = Omit<ServiceTicket, 'adminRemarks'> & {
+  adminRemarks?: string | null;
+  histories?: PublicHistory[];
+};
+
 export interface TicketFilterParams {
   page?: number;
   limit?: number;
@@ -92,4 +99,38 @@ export interface PaginatedTickets {
   pageCount: number;
   rowCount: number;
 }
+
+export interface TotalServiceStatusData {
+  totalTickets: number;
+  totalOpenedTickets: number;
+  totalAssignedTickets: number;
+  totalInProgressTickets: number;
+  totalOnHoldTickets: number;
+  totalEscalatedTickets: number;
+  totalCanceledTickets: number;
+  totalReOpenedTickets: number;
+  totalResolvedTickets: number;
+  totalClosedTickets: number;
+}
+
+export interface TotalTaskTypeData {
+  incident: number;
+  serviceRequest: number;
+  maintenance: number;
+  consultation: number;
+  accessibility: number;
+}
+
+export interface TotalEquipmentTypeData {
+  computer: number;
+  softwareApplication: number;
+  printer: number;
+  scanner: number;
+  phone: number;
+  network: number;
+  others: number;
+}
+
+export type IServiceTicket = ServiceTicket;
+
 

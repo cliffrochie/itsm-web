@@ -20,7 +20,7 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 
 import { OfficeDataTable, OfficeDataTableColumnHeader } from "@/features/offices";
 

@@ -7,6 +7,8 @@ import {
 } from '@tanstack/react-query';
 import type { Client, ClientFilterParams, PaginatedClients } from '../types';
 import type { ApiResponse, PaginatedResponse } from '@/types/api';
+import { clientKeys } from './query-keys';
+export * from './query-keys';
 import { toast } from 'sonner';
 
 export const clientsApi = {
@@ -48,7 +50,7 @@ export const clientsApi = {
 
 export const useClients = (params?: ClientFilterParams) => {
   return useQuery({
-    queryKey: ['clients', params],
+    queryKey: clientKeys.list(params),
     queryFn: () => clientsApi.getAll(params),
     placeholderData: keepPreviousData,
   });
@@ -56,7 +58,7 @@ export const useClients = (params?: ClientFilterParams) => {
 
 export const useClient = (id: number | string) => {
   return useQuery({
-    queryKey: ['clients', id],
+    queryKey: clientKeys.detail(id),
     queryFn: () => clientsApi.getById(id),
     enabled: Boolean(id),
   });
@@ -68,7 +70,7 @@ export const useCreateClient = () => {
   return useMutation({
     mutationFn: clientsApi.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: clientKeys.all });
       toast.success('Client created successfully.');
     },
     onError: (err: unknown) => {
@@ -87,8 +89,8 @@ export const useUpdateClient = () => {
   return useMutation({
     mutationFn: clientsApi.update,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
-      queryClient.invalidateQueries({ queryKey: ['clients', variables.id] });
+      queryClient.invalidateQueries({ queryKey: clientKeys.all });
+      queryClient.invalidateQueries({ queryKey: clientKeys.detail(variables.id) });
       toast.success('Client updated successfully.');
     },
     onError: (err: unknown) => {
@@ -107,7 +109,7 @@ export const useDeleteClient = () => {
   return useMutation({
     mutationFn: clientsApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: clientKeys.all });
       toast.success('Client deleted successfully.');
     },
     onError: (err: unknown) => {
@@ -119,3 +121,4 @@ export const useDeleteClient = () => {
     },
   });
 };
+

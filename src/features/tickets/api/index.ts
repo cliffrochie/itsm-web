@@ -9,8 +9,13 @@ import type {
   ServiceTicket,
   TicketFilterParams,
   PaginatedTickets,
+  TotalServiceStatusData,
+  TotalTaskTypeData,
+  TotalEquipmentTypeData,
 } from '../types';
 import type { TicketFormValues } from '../schemas';
+import { ticketKeys } from './query-keys';
+export * from './query-keys';
 import { toast } from 'sonner';
 
 export const ticketsApi = {
@@ -47,6 +52,65 @@ export const ticketsApi = {
       },
     });
     return response.data?.data ?? response.data?.results ?? [];
+  },
+
+  getClosed: async (userId?: string | number): Promise<ServiceTicket[]> => {
+    const response = await api.get('/service-tickets', {
+      params: {
+        serviceEngineerId: userId,
+        serviceStatus: 'closed',
+        limit: 50,
+      },
+    });
+    return response.data?.data ?? response.data?.results ?? [];
+  },
+
+  getTotalServiceStatus: async (): Promise<TotalServiceStatusData> => {
+    const queryParams = [
+      'totalOpenedTickets',
+      'totalAssignedTickets',
+      'totalInProgressTickets',
+      'totalOnHoldTickets',
+      'totalEscalatedTickets',
+      'totalCanceledTickets',
+      'totalReOpenedTickets',
+      'totalResolvedTickets',
+      'totalClosedTickets',
+    ];
+    const response = await api.get(
+      `/service-tickets/total-service-status/?totalTickets=true&${queryParams.map((a) => `${a}=true`).join('&')}`
+    );
+    return response.data?.data ?? response.data;
+  },
+
+  getTotalTaskType: async (): Promise<TotalTaskTypeData> => {
+    const queryParams = [
+      'incident',
+      'serviceRequest',
+      'maintenance',
+      'consultation',
+      'accessibility',
+    ];
+    const response = await api.get(
+      `/service-tickets/total-task-type/?${queryParams.map((a) => `${a}=true`).join('&')}`
+    );
+    return response.data?.data ?? response.data;
+  },
+
+  getTotalEquipmentType: async (): Promise<TotalEquipmentTypeData> => {
+    const queryParams = [
+      'computer',
+      'softwareApplication',
+      'printer',
+      'scanner',
+      'phone',
+      'network',
+      'others',
+    ];
+    const response = await api.get(
+      `/service-tickets/total-equipment-type/?${queryParams.map((a) => `${a}=true`).join('&')}`
+    );
+    return response.data?.data ?? response.data;
   },
 
   create: async (payload: Partial<ServiceTicket> | TicketFormValues): Promise<ServiceTicket> => {
@@ -120,7 +184,7 @@ export const ticketsApi = {
 
 export const useTickets = (params?: TicketFilterParams) => {
   return useQuery({
-    queryKey: ['tickets', params],
+    queryKey: ticketKeys.list(params),
     queryFn: () => ticketsApi.getAll(params),
     placeholderData: keepPreviousData,
   });
@@ -128,7 +192,7 @@ export const useTickets = (params?: TicketFilterParams) => {
 
 export const useTicket = (id: string | number) => {
   return useQuery({
-    queryKey: ['tickets', id],
+    queryKey: ticketKeys.detail(id),
     queryFn: () => ticketsApi.getById(id),
     enabled: Boolean(id),
   });
@@ -136,16 +200,45 @@ export const useTicket = (id: string | number) => {
 
 export const useRequestedTickets = () => {
   return useQuery({
-    queryKey: ['tickets', 'requested'],
+    queryKey: ticketKeys.requested(),
     queryFn: () => ticketsApi.getRequested(),
   });
 };
 
 export const useAssignedTickets = (userId?: string | number) => {
   return useQuery({
-    queryKey: ['tickets', 'assigned', userId],
+    queryKey: ticketKeys.assigned(userId),
     queryFn: () => ticketsApi.getAssigned(userId),
     enabled: Boolean(userId),
+  });
+};
+
+export const useClosedTickets = (userId?: string | number) => {
+  return useQuery({
+    queryKey: ticketKeys.closed(userId),
+    queryFn: () => ticketsApi.getClosed(userId),
+    enabled: Boolean(userId),
+  });
+};
+
+export const useTotalServiceStatus = () => {
+  return useQuery({
+    queryKey: ticketKeys.totalServiceStatus(),
+    queryFn: () => ticketsApi.getTotalServiceStatus(),
+  });
+};
+
+export const useTotalTaskType = () => {
+  return useQuery({
+    queryKey: ticketKeys.totalTaskType(),
+    queryFn: () => ticketsApi.getTotalTaskType(),
+  });
+};
+
+export const useTotalEquipmentType = () => {
+  return useQuery({
+    queryKey: ticketKeys.totalEquipmentType(),
+    queryFn: () => ticketsApi.getTotalEquipmentType(),
   });
 };
 
@@ -155,7 +248,7 @@ export const useCreateTicket = () => {
   return useMutation({
     mutationFn: ticketsApi.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
       toast.success('Ticket created successfully.');
     },
     onError: (err: unknown) => {
@@ -174,8 +267,8 @@ export const useUpdateTicket = () => {
   return useMutation({
     mutationFn: ticketsApi.update,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
       toast.success('Ticket updated successfully.');
     },
     onError: (err: unknown) => {
@@ -194,8 +287,8 @@ export const useUpdateTicketStatus = () => {
   return useMutation({
     mutationFn: ticketsApi.updateStatus,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
       toast.success('Ticket status updated successfully.');
     },
     onError: (err: unknown) => {
@@ -214,8 +307,8 @@ export const useAssignEngineer = () => {
   return useMutation({
     mutationFn: ticketsApi.assignEngineer,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
       toast.success('Engineer assigned successfully.');
     },
     onError: (err: unknown) => {
@@ -234,8 +327,8 @@ export const useSubmitFeedback = () => {
   return useMutation({
     mutationFn: ticketsApi.submitFeedback,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['tickets', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+      queryClient.invalidateQueries({ queryKey: ticketKeys.detail(variables.id) });
       toast.success('Feedback submitted successfully.');
     },
     onError: (err: unknown) => {
@@ -247,3 +340,4 @@ export const useSubmitFeedback = () => {
     },
   });
 };
+

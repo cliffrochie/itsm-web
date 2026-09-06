@@ -15,7 +15,7 @@ import { IClient } from "@/@types/client";
 import { IUser } from "@/@types/user";
 import { Undo2, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import {
   Table,
   TableBody,
@@ -512,11 +512,11 @@ export default function ClientTicketView() {
                     </TableHeader>
                     <TableBody>
                       {serviceTicketHistoryQuery.data &&
-                        serviceTicketHistoryQuery.data.map((history) => (
-                          <TableRow key={history._id}>
+                        serviceTicketHistoryQuery.data.map((history, idx) => (
+                          <TableRow key={history.id ?? history._id ?? idx}>
                             <TableCell>{history.date}</TableCell>
                             <TableCell>{history.time}</TableCell>
-                            <TableCell>{history.details}</TableCell>
+                            <TableCell>{history.details || history.action || "Status updated"}</TableCell>
                           </TableRow>
                         ))}
                     </TableBody>

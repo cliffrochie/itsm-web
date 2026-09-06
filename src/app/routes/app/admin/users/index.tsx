@@ -18,9 +18,9 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 
-import { UserDataTable, UserDataTableColumnHeader } from "@/features/users";
+import { UserDataTable, UserDataTableColumnHeader, ResetPasswordDialog } from "@/features/users";
 import { DataTablePagination } from "@/components/data-tables/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-tables/data-table-view-options";
 import { DataTableRowActions } from "@/components/data-tables/data-table-row-actions";
@@ -29,6 +29,10 @@ import { roles } from "@/data/user-roles";
 import { IUser } from "@/@types/user";
 
 export default function AdminUsersPage() {
+  const [resetPasswordUser, setResetPasswordUser] = useState<{
+    id: string | number;
+    username: string;
+  } | null>(null);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -169,6 +173,12 @@ export default function AdminUsersPage() {
               name={row.original.username}
               updatePath={`/admin/users/${row.original.id ?? row.original._id}/update`}
               deleteMutation={deleteMutation}
+              onResetPassword={() =>
+                setResetPasswordUser({
+                  id: row.original.id ?? row.original._id ?? "",
+                  username: row.original.username,
+                })
+              }
             />
           </div>
         ),
@@ -221,6 +231,17 @@ export default function AdminUsersPage() {
         <UserDataTable table={table} totalColumns={columns.length} />
         <DataTablePagination table={table} />
       </div>
+
+      {resetPasswordUser && (
+        <ResetPasswordDialog
+          open={Boolean(resetPasswordUser)}
+          onOpenChange={(open) => {
+            if (!open) setResetPasswordUser(null);
+          }}
+          userId={resetPasswordUser.id}
+          username={resetPasswordUser.username}
+        />
+      )}
     </section>
   );
 }

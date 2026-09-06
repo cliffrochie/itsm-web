@@ -17,3 +17,18 @@ export interface PaginatedUsers {
   pageCount: number;
   rowCount: number;
 }
+
+export interface TotalUserRoleData {
+  total?: number;
+  totalUsers?: number;
+  superAdmin?: number;
+  admin?: number;
+  serviceEngineer?: number;
+  client?: number;
+  totalAdmin?: number;
+  totalStaff?: number;
+  totalUser?: number;
+}
+
+export type IUser = User;
+

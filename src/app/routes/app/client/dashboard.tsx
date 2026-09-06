@@ -15,15 +15,15 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IServiceTicket } from "@/@types/service-ticket";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { formatDate } from "@/utils";
-import useAuthUser from "@/hooks/user--use-auth-user";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function ClientPage() {
   const [search, setSearch] = useState("");
   const [tickets, setTickets] = useState<IServiceTicket[] | []>([]);
 
-  const { authUser } = useAuthUser();
+  const authUser = useAuthStore((state) => state.user);
   const [clientId, setClientId] = useState<number | null>(null);
   const navigate = useNavigate();
 

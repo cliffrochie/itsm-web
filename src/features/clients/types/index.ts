@@ -38,3 +38,6 @@ export interface PaginatedClients {
   rowCount: number;
   meta?: ApiMeta;
 }
+
+export type IClient = Client;
+

@@ -21,7 +21,7 @@ import { taskTypes } from "@/data/task-types";
 import { equipmentTypes } from "@/data/equipment-types";
 import { capitalizeFirstLetter } from "@/utils";
 
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Circle, LucideIcon, Star, Undo2 } from "lucide-react";

@@ -15,7 +15,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 import { IServiceTicket } from "@/@types/service-ticket";
 import { Button } from "@/components/ui/button";
 import { Briefcase } from "lucide-react";

@@ -21,6 +21,7 @@ interface DataTableRowActionsProps {
   name: string;
   viewPath?: string;
   updatePath?: string;
+  onResetPassword?: () => void;
   deleteMutation?: UseMutationResult<
     AxiosResponse<unknown>,
     Error,
@@ -34,6 +35,7 @@ export function DataTableRowActions({
   name,
   viewPath,
   updatePath,
+  onResetPassword,
   deleteMutation,
 }: DataTableRowActionsProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -66,6 +68,18 @@ export function DataTableRowActions({
             <>
               <DropdownMenuItem onClick={() => navigate(updatePath)}>
                 Edit
+              </DropdownMenuItem>
+            </>
+          )}
+          {onResetPassword && (
+            <>
+              <DropdownMenuItem
+                onClick={() => {
+                  onResetPassword();
+                  setDropdownOpen(false);
+                }}
+              >
+                Reset Password
               </DropdownMenuItem>
             </>
           )}

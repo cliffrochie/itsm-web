@@ -19,7 +19,7 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
-import api from "@/hooks/use-api";
+import { api } from "@/lib/api-client";
 
 import { DesignationDataTable, DesignationDataTableColumnHeader as DataTableColumnHeader } from "@/features/designations";
 
