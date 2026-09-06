@@ -22,7 +22,7 @@ interface DataTableRowActionsProps {
   viewPath?: string;
   updatePath?: string;
   deleteMutation?: UseMutationResult<
-    AxiosResponse<any, any>,
+    AxiosResponse<unknown>,
     Error,
     string,
     unknown

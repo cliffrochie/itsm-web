@@ -2,6 +2,7 @@ import api from "@/hooks/use-api";
 import { useState, useEffect } from "react";
 import { IServiceTicket } from "@/@types/service-ticket";
 import { handleAxiosError } from "@/utils/error-handler";
+import { useAuthStore } from "@/stores/authStore";
 
 interface ThisResponse {
   assignedTickets?: IServiceTicket[];
@@ -10,31 +11,34 @@ interface ThisResponse {
 }
 
 export default function useGetAssignedServiceTickets(): ThisResponse {
-  const [assignedTickets, setAssignedTickets] = useState<IServiceTicket[] | []>(
-    []
-  );
+  const user = useAuthStore((state) => state.user);
+  const [assignedTickets, setAssignedTickets] = useState<IServiceTicket[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
-
-  let url = "/api/service-tickets/assigned";
 
   useEffect(() => {
     async function get() {
       try {
         setLoading(true);
-        const response = await api.get(url);
-        if (response.status === 200) {
-          setAssignedTickets(response.data);
+        const params: Record<string, unknown> = { limit: 100 };
+        if (user?.id) {
+          params.serviceEngineerId = user.id;
         }
-      } catch (error) {
-        setError(handleAxiosError(error));
+        const response = await api.get("/service-tickets", { params });
+        if (response.status === 200) {
+          const list: IServiceTicket[] =
+            response.data?.data || response.data || [];
+          setAssignedTickets(list.filter((t) => t.serviceStatus !== "closed"));
+        }
+      } catch (err) {
+        setError(handleAxiosError(err));
       } finally {
         setLoading(false);
       }
     }
 
     get();
-  }, []);
+  }, [user?.id]);
 
   return { assignedTickets, loading, error };
 }

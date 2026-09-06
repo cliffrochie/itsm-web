@@ -2,72 +2,31 @@ import { IDesignation } from "./designation";
 import { IOffice } from "./office";
 
 export interface IClient {
-  _id: string;
+  id?: number;
+  _id?: string;
   firstName: string;
-  middleName?: string;
+  middleName?: string | null;
   lastName: string;
-  extensionName?: string;
-  contactNo?: string;
-  email?: string;
-  designation: IDesignation | string | null;
-  office: IOffice | string | null;
-  createdBy?: string;
-  updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  extensionName?: string | null;
+  contactNo?: string | null;
+  email?: string | null;
+  officeId?: number | null;
+  designationId?: number | null;
+  userId?: number | null;
+  designation?: IDesignation | string | null;
+  office?: IOffice | string | null;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
-export function isClientInterface(obj: any): obj is IClient {
-  // console.log(obj)
+export function isClientInterface(obj: unknown): obj is IClient {
+  if (!obj || typeof obj !== "object") return false;
+  const c = obj as Record<string, unknown>;
   return (
-    obj &&
-    typeof obj._id === "string" &&
-    typeof obj.firstName === "string" &&
-    typeof (
-      obj.middleName === "string" ||
-      obj.middleName === null ||
-      obj.middleName === ""
-    ) &&
-    typeof obj.lastName === "string" &&
-    typeof (
-      obj.extensionName === "string" ||
-      obj.extensionName === null ||
-      obj.extensionName === ""
-    ) &&
-    typeof (
-      obj.contactNo === "string" ||
-      obj.contactNo === null ||
-      obj.contactNo === ""
-    ) &&
-    typeof (
-      obj.designation === "string" ||
-      obj.designation === null ||
-      obj.designation === ""
-    ) &&
-    typeof (
-      obj.office === "string" ||
-      obj.office === null ||
-      obj.office === ""
-    ) &&
-    typeof (
-      obj.createdBy === "string" ||
-      obj.createdBy === null ||
-      obj.createdBy === ""
-    ) &&
-    typeof (
-      obj.updatedBy === "string" ||
-      obj.updatedBy === null ||
-      obj.updatedBy === ""
-    ) &&
-    typeof (
-      obj.createdAt === "object" ||
-      obj.createdAt === null ||
-      obj.createdAt === ""
-    ) &&
-    typeof (
-      obj.updatedAt === "object" ||
-      obj.updatedAt === null ||
-      obj.updatedAt === ""
-    )
+    (typeof c.id === "number" || typeof c._id === "string") &&
+    typeof c.firstName === "string" &&
+    typeof c.lastName === "string"
   );
 }

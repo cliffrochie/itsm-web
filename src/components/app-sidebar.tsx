@@ -22,9 +22,9 @@ export function AppSidebar({
   setLinks: Dispatch<SetStateAction<INavLink[]>>;
 }) {
   const location = useLocation();
-  let usePath = "";
 
   useEffect(() => {
+    let usePath = "";
     const currentPath = location.pathname.split("/");
 
     if (currentPath[currentPath.length - 1] === "create") {
@@ -59,19 +59,17 @@ export function AppSidebar({
       }
     }
 
-    // console.log(currentPath)
-    // console.log(usePath)
-
     if (usePath.slice(-1) === "/") {
       usePath = usePath.slice(0, -1);
     }
 
-    const updatedLinks = links.map((link) => ({
-      ...link,
-      isActive: usePath === link.url,
-    }));
-    setLinks(updatedLinks);
-  }, [location.pathname]);
+    setLinks((prev) =>
+      prev.map((link) => ({
+        ...link,
+        isActive: usePath === link.url,
+      }))
+    );
+  }, [location.pathname, setLinks]);
 
   return (
     <Sidebar collapsible="offcanvas">

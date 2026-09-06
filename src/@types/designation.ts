@@ -1,8 +1,10 @@
 export interface IDesignation {
-  _id: string;
+  id?: number;
+  _id?: string;
+  name?: string;
   title: string;
   createdBy?: string;
   updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
