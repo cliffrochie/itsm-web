@@ -29,8 +29,10 @@ export default function useAuthUser(): ThisResponse {
         const response = await api.get("/auth/me");
         const userData = response.data?.data || response.data;
         setAuthUser(userData);
-      } catch (err: any) {
-        setError(err?.message || "An unknown error occurred.");
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "An unknown error occurred.";
+        setError(message);
       } finally {
         setLoading(false);
       }

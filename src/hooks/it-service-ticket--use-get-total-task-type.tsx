@@ -28,15 +28,14 @@ const queryParams = [
   "totalAccessibility",
 ];
 
+const url = `/api/service-tickets/total-task-type/?totalTickets=true&${queryParams.map((a) => `${a}=true`).join("&")}`;
+
 export default function useGetTotalTaskType(): ThisResponse {
   const [totalTaskTypes, setTaskTypes] = useState<Tickets | undefined>(
     undefined
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
-
-  let url = "/api/service-tickets/total-task-type/?totalTickets=true";
-  queryParams.forEach((a) => (url += `&${a}=true`));
 
   // console.log(url)
 

@@ -53,9 +53,7 @@ export default function AdminITServiceTicketsPage() {
   const dataQuery = useQuery({
     queryKey: serviceTicketQueryKey,
     queryFn: async () => {
-      const data = { rows: [], pageCount: 0, rowCount: 0 };
-
-      const params: Record<string, any> = {
+      const params: Record<string, unknown> = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
       };
@@ -70,11 +68,11 @@ export default function AdminITServiceTicketsPage() {
 
       const response = await api.get("/service-tickets", { params });
       const envelope = response.data;
-      data.rows = envelope?.data ?? envelope?.results ?? [];
-      data.pageCount = envelope?.meta?.last_page ?? envelope?.totalPages ?? 1;
-      data.rowCount = envelope?.meta?.total ?? envelope?.total ?? 0;
-
-      return data;
+      return {
+        rows: envelope?.data ?? envelope?.results ?? [],
+        pageCount: envelope?.meta?.last_page ?? envelope?.totalPages ?? 1,
+        rowCount: envelope?.meta?.total ?? envelope?.total ?? 0,
+      };
     },
     placeholderData: keepPreviousData,
   });
@@ -97,7 +95,7 @@ export default function AdminITServiceTicketsPage() {
     () => [
       {
         accessorKey: "ticketNo",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -108,7 +106,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "title",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -119,7 +117,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "serviceStatus",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -147,7 +145,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "priority",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -175,7 +173,7 @@ export default function AdminITServiceTicketsPage() {
 
       {
         accessorKey: "client",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -206,7 +204,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "serviceEngineer",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -235,7 +233,7 @@ export default function AdminITServiceTicketsPage() {
       },
       {
         accessorKey: "createdAt",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <ServiceTicketDataTableColumnHeader
             table={table}
             column={column}
@@ -278,7 +276,7 @@ export default function AdminITServiceTicketsPage() {
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

@@ -10,9 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { UseMutationResult } from "@tanstack/react-query";
 import { capitalizeFirstLetter } from "@/utils";
-import { AxiosResponse } from "axios";
 
 interface IUpdateStatusDialogProps {
   dialogOpen: boolean;
@@ -22,12 +20,9 @@ interface IUpdateStatusDialogProps {
   newValue?: string;
   currentValue?: string;
   selectedServiceStatus?: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function UpdateStatusAssignedTicketDialog({

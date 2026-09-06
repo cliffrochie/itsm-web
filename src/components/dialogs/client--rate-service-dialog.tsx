@@ -9,8 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { UseMutationResult } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
 import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 
@@ -20,12 +18,9 @@ interface IRateServiceDialog {
   id: string;
   name: string;
   serviceEngineerName: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function RateServiceDialog({

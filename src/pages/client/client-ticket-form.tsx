@@ -53,7 +53,6 @@ export default function ClientTicketForm() {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
 
-  const [errors, setErrors] = useState<any>(null);
   const [clientSearch, setClientSearch] = useState("");
   const [previousClient, setPreviousClient] = useState("");
   const [addClientDialogOpen, setAddClientDialogOpen] = useState(false);
@@ -74,13 +73,13 @@ export default function ClientTicketForm() {
       console.log(clientSearch);
       form.setValue("client", clientSearch);
     }
-  }, [clientSearch]);
+  }, [clientSearch, form]);
 
   useEffect(() => {
     if (authUser) {
       async function get() {
         try {
-          const userId = authUser?.id ?? (authUser as any)?._id;
+          const userId = authUser?.id ?? (authUser as { _id?: string | number })?._id;
           const response = await api.get("/clients", {
             params: { userId, limit: 1 },
           });
@@ -183,10 +182,25 @@ export default function ClientTicketForm() {
         });
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      const obj: Record<string, any> = {};
-      obj[err.key] = err.message;
-      setErrors(obj);
+      const err = handleAxiosError(e);
+      if (err) {
+        if (
+          [
+            "title",
+            "equipmentType",
+            "taskType",
+            "natureOfWork",
+            "client",
+          ].includes(err.key)
+        ) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
+      }
     }
   }
 
@@ -216,11 +230,7 @@ export default function ClientTicketForm() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className={errors?.title ? "text-red-500" : ""}
-                        >
-                          What is your concern?
-                        </FormLabel>
+                        <FormLabel>What is your concern?</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -230,7 +240,7 @@ export default function ClientTicketForm() {
                             }}
                           />
                         </FormControl>
-                        <FormMessage>{errors?.title}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -299,9 +309,7 @@ export default function ClientTicketForm() {
                     name="natureOfWork"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel
-                          className={errors?.natureOfWork ? "text-red-500" : ""}
-                        >
+                        <FormLabel>
                           Please provide additional information about your
                           concern that may help our IT personnel.
                         </FormLabel>
@@ -316,7 +324,7 @@ export default function ClientTicketForm() {
                             }}
                           />
                         </FormControl>
-                        <FormMessage>{errors?.natureOfWork}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -352,7 +360,7 @@ export default function ClientTicketForm() {
                             <Plus />
                           </Button>
                         </div>
-                        <FormMessage>{errors?.client}</FormMessage>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

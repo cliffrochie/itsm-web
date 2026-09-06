@@ -696,9 +696,9 @@ export default function ServiceEngineerITServiceTicket() {
       <ITSMFormDialog
         dialogOpen={ITSMFormDialogOpen}
         setDialogOpen={setITSMFormDialogOpen}
-        id={serviceTicket && serviceTicket._id ? serviceTicket._id : ""}
+        id={serviceTicket ? String(serviceTicket.id ?? serviceTicket._id ?? "") : ""}
         name={serviceTicket ? serviceTicket.ticketNo : ""}
-        data={serviceTicket ? serviceTicket : {}}
+        data={serviceTicket}
       />
     </section>
   );

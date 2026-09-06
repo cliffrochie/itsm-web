@@ -15,8 +15,13 @@ export const notificationsApi = {
     return response.data?.data || response.data || [];
   },
 
-  getByUserId: async (_userId?: string | number): Promise<Notification[]> => {
-    return notificationsApi.getAll();
+  getByUserId: async (userId?: string | number): Promise<Notification[]> => {
+    const params: Record<string, unknown> = { limit: 50 };
+    if (userId) {
+      params.userId = userId;
+    }
+    const response = await api.get('/notifications', { params });
+    return response.data?.data || response.data || [];
   },
 
   markAsRead: async (id: string | number): Promise<void> => {
@@ -31,7 +36,7 @@ export const notificationsApi = {
 export const useNotifications = (userId?: string | number) => {
   return useQuery({
     queryKey: ['notifications', userId],
-    queryFn: () => notificationsApi.getAll(),
+    queryFn: () => notificationsApi.getByUserId(userId),
     enabled: Boolean(userId),
     placeholderData: keepPreviousData,
   });

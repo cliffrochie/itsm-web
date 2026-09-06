@@ -52,9 +52,9 @@ export default function AdminClientsPage() {
   const dataQuery = useQuery({
     queryKey: clientQueryKey,
     queryFn: async () => {
-      let data = { rows: [] as IClient[], pageCount: 0, rowCount: 0 };
+      const data = { rows: [] as IClient[], pageCount: 0, rowCount: 0 };
 
-      const params: Record<string, any> = {
+      const params: Record<string, unknown> = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
       };
@@ -94,7 +94,7 @@ export default function AdminClientsPage() {
     () => [
       {
         accessorKey: "firstName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
@@ -105,7 +105,7 @@ export default function AdminClientsPage() {
       },
       {
         accessorKey: "lastName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
@@ -116,7 +116,7 @@ export default function AdminClientsPage() {
       },
       {
         accessorKey: "designation",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
@@ -135,7 +135,7 @@ export default function AdminClientsPage() {
       },
       {
         accessorKey: "office",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
@@ -171,7 +171,7 @@ export default function AdminClientsPage() {
         },
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

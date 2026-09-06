@@ -46,7 +46,6 @@ export default function AdminClientForm() {
   const [searchOffice, setSearchOffice] = useState("");
   const [previousDesignation, setPreviousDesignation] = useState("");
   const [previousOffice, setPreviousOffice] = useState("");
-  const [errors, setErrors] = useState<any>(null);
   const currentPath = location.pathname.split("/");
 
   let isUpdate = false;
@@ -102,7 +101,7 @@ export default function AdminClientForm() {
       if (data.officeId) setSearchOffice(String(data.officeId));
       if (data.designationId) setSearchDesignation(String(data.designationId));
     }
-  }, [data, isUpdate]);
+  }, [data, isUpdate, form]);
 
   async function onSubmit(d: z.infer<typeof formSchema>) {
     try {
@@ -144,12 +143,28 @@ export default function AdminClientForm() {
           navigate("/admin/clients");
         }
       }
-    } catch (e: any) {
-      const err = await handleAxiosError(e);
-      if (err?.errors) {
-        setErrors(err.errors);
+    } catch (e) {
+      const err = handleAxiosError(e);
+      if (err) {
+        if (
+          [
+            "firstName",
+            "middleName",
+            "lastName",
+            "extensionName",
+            "contactNo",
+            "email",
+          ].includes(err.key)
+        ) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
       } else {
-        toast.error(err?.message || "Operation failed.");
+        toast.error("Operation failed.");
       }
     }
   }
@@ -170,11 +185,7 @@ export default function AdminClientForm() {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.firstName ? "text-red-500" : ""}
-                    >
-                      First Name
-                    </FormLabel>
+                    <FormLabel>First Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -182,7 +193,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.firstName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -191,11 +202,7 @@ export default function AdminClientForm() {
                 name="middleName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.middleName ? "text-red-500" : ""}
-                    >
-                      Middle Name
-                    </FormLabel>
+                    <FormLabel>Middle Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -203,7 +210,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.middleName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -212,11 +219,7 @@ export default function AdminClientForm() {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.lastName ? "text-red-500" : ""}
-                    >
-                      Last Name
-                    </FormLabel>
+                    <FormLabel>Last Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -224,7 +227,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.lastName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -233,11 +236,7 @@ export default function AdminClientForm() {
                 name="extensionName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.extensionName ? "text-red-500" : ""}
-                    >
-                      Ext. Name
-                    </FormLabel>
+                    <FormLabel>Ext. Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -245,7 +244,7 @@ export default function AdminClientForm() {
                         className="h-7"
                       />
                     </FormControl>
-                    <FormMessage>{errors?.extensionName}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

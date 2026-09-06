@@ -47,9 +47,7 @@ export default function AdminUsersPage() {
   const dataQuery = useQuery({
     queryKey: userQueryKey,
     queryFn: async () => {
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
-
-      const params: Record<string, any> = {
+      const params: Record<string, unknown> = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
       };
@@ -64,11 +62,11 @@ export default function AdminUsersPage() {
 
       const response = await api.get("/users", { params });
       const envelope = response.data;
-      data.rows = envelope?.data ?? envelope?.results ?? [];
-      data.pageCount = envelope?.meta?.last_page ?? envelope?.totalPages ?? 1;
-      data.rowCount = envelope?.meta?.total ?? envelope?.total ?? 0;
-
-      return data;
+      return {
+        rows: envelope?.data ?? envelope?.results ?? [],
+        pageCount: envelope?.meta?.last_page ?? envelope?.totalPages ?? 1,
+        rowCount: envelope?.meta?.total ?? envelope?.total ?? 0,
+      };
     },
     placeholderData: keepPreviousData,
   });
@@ -89,7 +87,7 @@ export default function AdminUsersPage() {
     () => [
       {
         accessorKey: "username",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -101,7 +99,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "email",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -113,7 +111,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "firstName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -125,7 +123,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "lastName",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -137,7 +135,7 @@ export default function AdminUsersPage() {
       },
       {
         accessorKey: "role",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <UserDataTableColumnHeader
             table={table}
             column={column}
@@ -177,7 +175,7 @@ export default function AdminUsersPage() {
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

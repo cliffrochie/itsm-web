@@ -52,7 +52,7 @@ export default function AdminOfficesPage() {
     queryKey: officeQueryKey,
     queryFn: async () => {
       let sortValue = "";
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
+      const data = { rows: [], pageCount: 0, rowCount: 0 };
 
       let url = `/api/offices/`;
       url += `?page=${pagination.pageIndex + 1}`;
@@ -99,7 +99,7 @@ export default function AdminOfficesPage() {
     () => [
       {
         accessorKey: "name",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <OfficeDataTableColumnHeader
             table={table}
             column={column}
@@ -110,7 +110,7 @@ export default function AdminOfficesPage() {
       },
       {
         accessorKey: "alias",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <OfficeDataTableColumnHeader
             table={table}
             column={column}
@@ -121,7 +121,7 @@ export default function AdminOfficesPage() {
       },
       {
         accessorKey: "officeType",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <OfficeDataTableColumnHeader
             table={table}
             column={column}
@@ -160,7 +160,7 @@ export default function AdminOfficesPage() {
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

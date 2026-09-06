@@ -24,12 +24,13 @@ export default function DesignationComboBox({
     .filter((designation) => {
       if (!search) return true;
       const term = search.toLowerCase();
-      const text = designation.name || (designation as any).title || "";
+      const title = (designation as { title?: string }).title;
+      const text = designation.name || title || "";
       return text.toLowerCase().includes(term);
     })
     .map((designation) => ({
       value: String(designation.id),
-      label: designation.name || (designation as any).title || "",
+      label: designation.name || (designation as { title?: string }).title || "",
     }));
 
   return (

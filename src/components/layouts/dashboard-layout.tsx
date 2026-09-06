@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import SidebarLayout from '@/layouts/sidebar-layout';
+import SidebarLayout from './sidebar-layout';
 import { useAuthStore } from '@/stores/authStore';
 import type { INavLink } from '@/@types/nav-link';
 import {

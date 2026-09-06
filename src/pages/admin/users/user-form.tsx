@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useParams } from "react-router";
 
@@ -15,7 +15,6 @@ import { toast, Slide } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Form,
   FormControl,
@@ -24,23 +23,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { IUser } from "@/@types/user";
 
 const formSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  middleName: z.string().nullable().optional(),
-  lastName: z.string().min(1, "Last name is required"),
-  extensionName: z.string().nullable().optional(),
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Invalid email address"),
+  firstName: z.string().min(2),
+  middleName: z.string().optional(),
+  lastName: z.string().min(2),
+  extensionName: z.string().optional(),
+  username: z.string().min(4),
+  email: z.string().email(),
   contactNo: z
     .string()
-    .max(13)
-    .regex(/^\d+$/, {
-      message: "Must be a string containing only numbers",
-    })
-    .nullable()
+    .length(11, { message: "Contact number must be 11 characters" })
     .optional()
     .or(z.literal("")),
   password: z.string().optional(),
@@ -54,21 +50,26 @@ export default function AdminUserForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  const currentPath = location.pathname.split("/");
-  const [errors, setErrors] = useState<any>(null);
 
-  let isUpdate = false;
+  const isUpdate = location.pathname.endsWith("/update");
+  const title = isUpdate ? "Update" : "Create";
 
-  let title = "";
-  if (currentPath[currentPath.length - 1] === "create") {
-    title = "Create";
-  } else if (currentPath[currentPath.length - 1] === "update") {
-    title = "Update";
-    isUpdate = true;
-  }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      extensionName: "",
+      username: "",
+      email: "",
+      password: "",
+      password2: "",
+    },
+  });
 
   const { data } = useQuery({
-    queryKey: ["userForm"],
+    queryKey: ["userForm", params.userId],
     queryFn: async () => {
       let data: IUser = {
         _id: "",
@@ -91,41 +92,17 @@ export default function AdminUserForm() {
   });
 
   useEffect(() => {
-    if (isUpdate) {
-      console.log(data);
-      form.setValue("firstName", data ? data.firstName : "");
-      form.setValue(
-        "middleName",
-        data ? (data.middleName !== undefined ? data.middleName : "") : ""
-      );
-      form.setValue("lastName", data ? data.lastName : "");
-      form.setValue(
-        "extensionName",
-        data ? (data.extensionName !== undefined ? data.extensionName : "") : ""
-      );
-      form.setValue("username", data ? data.username : "");
-      form.setValue("email", data ? data.email : "");
-      form.setValue(
-        "contactNo",
-        data ? (data.contactNo !== undefined ? data.contactNo : "") : ""
-      );
-      form.setValue("role", data ? data.role : "user");
+    if (isUpdate && data) {
+      form.setValue("firstName", data.firstName || "");
+      form.setValue("middleName", data.middleName || "");
+      form.setValue("lastName", data.lastName || "");
+      form.setValue("extensionName", data.extensionName || "");
+      form.setValue("username", data.username || "");
+      form.setValue("email", data.email || "");
+      form.setValue("contactNo", data.contactNo || "");
+      form.setValue("role", data.role || "user");
     }
-  }, [data]);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      extensionName: "",
-      username: "",
-      email: "",
-      password: "",
-      password2: "",
-    },
-  });
+  }, [data, isUpdate, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     console.log(data);
@@ -212,12 +189,16 @@ export default function AdminUserForm() {
         }
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      console.log(err);
+      const err = handleAxiosError(e);
       if (err?.key) {
-        let obj: any = {};
-        obj[err.key] = err.message;
-        setErrors(obj);
+        if (err.key in form.getValues()) {
+          form.setError(err.key as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message: err.message,
+          });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
       }
     }
   }
@@ -300,15 +281,11 @@ export default function AdminUserForm() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel
-                      className={errors?.username ? "text-red-500" : ""}
-                    >
-                      Username
-                    </FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input {...field} className="h-7" />
                     </FormControl>
-                    <FormMessage>{errors?.username}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -318,15 +295,11 @@ export default function AdminUserForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel
-                        className={errors?.email ? "text-red-500" : ""}
-                      >
-                        Email
-                      </FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input {...field} type="email" className="h-7" />
                       </FormControl>
-                      <FormMessage>{errors?.email}</FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -335,11 +308,7 @@ export default function AdminUserForm() {
                   name="contactNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel
-                        className={errors?.contactNo ? "text-red-500" : ""}
-                      >
-                        Contact Number
-                      </FormLabel>
+                      <FormLabel>Contact Number</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -348,7 +317,7 @@ export default function AdminUserForm() {
                           className="h-7"
                         />
                       </FormControl>
-                      <FormMessage>{errors?.contactNo}</FormMessage>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

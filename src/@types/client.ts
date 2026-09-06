@@ -21,11 +21,12 @@ export interface IClient {
   updatedAt?: Date | string;
 }
 
-export function isClientInterface(obj: any): obj is IClient {
+export function isClientInterface(obj: unknown): obj is IClient {
+  if (!obj || typeof obj !== "object") return false;
+  const c = obj as Record<string, unknown>;
   return (
-    obj &&
-    (typeof obj.id === "number" || typeof obj._id === "string") &&
-    typeof obj.firstName === "string" &&
-    typeof obj.lastName === "string"
+    (typeof c.id === "number" || typeof c._id === "string") &&
+    typeof c.firstName === "string" &&
+    typeof c.lastName === "string"
   );
 }

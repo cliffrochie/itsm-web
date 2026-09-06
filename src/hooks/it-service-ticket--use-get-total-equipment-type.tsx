@@ -28,15 +28,14 @@ const queryParams = [
   "totalOthers",
 ];
 
+const url = `/api/service-tickets/total-equipment-type/?totalTickets=true&${queryParams.map((a) => `${a}=true`).join("&")}`;
+
 export default function useGetTotalEquipmentType(): ThisResponse {
   const [totalEquipmentTypes, setTotalEquipmentTypes] = useState<
     Tickets | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
-
-  let url = "/api/service-tickets/total-equipment-type/?totalTickets=true";
-  queryParams.forEach((a) => (url += `&${a}=true`));
 
   // console.log(url)
 

@@ -14,7 +14,7 @@ export default function useGetClientByName(fullName: string): ThisResponse {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
 
-  let url = `/api/clients/?noPage=true&fullName=${fullName}`;
+  const url = `/api/clients/?noPage=true&fullName=${fullName}`;
 
   useEffect(() => {
     async function get() {
@@ -32,7 +32,7 @@ export default function useGetClientByName(fullName: string): ThisResponse {
     }
 
     get();
-  }, []);
+  }, [url]);
 
   return { client, loading, error };
 }

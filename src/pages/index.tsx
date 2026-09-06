@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import Logo from "@/assets/images/logo.svg";
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,6 +15,7 @@ export default function HomePage() {
           navigate("/client");
           break;
         case "staff":
+        case "service_engineer":
           navigate("/service-engineer");
           break;
         case "admin":
@@ -22,7 +23,7 @@ export default function HomePage() {
           break;
       }
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-gray-100">
@@ -42,14 +43,14 @@ export default function HomePage() {
               variant="default"
               className="bg-gray-600"
               size="lg"
-              onClick={() => navigate("/sign-up")}
+              onClick={() => navigate("/auth/register")}
             >
               Sign Up
             </Button>
             <Button
               variant="outline"
               size="lg"
-              onClick={() => navigate("/sign-in")}
+              onClick={() => navigate("/auth/login")}
             >
               Sign In
             </Button>

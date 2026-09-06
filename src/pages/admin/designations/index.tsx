@@ -55,7 +55,7 @@ export default function AdminDesignationsPage() {
     queryKey: designationQueryKey,
     queryFn: async () => {
       let sortValue = "";
-      let data = { rows: [], pageCount: 0, rowCount: 0 };
+      const data = { rows: [], pageCount: 0, rowCount: 0 };
 
       let url = `/api/designations/`;
       url += `?page=${pagination.pageIndex + 1}`;
@@ -101,7 +101,7 @@ export default function AdminDesignationsPage() {
     () => [
       {
         accessorKey: "title",
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
@@ -124,7 +124,7 @@ export default function AdminDesignationsPage() {
         ),
       },
     ],
-    []
+    [deleteMutation]
   );
 
   const table = useReactTable({

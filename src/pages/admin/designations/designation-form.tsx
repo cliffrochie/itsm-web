@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useParams } from "react-router";
 
@@ -34,41 +34,8 @@ export default function AdminDesignationForm() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  const currentPath = location.pathname.split("/");
-  const [errors, setErrors] = useState<any>(null);
-
-  let isUpdate = false;
-
-  let title = "";
-  if (currentPath[currentPath.length - 1] === "create") {
-    title = "Create";
-  } else if (currentPath[currentPath.length - 1] === "update") {
-    title = "Update";
-    isUpdate = true;
-  }
-
-  const { data } = useQuery({
-    queryKey: ["designationForm"],
-    queryFn: async () => {
-      let data: IDesignation = {
-        _id: "",
-        title: "",
-      };
-      let url = `/api/designations/${params.designationId}`;
-      if (params.designationId) {
-        await api.get(url).then((response) => {
-          data = response.data;
-        });
-      }
-      return data;
-    },
-  });
-
-  useEffect(() => {
-    if (isUpdate) {
-      form.setValue("title", data ? data.title : "");
-    }
-  }, [data]);
+  const isUpdate = location.pathname.endsWith("/update");
+  const title = isUpdate ? "Update" : "Create";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,6 +43,29 @@ export default function AdminDesignationForm() {
       title: "",
     },
   });
+
+  const { data } = useQuery({
+    queryKey: ["designationForm", params.designationId],
+    queryFn: async () => {
+      let data: IDesignation = {
+        _id: "",
+        title: "",
+      };
+      const url = `/api/designations/${params.designationId}`;
+      if (params.designationId) {
+        await api.get(url).then((response) => {
+          data = response.data?.data ?? response.data;
+        });
+      }
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (isUpdate && data?.title) {
+      form.setValue("title", data.title);
+    }
+  }, [data, isUpdate, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     // console.log(data)
@@ -125,10 +115,14 @@ export default function AdminDesignationForm() {
         }
       }
     } catch (e) {
-      const err = await handleAxiosError(e);
-      let obj: any = {};
-      obj[err.key] = err.message;
-      setErrors(obj);
+      const err = handleAxiosError(e);
+      if (err) {
+        if (err.key === "title") {
+          form.setError("title", { type: "server", message: err.message });
+        } else {
+          form.setError("root", { type: "server", message: err.message });
+        }
+      }
     }
   }
 
@@ -148,13 +142,13 @@ export default function AdminDesignationForm() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={errors?.title ? "text-red-500" : ""}>
+                    <FormLabel>
                       Position Title
                     </FormLabel>
                     <FormControl>
                       <Input {...field} className="h-7" />
                     </FormControl>
-                    <FormMessage>{errors?.title}</FormMessage>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

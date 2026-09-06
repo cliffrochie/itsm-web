@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { UseMutationResult } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -19,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AxiosResponse } from "axios";
 import UserComboBox from "@/components/comboboxes/user-combobox";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -28,12 +26,9 @@ interface IUpdateStatusDialogProps {
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   id?: string;
   name?: string;
-  updateMutation: UseMutationResult<
-    AxiosResponse<any, any>,
-    Error,
-    string,
-    unknown
-  >;
+  updateMutation: {
+    mutate: (variables: string) => void;
+  };
 }
 
 export default function AssignServiceEngineerDialog({

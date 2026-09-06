@@ -18,5 +18,9 @@ export const login = async (credentials: LoginCredentials): Promise<LoginRespons
     useAuthStore.getState().setAuth(token, user);
   }
 
-  return response.data as unknown as LoginResponse;
+  return {
+    message: response.data?.message,
+    token,
+    user,
+  };
 };

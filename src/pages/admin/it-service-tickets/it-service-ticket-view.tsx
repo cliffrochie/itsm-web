@@ -711,7 +711,7 @@ export default function ITServiceTicketView() {
           setDialogOpen={setITSMFormDialogOpen}
           id={dataQuery.data ? String(dataQuery.data.id ?? dataQuery.data._id ?? "") : ""}
           name={dataQuery.data ? dataQuery.data.ticketNo : ""}
-          data={dataQuery.data ? dataQuery.data : {}}
+          data={dataQuery.data ?? null}
         />
       </div>
     </section>

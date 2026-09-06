@@ -20,7 +20,7 @@ export default function useGetAssignedServiceTickets(): ThisResponse {
     async function get() {
       try {
         setLoading(true);
-        const params: Record<string, any> = { limit: 100 };
+        const params: Record<string, unknown> = { limit: 100 };
         if (user?.id) {
           params.serviceEngineerId = user.id;
         }

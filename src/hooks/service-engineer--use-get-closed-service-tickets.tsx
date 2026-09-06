@@ -20,7 +20,7 @@ export default function useGetClosedServiceTickets(): ThisResponse {
     async function get() {
       try {
         setLoading(true);
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           limit: 100,
           serviceStatus: "closed",
         };

@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ToastContainer, Slide, toast } from "react-toastify";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import {
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import DropdownUser from "@/components/app-dropdown-user";
-import { INavLink } from "@/@types/nav-link";
+import type { INavLink } from "@/@types/nav-link";
 import { Button } from "@/components/ui/button";
 import {
   keepPreviousData,
@@ -28,10 +27,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useGetAuthUser from "@/hooks/user--use-auth-user";
-import { INotification } from "@/@types/notification";
-import api from "@/hooks/use-api";
+import type { INotification } from "@/@types/notification";
+import api from "@/lib/api-client";
 import { Info, Trash } from "lucide-react";
 import { connectSocket } from "@/lib/socket";
+import { toast } from "sonner";
 
 export default function SidebarLayout({
   links,
@@ -44,13 +44,13 @@ export default function SidebarLayout({
   const { authUser } = useGetAuthUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const queryKey = ["notifications", authUser?.id ?? authUser?._id];
+  const queryKey = ["notifications", authUser?.id];
 
   useEffect(() => {
-    const userId = authUser?.id ?? (authUser as any)?._id;
+    const userId = authUser?.id;
     if (userId) {
       const socket = connectSocket(userId);
-      const handleNewNotification = (notification: any) => {
+      const handleNewNotification = (notification: { message?: string }) => {
         queryClient.invalidateQueries({ queryKey: ["notifications"] });
         toast.info(notification.message || "New notification received");
       };
@@ -81,7 +81,7 @@ export default function SidebarLayout({
       await api.patch(`/notifications/${data}/read`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -91,7 +91,7 @@ export default function SidebarLayout({
       await api.patch(`/notifications/read-all`);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
@@ -161,12 +161,12 @@ export default function SidebarLayout({
                   {notifications && notifications.length > 0 ? (
                     notifications.map((notification) => (
                       <DropdownMenuItem
-                        key={notification.id ?? notification._id ?? notification.message}
+                        key={notification.id ?? notification.message}
                         className="py-4 text-sm cursor-pointer"
                         onClick={() =>
                           redirectToTicket(
-                            notification.id ?? notification._id,
-                            notification.ticketId ?? notification.serviceTicket,
+                            notification.id,
+                            notification.ticketId,
                             notification.ticketNo
                           )
                         }
@@ -203,20 +203,7 @@ export default function SidebarLayout({
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <main>
-            <Outlet /> {/* Render child routes */}
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick={false}
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-              transition={Slide}
-            />
+            <Outlet />
           </main>
         </div>
       </SidebarInset>

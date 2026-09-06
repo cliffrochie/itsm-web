@@ -14,13 +14,21 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "@/utils";
 
+export interface DashboardTicketItem {
+  _id?: string;
+  id?: string | number;
+  ticketNo?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
 interface IProps {
   dialogOpen: boolean;
   setDialogOpen: Dispatch<SetStateAction<boolean>>;
   id?: string;
   title: string;
   name?: string;
-  data: any[];
+  data: DashboardTicketItem[];
 }
 
 export default function DataListDialog({
@@ -64,7 +72,7 @@ export default function DataListDialog({
                     <TableCell className="font-medium p-5 custom-md:w-48 text-right">
                       <span className="text-gray-500">
                         {ticket.createdAt
-                          ? formatDate(ticket.createdAt)
+                          ? formatDate(new Date(ticket.createdAt))
                           : undefined}
                       </span>
                     </TableCell>

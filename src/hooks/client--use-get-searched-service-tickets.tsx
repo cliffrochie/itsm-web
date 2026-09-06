@@ -39,7 +39,7 @@ export default function useGetSearchedServiceTickets(
     }
 
     get();
-  }, []);
+  }, [url]);
 
   return { searchedTickets, loading, error };
 }

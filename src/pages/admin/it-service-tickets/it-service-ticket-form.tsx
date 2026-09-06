@@ -219,15 +219,15 @@ export default function AdminITServiceTicketForm() {
         serviceEngineer ? String(serviceEngineer.id ?? serviceEngineer._id ?? "") : (data?.serviceEngineerId ? String(data.serviceEngineerId) : null)
       );
     }
-  }, [data, searchClient, searchUser]);
+  }, [data, searchClient, searchUser, form, isUpdate]);
 
   useEffect(() => {
     form.setValue("client", searchClient ? searchClient : "");
-  }, [searchClient]);
+  }, [searchClient, form]);
 
   useEffect(() => {
     form.setValue("serviceEngineer", searchUser ? searchUser : "");
-  }, [searchUser]);
+  }, [searchUser, form]);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const payload = {

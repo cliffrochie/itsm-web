@@ -33,15 +33,14 @@ const queryParams = [
   "totalClosedTickets",
 ];
 
+const url = `/api/service-tickets/total-service-status/?totalTickets=true&${queryParams.map((a) => `${a}=true`).join("&")}`;
+
 export default function useGetTotalServiceStatus(): ThisResponse {
   const [totalServiceStatuses, setServiceStatuses] = useState<
     Tickets | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<object | string | undefined>(undefined);
-
-  let url = "/api/service-tickets/total-service-status/?totalTickets=true";
-  queryParams.forEach((a) => (url += `&${a}=true`));
 
   // console.log(url)
 

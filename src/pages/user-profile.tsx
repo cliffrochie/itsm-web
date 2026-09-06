@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuthStore } from "@/stores/authStore";
 import {
   Card,
   CardContent,
@@ -18,9 +18,9 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState("");
-  const [errors, setErrors] = useState<any>({ sample: "errors" });
+  const [errors, setErrors] = useState<Record<string, string>>({ sample: "errors" });
 
-  const { user, handleLogin } = useAuth();
+  const user = useAuthStore((state) => state.user);
 
   function updateDisplayTab(tab: string) {
     setCurrentTab(tab);
@@ -28,15 +28,15 @@ export default function ProfilePage() {
 
   async function checkUserPassword(currentPassword: string) {
     try {
-      const username = user ? user.username : "guest";
+      const username = user?.username;
+      if (!username) return false;
 
-      console.log("username: ", username);
-      console.log("password: ");
-
-      const response = await handleLogin(username, currentPassword);
-      const result = response.status === 200 ? true : false;
-      return result;
-    } catch (error) {
+      const response = await api.post("/auth/login", {
+        identifier: username,
+        password: currentPassword,
+      });
+      return response.status === 200;
+    } catch {
       return false;
     }
   }
@@ -88,8 +88,9 @@ export default function ProfilePage() {
         errorMessages.newPassword === "" &&
         errorMessages.currentPassword === ""
       ) {
+        const userId = user?.id || user?._id;
         const response = await api.patch(
-          `/api/users/${user?._id}/change-password`,
+          `/users/${userId}/change-password`,
           { password: newPassword }
         );
         if (response.status === 200) {

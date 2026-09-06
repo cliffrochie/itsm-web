@@ -28,7 +28,7 @@ export default function ClientPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = authUser?.id ?? (authUser as any)?._id;
+    const userId = authUser?.id ?? (authUser as { _id?: string | number })?._id;
     if (userId) {
       api
         .get("/clients", { params: { userId, limit: 1 } })
@@ -47,7 +47,7 @@ export default function ClientPage() {
   const dataQuery = useQuery({
     queryKey: clientKey,
     queryFn: async () => {
-      const params: Record<string, any> = { limit: 100 };
+      const params: Record<string, unknown> = { limit: 100 };
       if (search) {
         params.search = search;
       }

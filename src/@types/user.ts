@@ -16,13 +16,14 @@ export interface IUser {
   updatedAt?: Date | string;
 }
 
-export function isUserInterface(obj: any): obj is IUser {
+export function isUserInterface(obj: unknown): obj is IUser {
+  if (!obj || typeof obj !== "object") return false;
+  const u = obj as Record<string, unknown>;
   return (
-    obj &&
-    (typeof obj.id === "number" || typeof obj._id === "string") &&
-    typeof obj.username === "string" &&
-    typeof obj.email === "string" &&
-    typeof obj.firstName === "string" &&
-    typeof obj.lastName === "string"
+    (typeof u.id === "number" || typeof u._id === "string") &&
+    typeof u.username === "string" &&
+    typeof u.email === "string" &&
+    typeof u.firstName === "string" &&
+    typeof u.lastName === "string"
   );
 }
