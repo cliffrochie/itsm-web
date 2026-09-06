@@ -2,6 +2,8 @@ import { api } from '@/lib/api-client';
 import { useQuery } from '@tanstack/react-query';
 import type { Designation } from '../types';
 import type { ApiResponse } from '@/types/api';
+import { designationKeys } from './query-keys';
+export * from './query-keys';
 
 export const designationsApi = {
   getAll: async (): Promise<Designation[]> => {
@@ -12,7 +14,8 @@ export const designationsApi = {
 
 export const useDesignations = () => {
   return useQuery({
-    queryKey: ['designations'],
+    queryKey: designationKeys.lists(),
     queryFn: () => designationsApi.getAll(),
   });
 };
+

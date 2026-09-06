@@ -7,3 +7,6 @@ export interface Designation {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+
+export type IDesignation = Designation;
+

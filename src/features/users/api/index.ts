@@ -5,7 +5,9 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import type { User, UserFilterParams, PaginatedUsers } from '../types';
+import type { User, UserFilterParams, PaginatedUsers, TotalUserRoleData } from '../types';
+import { userKeys } from './query-keys';
+export * from './query-keys';
 import { toast } from 'sonner';
 
 export const usersApi = {
@@ -27,6 +29,19 @@ export const usersApi = {
 
   getById: async (id: string | number): Promise<User> => {
     const response = await api.get(`/users/${id}`);
+    return response.data?.data ?? response.data;
+  },
+
+  getTotalUserRoles: async (): Promise<TotalUserRoleData> => {
+    const queryParams = [
+      'superAdmin',
+      'admin',
+      'serviceEngineer',
+      'client',
+    ];
+    const response = await api.get(
+      `/users/total-user-role/?totalUsers=true&${queryParams.map((a) => `${a}=true`).join('&')}`
+    );
     return response.data?.data ?? response.data;
   },
 
@@ -64,7 +79,7 @@ export const usersApi = {
 
 export const useUsers = (params?: UserFilterParams) => {
   return useQuery({
-    queryKey: ['users', params],
+    queryKey: userKeys.list(params),
     queryFn: () => usersApi.getAll(params),
     placeholderData: keepPreviousData,
   });
@@ -72,9 +87,16 @@ export const useUsers = (params?: UserFilterParams) => {
 
 export const useUser = (id: string | number) => {
   return useQuery({
-    queryKey: ['users', id],
+    queryKey: userKeys.detail(id),
     queryFn: () => usersApi.getById(id),
     enabled: Boolean(id),
+  });
+};
+
+export const useTotalUserRoles = () => {
+  return useQuery({
+    queryKey: userKeys.totalUserRoles(),
+    queryFn: () => usersApi.getTotalUserRoles(),
   });
 };
 
@@ -84,7 +106,7 @@ export const useCreateUser = () => {
   return useMutation({
     mutationFn: usersApi.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success('User created successfully.');
     },
     onError: (err: unknown) => {
@@ -103,8 +125,8 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: usersApi.update,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      queryClient.invalidateQueries({ queryKey: ['users', variables.id] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.id) });
       toast.success('User updated successfully.');
     },
     onError: (err: unknown) => {
@@ -123,7 +145,7 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: usersApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success('User deleted successfully.');
     },
     onError: (err: unknown) => {
@@ -135,3 +157,4 @@ export const useDeleteUser = () => {
     },
   });
 };
+
