@@ -76,9 +76,17 @@ export default function AdminDesignationsPage() {
       }
 
       await api.get(url).then((response) => {
-        data.rows = response.data?.results;
-        data.pageCount = response.data?.totalPages;
-        data.rowCount = response.data?.total;
+        const payload = response.data?.data;
+        const meta = response.data?.meta;
+
+        data.rows = Array.isArray(payload)
+          ? payload
+          : (response.data?.results || []);
+        data.pageCount = meta?.last_page || response.data?.totalPages || 1;
+        data.rowCount =
+          meta?.total ||
+          response.data?.total ||
+          (Array.isArray(payload) ? payload.length : 0);
       });
 
       return data;
@@ -99,14 +107,17 @@ export default function AdminDesignationsPage() {
   const columns: ColumnDef<IDesignation>[] = useMemo<ColumnDef<IDesignation>[]>(
     () => [
       {
-        accessorKey: "title",
+        accessorKey: "name",
         header: ({ column, table }) => (
           <DataTableColumnHeader
             table={table}
             column={column}
-            accessorKey="title"
+            accessorKey="name"
             title="Position title"
           />
+        ),
+        cell: ({ row }) => (
+          <div>{row.original.name || row.original.title || "-"}</div>
         ),
       },
       {
@@ -115,7 +126,7 @@ export default function AdminDesignationsPage() {
           <div className="flex justify-end">
             <DataTableRowActions
               id={String(row.original._id || row.original.id || "")}
-              name={row.original.name || row.original.title}
+              name={row.original.name || row.original.title || ""}
               updatePath={`/admin/designations/${row.original._id || row.original.id}/update`}
               deleteMutation={deleteMutation}
             />

@@ -27,7 +27,7 @@ import {
 import { IDesignation } from "@/@types/designation";
 
 const formSchema = z.object({
-  title: z.string().min(4),
+  name: z.string().min(2, "Position title must be at least 2 characters."),
 });
 
 export default function AdminDesignationForm() {
@@ -40,7 +40,7 @@ export default function AdminDesignationForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      name: "",
     },
   });
 
@@ -49,7 +49,7 @@ export default function AdminDesignationForm() {
     queryFn: async () => {
       let data: IDesignation = {
         _id: "",
-        title: "",
+        name: "",
       };
       const url = `/api/designations/${params.designationId}`;
       if (params.designationId) {
@@ -59,11 +59,12 @@ export default function AdminDesignationForm() {
       }
       return data;
     },
+    enabled: Boolean(params.designationId),
   });
 
   useEffect(() => {
-    if (isUpdate && data?.title) {
-      form.setValue("title", data.title);
+    if (isUpdate && data) {
+      form.setValue("name", data.name || data.title || "");
     }
   }, [data, isUpdate, form]);
 
@@ -76,7 +77,7 @@ export default function AdminDesignationForm() {
           data
         );
         if (response.status === 200) {
-          toast.success(`${data.title} is updated successfully.`, {
+          toast.success(`${data.name} is updated successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -96,7 +97,7 @@ export default function AdminDesignationForm() {
       } else {
         const response = await api.post("/api/designations", data);
         if (response.status === 201) {
-          toast.success(`${data.title} is created successfully.`, {
+          toast.success(`${data.name} is created successfully.`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -117,8 +118,8 @@ export default function AdminDesignationForm() {
     } catch (e) {
       const err = handleAxiosError(e);
       if (err) {
-        if (err.key === "title") {
-          form.setError("title", { type: "server", message: err.message });
+        if (err.key === "name" || err.key === "title") {
+          form.setError("name", { type: "server", message: err.message });
         } else {
           form.setError("root", { type: "server", message: err.message });
         }
@@ -139,7 +140,7 @@ export default function AdminDesignationForm() {
             <div className="grid gap-4">
               <FormField
                 control={form.control}
-                name="title"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
@@ -153,6 +154,11 @@ export default function AdminDesignationForm() {
                 )}
               />
             </div>
+            {form.formState.errors.root && (
+              <p className="text-sm font-medium text-destructive">
+                {form.formState.errors.root.message}
+              </p>
+            )}
             <Button type="submit" className="bg-blue-500">
               Submit
             </Button>
